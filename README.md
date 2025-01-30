@@ -97,5 +97,60 @@ All experiments will utilize publicly available data from sources like:
 3. 💻 **GitHub Setup and Experiments** – *Longling Gloria Geng*  
 
 ---
+# 🚀 How to Run the Code
+
+## 1) (Optional) Create and Activate a Virtual Environment
+It is recommended to use a virtual environment to manage dependencies:
+
+```sh
+python3 -m venv env
+source env/bin/activate  # On macOS/Linux
+env\Scripts\activate     # On Windows
+```
+
+## 2) Install Dependencies
+Ensure you have all necessary dependencies installed:
+
+```sh
+pip install -r requirements.txt
+```
+
+Or install manually:
+
+```sh
+pip install pandas numpy matplotlib prophet
+```
+
+## 3) Download & Place the S&P 500 Stocks Data
+The dataset is available on Kaggle:  
+🔗 [S&P 500 Stocks Dataset](https://www.kaggle.com/datasets/andrewmvd/sp-500-stocks)
+
+Extract and place the CSV file inside the `sp500_stocks/` directory:
+
+```sh
+mkdir -p sp500_stocks
+mv path/to/sp500_stocks.csv sp500_stocks/
+```
+
+## 4) Execute the Python Script
+Run the stock prediction script:
+
+```sh
+python3 main.py
+```
+
+## 5) Wait for the Script to Finish
+The script will:  
+✅ Predict stock prices for **2 years into the future**  
+✅ Load and preprocess the stock data  
+✅ Train a **Prophet forecasting model**  
+✅ Generate & save plots showing historical vs. forecasted values
+
+## 6) View Generated Plots
+Once the script completes, you’ll find the forecasted plots in the project folder:  
+- `AAPL_forecast.png` → Forecast for **Apple**  
+- `TSLA_forecast.png` → Forecast for **Tesla**  
+- `META_forecast.png` → Forecast for **Meta**
+- other plots etc.
 
 This **README** provides an overview of the **CS224G MACI for Stock Prediction** project, highlighting its **motivations, project plan, methodologies, demo, and future directions.** 🚀  
