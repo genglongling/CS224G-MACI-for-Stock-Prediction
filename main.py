@@ -18,6 +18,7 @@ from prophet import Prophet
 #     "META",  # Meta
 # ]
 
+
 # sector 2-financial
 # TARGET_SYMBOLS = [
 #     "JPM",  # JP Morgan Chase & Co.

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial LLM Chat</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; text-align: center; }
+        .container { max-width: 600px; margin: auto; }
+        select, input, button { width: 100%; padding: 10px; margin-top: 10px; }
+        .response { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Financial LLM Chat</h1>
+        <select id="model">
+            <option value="gpt-4o">GPT-4o</option>
+            <option value="deepseek">DeepSeek</option>
+            <option value="custom-financial">Custom Financial LLM</option>
+            <option value="meta-llama/Llama-3.3-70B-Instruct-Turbo">Llama-3.3-70B</option>
+        </select>
+        <input type="text" id="query" placeholder="Ask about stocks, risks, news...">
+        <button onclick="handleQuery()">Get Insights</button>
+        <div id="response" class="response"></div>
+    </div>
+
+    <script>
+        async function handleQuery() {
+            const model = document.getElementById("model").value;
+            const query = document.getElementById("query").value;
+            const responseDiv = document.getElementById("response");
+
+            if (!query) {
+                responseDiv.innerText = "Please enter a query.";
+                return;
+            }
+
+            responseDiv.innerText = "Analyzing...";
+
+            try {
+                const response = await axios.post("https://api.together.xyz/v1/chat/completions", {
+                    model: model,
+                    messages: [{ role: "user", content: query }],
+                }, {
+                    headers: { "Authorization": "Bearer 5efb8de8e762c4b798de6885afb380513339c22cb37628c76e9420fce30b5bac" }
+                });
+
+                responseDiv.innerText = response.data.choices[0].message.content;
+            } catch (error) {
+                responseDiv.innerText = "Error fetching response. Please try again.";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Chat with LLM Assistant</title>
+    <meta property="og:title" content="Chat with LLM Assistant" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+
+    <style data-tag="reset-style-sheet">
+      /* Include reset style here (same as your previous page) */
+    </style>
+    <style data-tag="default-style-sheet">
+      html {
+        font-family: Inter;
+        font-size: 16px;
+      }
+
+      body {
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: normal;
+        line-height: 1.15;
+        color: var(--dl-color-gray-black);
+        background: var(--dl-color-gray-white);
+      }
+
+      /* Chat-specific styles */
+      .chat-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        border-radius: 10px;
+        background: #f4f4f4;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .chat-header {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
+
+      .chat-messages {
+        max-height: 400px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+      }
+
+      .chat-input-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .chat-input {
+        width: 80%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .chat-send-button {
+        padding: 10px 20px;
+        background-color: #5128f5;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .chat-send-button:hover {
+        background-color: #3a1fca;
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">Chat with LLM Assistant</div>
+      <div class="chat-messages" id="chat-messages">
+        <!-- Chat messages will go here -->
+      </div>
+      <div class="chat-input-container">
+        <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." />
+        <button id="chat-send" class="chat-send-button">Send</button>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('chat-send').addEventListener('click', function() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+
+        if (message) {
+          // Display the user's message
+          const messageElement = document.createElement('div');
+          messageElement.classList.add('user-message');
+          messageElement.textContent = message;
+          document.getElementById('chat-messages').appendChild(messageElement);
+
+          // Send message to LLM and get the response (you can use an API here)
+          const responseMessage = "LLM Assistant's response will go here."; // Mock response
+          const responseElement = document.createElement('div');
+          responseElement.classList.add('llm-message');
+          responseElement.textContent = responseMessage;
+          document.getElementById('chat-messages').appendChild(responseElement);
+
+          // Clear the input field
+          input.value = '';
+          input.focus();
+        }
+      });
+    </script>
+  </body>
+</html>

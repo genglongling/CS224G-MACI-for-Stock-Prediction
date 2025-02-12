@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MACI Agent Repository</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+        .card { border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>MACI Agent Repository</h1>
+    <div>
+        <input type="text" id="agentName" placeholder="Agent Name">
+        <select id="agentLLM">
+            <option value="meta-llama/Llama-3.3-70B-Instruct-Turbo">meta-llama/Llama-3.3-70B-Instruct-Turbo</option>
+        </select>
+        <select id="agentType">
+            <option value="Common">Common</option>
+            <option value="Specialized">Specialized</option>
+        </select>
+        <input type="text" id="agentCapability" placeholder="Capability Vector">
+        <input type="number" id="contextWindow" placeholder="Context Window (≤1k tokens)">
+        <input type="text" id="efficiency" placeholder="Efficiency Constraint">
+        <button onclick="registerAgent()">Register Agent</button>
+    </div>
+
+    <h2>Registered Agents</h2>
+    <div id="agentsList"></div>
+
+    <h2>Meta-Planner</h2>
+    <input type="text" id="taskQuery" placeholder="Enter task for matching">
+    <button onclick="matchAgents()">Find Best Agents</button>
+    <div id="matchedAgentsList"></div>
+
+    <h2>Predicted Output</h2>
+    <div id="predictionResult"></div>
+
+    <script>
+        let agents = [];
+
+        // Predefined agent list
+        const predefinedAgents = [
+            { name: "Historical Data Agent", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Common", capability: "Collects and cleans past stock data", context: "500", efficiency: "High" },
+            { name: "Market Sentiment Agent", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Common", capability: "Analyzes news, social media, and analyst reports", context: "800", efficiency: "High" },
+            { name: "Macroeconomic Agent", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Common", capability: "Integrates economic indicators (GDP, inflation, interest rates)", context: "600", efficiency: "Medium" },
+            { name: "Risk & Uncertainty Agent", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Common", capability: "Assesses volatility and confidence in prediction", context: "400", efficiency: "High" },
+            { name: "Constraint Validation Agent", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Common", capability: "Ensures compliance with dependencies and constraints", context: "350", efficiency: "Medium" },
+            { name: "Technical Analysis Agent", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Specialized", capability: "Uses moving averages, RSI, MACD, and Bollinger Bands", context: "800", efficiency: "High" },
+            { name: "Fundamental Analysis Agent", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Specialized", capability: "Evaluates financial statements and valuation metrics", context: "900", efficiency: "High" },
+            { name: "Sector Correlation Agent", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Specialized", capability: "Identifies inter-sector dependencies (e.g., oil prices affecting airline stocks)", context: "700", efficiency: "Medium" },
+            { name: "Event Impact Agent", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Specialized", capability: "Processes real-time news, earnings reports, and geopolitical events", context: "650", efficiency: "High" },
+            { name: "Adaptive Learning Agent", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Specialized", capability: "Refines prediction models based on past performance", context: "750", efficiency: "High" },
+            { name: "Multi-Agent Coordination Supervisor", llm: "meta-llama/Llama-3.3-70B-Instruct-Turbo", type: "Specialized", capability: "Ensures seamless collaboration across agents", context: "950", efficiency: "Medium" }
+        ];
+
+        predefinedAgents.forEach(agent => {
+            agent.rating = 5;  // Set rating to 5 for all predefined agents
+            agents.push(agent);
+        });
+
+        function registerAgent() {
+            const name = document.getElementById("agentName").value;
+            const llm = "meta-llama/Llama-3.3-70B-Instruct-Turbo";  // Set LLM to fixed value
+            const type = document.getElementById("agentType").value;
+            const capability = document.getElementById("agentCapability").value;
+            const context = document.getElementById("contextWindow").value;
+            const efficiency = document.getElementById("efficiency").value;
+            const rating = 5;  // Set all ratings to 5
+
+            if (!name || !capability) return;
+
+            const agent = { name, llm, type, capability, context, efficiency, rating };
+            agents.push(agent);
+            displayAgents();
+        }
+
+        function displayAgents() {
+            const list = document.getElementById("agentsList");
+            list.innerHTML = "";
+            agents.forEach(agent => {
+                list.innerHTML += `<div class='card'>
+                    <p><strong>Name:</strong> ${agent.name}</p>
+                    <p><strong>LLM:</strong> ${agent.llm}</p>
+                    <p><strong>Type:</strong> ${agent.type}</p>
+                    <p><strong>Capabilities:</strong> ${agent.capability}</p>
+                    <p><strong>Context:</strong> ${agent.context} tokens</p>
+                    <p><strong>Efficiency:</strong> ${agent.efficiency}</p>
+                    <p><strong>Rating:</strong> ${agent.rating}/5</p>
+                </div>`;
+            });
+        }
+
+        function matchAgents() {
+            const task = document.getElementById("taskQuery").value;
+            let matched = agents.filter(agent => agent.capability.toLowerCase().includes(task.toLowerCase()));
+
+            // Ensure we select agents based on context window constraints (≤1k tokens)
+            matched = matched.filter(agent => parseInt(agent.context) <= 1000);
+
+            // Step 3: Agent Ranking (Sort by efficiency and rating)
+            matched.sort((a, b) => b.rating - a.rating || parseInt(a.efficiency) - parseInt(b.efficiency));
+
+            const list = document.getElementById("matchedAgentsList");
+            list.innerHTML = "";
+            matched.forEach(agent => {
+                list.innerHTML += `<div class='card'>
+                    <p><strong>Name:</strong> ${agent.name}</p>
+                    <p><strong>Rating:</strong> ${agent.rating}/5</p>
+                    <p><strong>Efficiency:</strong> ${agent.efficiency}</p>
+                </div>`;
+            });
+
+            // Algorithm 1: MP - Planner for planning the task of predicting stock price for Apple
+            const taskObjective = task.toLowerCase();  // Example task: "predict stock price for apple"
+            const roleAssignments = {};
+            const workflow = [];
+
+            // Phase 1: Network Construction (Extracting roles from objectives)
+            const roles = ["Data Collection", "Sentiment Analysis", "Macroeconomic Impact", "Technical Analysis"];
+            const dependencies = ["Market Sentiment", "Historical Data", "Macroeconomics", "Risk Assessment"];
+
+            // Phase 2: Agent Assignment (Assigning agents to roles)
+            roles.forEach(role => {
+                const matchedAgent = matched.find(agent => agent.capability.toLowerCase().includes(role.toLowerCase()));
+                if (matchedAgent) {
+                    roleAssignments[role] = matchedAgent;
+                    workflow.push({ role, agent: matchedAgent });
+                }
+            });
+
+            // Simulate a workflow output
+            let predictionOutput = `Prediction for stock price of Apple based on the selected workflow:\n`;
+            workflow.forEach(item => {
+                predictionOutput += `${item.role} performed by: ${item.agent.name}\n`;
+            });
+
+            // Display Prediction Result
+            document.getElementById("predictionResult").innerHTML = predictionOutput;
+            console.log("Used Common Agents:", workflow.filter(item => item.agent.type === "Common").map(item => item.agent.name));
+            console.log("Used Specialized Agents:", workflow.filter(item => item.agent.type === "Specialized").map(item => item.agent.name));
+        }
+
+        // Register predefined agents on load
+        window.onload = displayAgents;
+    </script>
+</body>
+</html>
