@@ -124,55 +124,41 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     };
 
-      document.getElementById('chat-send').addEventListener('click', function() {
+       document.getElementById('chat-send').addEventListener('click', async function() {
         const input = document.getElementById('chat-input');
         const message = input.value.trim();
 
-        if (message) {
-          // Display the user's message
-          const messageElement = document.createElement('div');
-          messageElement.classList.add('user-message');
-          messageElement.textContent = message;
-          document.getElementById('chat-messages').appendChild(messageElement);
+        if (!message) return;
 
-          // Clear the input field
-          input.value = '';
-          input.focus();
+        // Display user message
+        const userMessage = document.createElement('div');
+        userMessage.classList.add('user-message');
+        userMessage.textContent = "You: " + message;
+        document.getElementById('chat-messages').appendChild(userMessage);
 
-          // Send message to server and get the response
-          fetch('http://localhost:8000/query', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ query: message })
-          })
+        input.value = ''; // Clear input field
 
-          .then(response => {
-            console.log('Response Status:', response.status);  // Log status
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.text();  // Parse the response as JSON
+        try {
+            // Send query to server
+            const response = await fetch('http://localhost:8000/query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: message })
+            });
 
+            const data = await response.json();
+            console.log('response:', data);
 
-            // Display the response from the assistant
-            const responseElement = document.createElement('div');
-            responseElement.classList.add('llm-message');
-            responseElement.textContent = data.response ? data.response : 'No response available'; // Safely access data.response
-            document.getElementById('chat-messages').appendChild(responseElement);
-
-            // Scroll to the bottom of the chat
-            const chatMessages = document.getElementById('chat-messages');
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-          })
-
-          .catch(error => {
+            // Display AI response
+            const aiResponse = document.createElement('div');
+            aiResponse.classList.add('ai-message');
+            aiResponse.textContent = "AI: " + (data.response || "No response available");
+            document.getElementById('chat-messages').appendChild(aiResponse);
+        } catch (error) {
             console.error('Error:', error);
-          });
         }
-      });
+    });
     </script>
+
   </body>
 </html>
