@@ -18,11 +18,8 @@ def _set_env(var: str):
     if not os.environ.get(var):
         os.environ[var] = getpass.getpass(f"{var}: ")
 
-# TAVILY_API_KEY:
-# together api:
 _set_env("TAVILY_API_KEY")
 _set_env("TOGETHER_API_KEY")
-# os.environ["TOGETHER_API_KEY"] =
 
 from langchain_together import ChatTogether
 
@@ -151,93 +148,35 @@ def web_research_node(state: MessagesState) -> Command[Literal["supervisor"]]:
 #     )
 
 
+from flask import Flask, request, jsonify, render_template
+
+app = Flask(__name__)
 
 
-
-
-
-# example2: stock prediction
-
-from IPython.display import Image, display
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import json
-
-# Function to process the query and generate a response
+# Function to process the query
 def process_query(query: str):
-    # In the real scenario, you would integrate your graph, agents, and decision-making logic here
-    response = "Processed response for (top 5): " + query  # Replace with the actual processing logic using langgraph
-
-    builder = StateGraph(MessagesState)
-    builder.add_edge(START, "supervisor")
-    builder.add_node("supervisor", supervisor_node)
-    builder.add_node("web_researcher", web_research_node)
-    # builder.add_node("rag", rag_node)
-    # builder.add_node("nl2sql", nl2sql_node)
-    graph = builder.compile()
-
-    try:
-        display(Image(graph.get_graph().draw_mermaid_png()))
-    except Exception:
-        # You can put your exception handling code here
-        pass
-
-    i = 0
-    for s in graph.stream(
-            {"messages": [("user", query)]},
-            {"recursion_limit": 100},
-            subgraphs=True,
-    ):
-        #print(s)
-        #print("----")
-        response = response + str(s)
-        i = i + 1
-        if i == 4:
-            break
-    #response = "this is a testing response"
+    # Simulating AI processing (replace this with your actual logic)
+    #response = f"Processed response for (top 5): {query}"
+    response = "this is a testing"
     return response
-#
-# Define HTTP server request handler
-class RequestHandler(BaseHTTPRequestHandler):
-    def do_OPTIONS(self):
-        self.send_response(200, "ok")
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        self.send_header("Access-Control-Allow-Headers", "X-Requested-With")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.end_headers()
 
-    def do_POST(self):
-        # Get content length and parse incoming data
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
 
-        # Parse the JSON data from the client
-        data = json.loads(post_data)
-        query = data.get('query', '')
+@app.route('/')
+def index():
+    return render_template('index.html')  # Serve the HTML page
 
-        # Process the query using your agent setup
-        response = process_query(query)
-        print(response)
 
-        # Send response back to the client
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps({'response': response}).encode())
+@app.route('/query', methods=['POST'])
+def handle_post():
+    data = request.get_json()
+    query = data.get("query", "")
 
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-        self.wfile.write(b"Hello, world!")
+    if not query:
+        return jsonify({"error": "No query provided"}), 400
 
-# Start HTTP server
-def run(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f'Starting server on port {port}...')
-    httpd.serve_forever()
+    response = process_query(query)  # Process the query
+    return jsonify({"response": response})  # Send JSON response
+
 
 if __name__ == '__main__':
-    run()
-
+    app.run(debug=True, port=8000)  # Runs on http://localhost:8000

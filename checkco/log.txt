@@ -1,0 +1,23 @@
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /image.jpeg 404 File Not Found
+localhost/127.0.0.1 2025-02-12 12:41:22 /image.jpeg 404 File Not Found
+localhost/127.0.0.1 2025-02-12 12:41:22 /image.jpeg 404 File Not Found
+localhost/127.0.0.1 2025-02-12 12:41:22 /file.txt 404 File Not Found
+localhost/127.0.0.1 2025-02-12 12:41:22 /file.txt 404 File Not Found
+localhost/127.0.0.1 2025-02-12 12:41:22 /file.txt 404 File Not Found
+localhost/127.0.0.1 2025-02-12 12:41:22 /file.txt 404 File Not Found
+localhost/127.0.0.1 2025-02-12 12:41:22 /file.txt 404 File Not Found
+localhost/127.0.0.1 2025-02-12 12:41:22 /file.txt 404 File Not Found
+localhost/127.0.0.1 2025-02-12 12:41:22 / 400 Bad Request
+localhost/127.0.0.1 2025-02-12 12:41:22 /helloword.c 404 File Not Found
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
+localhost/127.0.0.1 2025-02-12 12:41:22 /index.html 200 OK
