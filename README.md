@@ -1,5 +1,10 @@
 # 🚀 CS224G-MACI-for-Stock-Prediction  
 
+## [NEW UPDATE]
+## - Please review section How To Run The Code Part D
+## - Paper: [MACI Framework](https://arxiv.org/abs/2502.18836)
+## - Code: cd MACI_framework
+
 ## ⚠️ 1. LLM Limitations in Complex Planning  
 
 Large Language Models (LLMs) excel at pattern recognition but struggle with complex planning tasks that require:  
