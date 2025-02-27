@@ -60,15 +60,15 @@ MACI is designed to overcome these LLM limitations using a three-layer approach:
 
 - 🏗 **(Sprint 1)** Implementation, Experiments, First Results →  
 - 🚀 **(Sprint 2)** First App Demo (Frond-End & Back-End) →  
-- 🔧 **(Sprint 3)** Enhancement, Second App Demo →  
-- 🎤 **(Demo Day)** Paper Submission for NeurIPS, Final App Demo →  
+- 🔧 **(Sprint 3)** MACI Enhancement, Second App Demo →  
+- 🎤 **(Demo Day)** App Integration, Paper Submission for NeurIPS, Final App Demo →  
 
 ### 🤖 3.4 Multi-Agent App Development:  
 
-- 🔍 **(1) LLM Specialization**: Different LLMs tailored for **Stock Prediction, Company Analysis, Personal Insights, and Job Market Trends**.  
-- 🏗 **(2) Overall Architecture**: Using **Langraph API**, Multi-Agents selection and collaboration, to generate holistic financial and career insights.  
-- 📈 **(3) Agent 1 & 2: Stock Prediction & Company Analysis**: Real-time data integration, LLMs for market trends and company analysis.  
-- 👥 **(4) Agent 3 & 4: Investment Expert Analysis & Job Analysis**: AI-driven investment, career suggestion, and matching based on market shifts.  
+- 🔍 **(1) LLM Specializatio✅**: Different LLMs tailored for **Stock Prediction, Company Analysis, Personal Insights, and Job Market Trends**.  
+- 🏗 **(2) Overall Architecture[TO BE FINISHED]**: Using **MACI Framework with website**, Multi-Agents selection and collaboration, to generate holistic financial and career insights.  
+- 📈 **(3) Agent 1 & 2✅: Stock Prediction & Company Analysis**: Real-time data integration, LLMs for market trends and company analysis.  
+- 👥 **(4) Agent 3 & 4✅: Investment Expert Analysis & Job Analysis**: AI-driven investment, career suggestion, and matching based on market shifts.  
 - 🚀 **(5) Milestones**: Iterative development, testing, and user feedback loops.
   
 ---
@@ -101,7 +101,7 @@ All experiments will utilize publicly available data from sources like:
 ## 🎓 5. Contribution  
 
 1. 📄 **Paper: Multi-Agent Collaborative Intelligence for Robust Temporal Planning** – *Edward Y. Chang*  
-2. 📄 **Paper: Benchmarking Multi-Agent Collaborative Intelligence Application: Stock Prediction Case** – *Longling Gloria Geng, Edward Y. Chang*  
+2. 📄 **Paper: REALM-Bench: A Real-World Planning Benchmark for LLMs and Multi-Agent Systems** – *Longling Gloria Geng, Edward Y. Chang*  
 3. 💻 **GitHub Setup and Experiments** – *Longling Gloria Geng*  
 
 ---
@@ -174,6 +174,12 @@ cd checkco
 python3 server.py
 ```
 then open front.html
+
+## D. MACI Demo (NEW)
+```sh
+cd MACI_framework
+```
+then follow README file to set up your own multi-agent framework and pipeline.
 
 
 This **README** provides an overview of the **CS224G MACI for Stock Prediction** project, highlighting its **motivations, project plan, methodologies, demo, and future directions.** 🚀  
