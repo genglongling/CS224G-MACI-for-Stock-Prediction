@@ -55,20 +55,94 @@ class Router(TypedDict):
 def initialize_llm_and_tools():
     global llm, web_search_tool, websearch_agent
     
-    # Initialize LLM
+    # Verify API keys are set
+    if not os.getenv("TAVILY_API_KEY") or not os.getenv("TOGETHER_API_KEY"):
+        print("API keys not set")
+        return False
+    
     try:
-        llm = ChatTogether(model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo")
-        
-        # Initialize search tool
-        web_search_tool = TavilySearchResults(max_results=5, api_key=os.getenv("TAVILY_API_KEY"))
-        
-        # Initialize web search agent
-        websearch_agent = create_agent(llm, [web_search_tool])
-        
-        print("LLM and tools initialized successfully")
-        return True
+        # Try to initialize components without strict validation first
+        try:
+            # Create components with the provided API keys
+            llm = ChatTogether(model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo")
+            web_search_tool = TavilySearchResults(max_results=5, api_key=os.getenv("TAVILY_API_KEY"))
+            websearch_agent = create_agent(llm, [web_search_tool])
+            
+            # Simple test to verify the components work
+            # Test the LLM with a simple query
+            test_response = llm.invoke("Hello, are you working?")
+            print("LLM test response received")
+            
+            # Test the search tool with a simple query
+            test_search = web_search_tool.invoke("test query")
+            print("Search tool test response received")
+            
+            print("LLM and tools initialized and tested successfully")
+            return True
+            
+        except Exception as component_error:
+            print(f"Component initialization error: {component_error}")
+            
+            # If component initialization fails, try basic API validation
+            import requests
+            from requests.exceptions import RequestException
+            
+            # Basic validation for Tavily
+            try:
+                tavily_key = os.getenv("TAVILY_API_KEY")
+                tavily_test_url = "https://api.tavily.com/search"
+                tavily_payload = {
+                    "query": "test",
+                    "search_depth": "basic",
+                    "max_results": 1
+                }
+                tavily_headers = {
+                    "Content-Type": "application/json",
+                    "X-API-Key": tavily_key
+                }
+                
+                tavily_response = requests.post(
+                    tavily_test_url, 
+                    json=tavily_payload,
+                    headers=tavily_headers,
+                    timeout=5
+                )
+                
+                if tavily_response.status_code >= 400:
+                    print(f"Tavily API key validation failed with status {tavily_response.status_code}")
+                    return False
+                    
+            except RequestException as e:
+                print(f"Tavily API connection error: {e}")
+                return False
+            
+            # Basic validation for Together API
+            try:
+                together_key = os.getenv("TOGETHER_API_KEY")
+                together_headers = {"Authorization": f"Bearer {together_key}"}
+                together_test_url = "https://api.together.xyz/v1/models"
+                
+                together_response = requests.get(
+                    together_test_url,
+                    headers=together_headers,
+                    timeout=5
+                )
+                
+                if together_response.status_code >= 400:
+                    print(f"Together API key validation failed with status {together_response.status_code}")
+                    return False
+                    
+            except RequestException as e:
+                print(f"Together API connection error: {e}")
+                return False
+                
+            # If we got here, basic validation passed but component initialization failed
+            # This could indicate an issue with the API keys or with our code
+            print("API keys appear valid but component initialization failed")
+            return False
+            
     except Exception as e:
-        print(f"Error initializing LLM and tools: {e}")
+        print(f"Error in validation process: {e}")
         return False
 
 # Create supervisor node function
@@ -249,6 +323,18 @@ class RequestHandler(BaseHTTPRequestHandler):
                 together_api_key = data.get('together_api_key', '')
                 user_info = data.get('user', {})
                 
+                # Check if API keys are provided
+                if not tavily_api_key or not together_api_key:
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        'success': False, 
+                        'error': 'Both Tavily and Together API keys are required.'
+                    }).encode())
+                    return
+                
                 # If user info exists, store the user's API keys
                 if user_info and 'email' in user_info:
                     user_email = user_info['email']
@@ -260,65 +346,55 @@ class RequestHandler(BaseHTTPRequestHandler):
                     print(f"User {user_email} has set API keys")
                 
                 # Set environment variables
-                if tavily_api_key:
-                    os.environ["TAVILY_API_KEY"] = tavily_api_key
-                if together_api_key:
-                    os.environ["TOGETHER_API_KEY"] = together_api_key
+                os.environ["TAVILY_API_KEY"] = tavily_api_key
+                os.environ["TOGETHER_API_KEY"] = together_api_key
                 
-                # Initialize LLM and search tools
-                init_success = initialize_llm_and_tools()
+                print("API keys set in environment variables")
                 
-                # Send response
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                
-                if init_success:
-                    self.wfile.write(json.dumps({'success': True}).encode())
-                else:
-                    self.wfile.write(json.dumps({'success': False, 'error': 'Failed to initialize LLM and tools'}).encode())
+                # Initialize LLM and search tools and validate API keys
+                try:
+                    print("Starting initialization and validation...")
+                    init_success = initialize_llm_and_tools()
+                    
+                    # Send response
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    
+                    if init_success:
+                        print("Initialization successful")
+                        self.wfile.write(json.dumps({'success': True}).encode())
+                    else:
+                        error_msg = 'API validation failed. The API keys may be incorrect or the services may be unavailable.'
+                        print(error_msg)
+                        self.wfile.write(json.dumps({
+                            'success': False, 
+                            'error': error_msg
+                        }).encode())
+                    
+                except Exception as init_error:
+                    print(f"Error during initialization: {str(init_error)}")
+                    self.send_response(200)  # Still send 200 to let the client process the error
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        'success': False, 
+                        'error': f'Error during initialization: {str(init_error)}'
+                    }).encode())
                 
             except Exception as e:
-                # Send error response
+                # Send error response for parsing/processing error
+                print(f"Error processing request: {str(e)}")
                 self.send_response(500)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
-                self.wfile.write(json.dumps({'success': False, 'error': str(e)}).encode())
-            
-        elif self.path == '/query':
-            # Original query processing code
-            content_length = int(self.headers['Content-Length'])
-            post_data = self.rfile.read(content_length)
-
-            try:
-                data = json.loads(post_data)
-                query = data.get('query', '')
-
-                self.send_response(200)
-                self.send_header('Content-type', 'text/event-stream')
-                self.send_header('Cache-Control', 'no-cache')
-                self.send_header('Connection', 'keep-alive')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-
-                self.send_sse_message("Starting query processing: " + query)
-                
-                process_query_streaming(self, query)
-                
-                self.send_sse_message("Processing complete", event="complete")
-                
-            except Exception as e:
-                self.send_response(500)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps({'error': str(e)}).encode())
-        else:
-            self.send_response(404)
-            self.end_headers()
-            self.wfile.write(b'Not Found')
+                self.wfile.write(json.dumps({
+                    'success': False, 
+                    'error': f'Server error: {str(e)}'
+                }).encode())
 
     def do_GET(self):
         """Handle GET requests, mainly for SSE connections"""
