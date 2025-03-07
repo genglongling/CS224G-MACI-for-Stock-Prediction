@@ -638,28 +638,70 @@
       });
       
       // Function to send API keys to the server
-      async function sendApiKeys(tavilyApiKey, togetherApiKey) {
-        try {
-          const response = await fetch('http://localhost:8000/set-api-keys', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              tavily_api_key: tavilyApiKey,
-              together_api_key: togetherApiKey,
-              user: window.currentUser // Send user info to the server
-            })
-          });
+    async function sendApiKeys(tavilyApiKey, togetherApiKey) {
+      try {
+        // Show loading state
+        const submitButton = document.querySelector('.submit-button');
+        const originalButtonText = submitButton.textContent;
+        submitButton.textContent = "Connecting...";
+        submitButton.disabled = true;
+        
+        // Display status message
+        const statusDiv = document.createElement('div');
+        statusDiv.id = 'status-message';
+        statusDiv.style.marginTop = '10px';
+        statusDiv.style.padding = '8px';
+        statusDiv.style.borderRadius = '4px';
+        statusDiv.style.backgroundColor = '#f8f9fa';
+        statusDiv.textContent = 'Connecting to API services...';
+        
+        // Add status div after the form
+        const form = document.getElementById('apiKeyForm');
+        if (form.nextElementSibling) {
+          form.parentNode.insertBefore(statusDiv, form.nextElementSibling);
+        } else {
+          form.parentNode.appendChild(statusDiv);
+        }
+        
+        // Make the API request
+        console.log('Sending API keys to server...');
+        const response = await fetch('http://localhost:8000/set-api-keys', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tavily_api_key: tavilyApiKey,
+            together_api_key: togetherApiKey,
+            user: window.currentUser // Send user info to the server
+          })
+        });
+        
+        // Log response status
+        console.log('Server response status:', response.status);
+        
+        // Parse the response
+        const data = await response.json();
+        console.log('Server response data:', data);
+        
+        // Restore button state
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
+        
+        if (data.success) {
+          // Update status message
+          statusDiv.style.backgroundColor = '#d4edda';
+          statusDiv.style.color = '#155724';
+          statusDiv.textContent = 'Connection successful!';
           
-          const data = await response.json();
-          
-          if (data.success) {
-            // Close the modal
+          // Close the modal after a brief delay
+          setTimeout(() => {
             document.getElementById('apiKeyModal').style.display = 'none';
             
-            // Show success message
-            alert('Connection successful! You can now start chatting.');
+            // Remove the status message
+            if (statusDiv.parentNode) {
+              statusDiv.parentNode.removeChild(statusDiv);
+            }
             
             // Enable chat input and button
             document.getElementById('chat-input').disabled = false;
@@ -670,15 +712,48 @@
             initialMessageElement.classList.add('llm-message');
             initialMessageElement.textContent = 'How can I help you?';
             document.getElementById('chat-messages').appendChild(initialMessageElement);
-          } else {
-            console.error('Initialization failed:', data);
-            alert(`Error: ${data.error || 'Failed to set API keys. Check browser console for details.'}`);
-          }
-        } catch (error) {
-          console.error('Error sending API keys:', error);
-          alert('Error connecting to server. Please make sure the server is running.');
+          }, 1500);
+        } else {
+          // Update status with error message
+          statusDiv.style.backgroundColor = '#f8d7da';
+          statusDiv.style.color = '#721c24';
+          statusDiv.textContent = `Error: ${data.error || 'Failed to connect with the provided API keys.'}`;
+          
+          // Keep modal open so user can edit their API keys
+          console.error('Initialization failed:', data);
         }
+      } catch (error) {
+        console.error('Error sending API keys:', error);
+        
+        // Find or create status div
+        let statusDiv = document.getElementById('status-message');
+        if (!statusDiv) {
+          statusDiv = document.createElement('div');
+          statusDiv.id = 'status-message';
+          statusDiv.style.marginTop = '10px';
+          statusDiv.style.padding = '8px';
+          statusDiv.style.borderRadius = '4px';
+          
+          // Add status div after the form
+          const form = document.getElementById('apiKeyForm');
+          if (form.nextElementSibling) {
+            form.parentNode.insertBefore(statusDiv, form.nextElementSibling);
+          } else {
+            form.parentNode.appendChild(statusDiv);
+          }
+        }
+        
+        // Update status with error message
+        statusDiv.style.backgroundColor = '#f8d7da';
+        statusDiv.style.color = '#721c24';
+        statusDiv.textContent = 'Error connecting to server. Please make sure the server is running.';
+        
+        // Restore button state
+        const submitButton = document.querySelector('.submit-button');
+        submitButton.textContent = "Connect";
+        submitButton.disabled = false;
       }
+    }
 
       // Simple Markdown parsing function
       function parseMarkdown(text) {
