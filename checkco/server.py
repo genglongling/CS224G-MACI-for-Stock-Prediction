@@ -17,10 +17,10 @@ import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from IPython.display import Image, display
 
-# 全局变量用于存储API密钥
+# Global variables to store API keys
 tavily_api_key = None
 together_api_key = None
-users = {}  # 存储用户信息和他们的API密钥
+users = {}  # Store user information and their API keys
 
 from typing import Literal
 from typing_extensions import TypedDict
@@ -51,18 +51,18 @@ class Router(TypedDict):
     """Worker to route to next. If no workers needed, route to FINISH."""
     next: Literal["web_researcher", "FINISH"] # "rag", "nl2sql",
 
-# 初始化LLM和工具的函数
+# Function to initialize LLM and tools
 def initialize_llm_and_tools():
     global llm, web_search_tool, websearch_agent
     
-    # 初始化LLM
+    # Initialize LLM
     try:
         llm = ChatTogether(model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo")
         
-        # 初始化搜索工具
+        # Initialize search tool
         web_search_tool = TavilySearchResults(max_results=5, api_key=os.getenv("TAVILY_API_KEY"))
         
-        # 初始化网络搜索代理
+        # Initialize web search agent
         websearch_agent = create_agent(llm, [web_search_tool])
         
         print("LLM and tools initialized successfully")
@@ -225,7 +225,7 @@ def process_query_streaming(handler, query):
     
     handler.send_sse_message(summary)
 
-# 修改请求处理类，添加处理API密钥设置的方法
+# Modified request handler class to add API key setting method
 class RequestHandler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(200, "ok")
@@ -239,56 +239,56 @@ class RequestHandler(BaseHTTPRequestHandler):
         global tavily_api_key, together_api_key
         
         if self.path == '/set-api-keys':
-                # 处理设置API密钥的请求
-                content_length = int(self.headers['Content-Length'])
-                post_data = self.rfile.read(content_length)
+            # Handle API key setting request
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            
+            try:
+                data = json.loads(post_data)
+                tavily_api_key = data.get('tavily_api_key', '')
+                together_api_key = data.get('together_api_key', '')
+                user_info = data.get('user', {})
                 
-                try:
-                    data = json.loads(post_data)
-                    tavily_api_key = data.get('tavily_api_key', '')
-                    together_api_key = data.get('together_api_key', '')
-                    user_info = data.get('user', {})
-                    
-                    # 如果有用户信息，存储该用户的API密钥
-                    if user_info and 'email' in user_info:
-                        user_email = user_info['email']
-                        users[user_email] = {
-                            'info': user_info,
-                            'tavily_api_key': tavily_api_key,
-                            'together_api_key': together_api_key
-                        }
-                        print(f"用户 {user_email} 已设置API密钥")
-                    
-                    # 设置环境变量
-                    if tavily_api_key:
-                        os.environ["TAVILY_API_KEY"] = tavily_api_key
-                    if together_api_key:
-                        os.environ["TOGETHER_API_KEY"] = together_api_key
-                    
-                    # 初始化LLM和搜索工具
-                    init_success = initialize_llm_and_tools()
-                    
-                    # 发送响应
-                    self.send_response(200)
-                    self.send_header('Content-type', 'application/json')
-                    self.send_header('Access-Control-Allow-Origin', '*')
-                    self.end_headers()
-                    
-                    if init_success:
-                        self.wfile.write(json.dumps({'success': True}).encode())
-                    else:
-                        self.wfile.write(json.dumps({'success': False, 'error': 'Failed to initialize LLM and tools'}).encode())
-                    
-                except Exception as e:
-                    # 发送错误响应
-                    self.send_response(500)
-                    self.send_header('Content-type', 'application/json')
-                    self.send_header('Access-Control-Allow-Origin', '*')
-                    self.end_headers()
-                    self.wfile.write(json.dumps({'success': False, 'error': str(e)}).encode())
+                # If user info exists, store the user's API keys
+                if user_info and 'email' in user_info:
+                    user_email = user_info['email']
+                    users[user_email] = {
+                        'info': user_info,
+                        'tavily_api_key': tavily_api_key,
+                        'together_api_key': together_api_key
+                    }
+                    print(f"User {user_email} has set API keys")
                 
+                # Set environment variables
+                if tavily_api_key:
+                    os.environ["TAVILY_API_KEY"] = tavily_api_key
+                if together_api_key:
+                    os.environ["TOGETHER_API_KEY"] = together_api_key
+                
+                # Initialize LLM and search tools
+                init_success = initialize_llm_and_tools()
+                
+                # Send response
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                
+                if init_success:
+                    self.wfile.write(json.dumps({'success': True}).encode())
+                else:
+                    self.wfile.write(json.dumps({'success': False, 'error': 'Failed to initialize LLM and tools'}).encode())
+                
+            except Exception as e:
+                # Send error response
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({'success': False, 'error': str(e)}).encode())
+            
         elif self.path == '/query':
-            # 原有的处理查询的代码
+            # Original query processing code
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
 
