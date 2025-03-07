@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-CheckCo 系统启动脚本
-此脚本会启动服务器并自动打开浏览器前端页面
+CheckCo System Startup Script
+This script starts the server and automatically opens the browser frontend page
 """
 
 import os
@@ -13,54 +13,54 @@ import platform
 import threading
 
 def check_dependencies():
-    """检查并安装所需依赖"""
+    """Check and install required dependencies"""
     try:
         import http.server
         import json
         import urllib.parse
         
-        # 尝试导入可能需要额外安装的包
+        # Try to import packages that might need additional installation
         try:
             import langchain_together
             import langgraph
         except ImportError:
-            print("正在安装所需依赖包...")
+            print("Installing required dependency packages...")
             subprocess.check_call([sys.executable, "-m", "pip", "install", 
                                   "langchain-together", "langgraph-core"])
-            print("依赖安装完成！")
+            print("Dependencies installed successfully!")
     except ImportError as e:
-        print(f"错误: 缺少必要的依赖 - {e}")
-        print("请确保Python环境正确安装")
+        print(f"Error: Missing required dependency - {e}")
+        print("Please ensure Python environment is properly installed")
         sys.exit(1)
 
 def start_server():
-    """直接在当前进程中启动服务器"""
-    # 导入服务器模块
-    print("正在启动服务器...")
+    """Start the server directly in the current process"""
+    # Import server module
+    print("Starting server...")
     
     try:
-        # 方法1: 直接导入server.py中的run函数并在新线程中运行
+        # Method 1: Directly import and run the server.py run function in a new thread
         sys.path.append(os.path.dirname(os.path.abspath(__file__)))
         import server
         
-        # 创建一个线程来运行服务器
+        # Create a thread to run the server
         server_thread = threading.Thread(target=server.run)
-        server_thread.daemon = True  # 设置为守护线程，这样主程序退出时它也会退出
+        server_thread.daemon = True  # Set as daemon thread so it exits when main program exits
         server_thread.start()
         
         return server_thread
     except ImportError:
-        print("无法导入server模块，尝试使用子进程方式启动...")
-        # 方法2: 如果导入失败，使用子进程方式但确保输出重定向到当前控制台
+        print("Unable to import server module, attempting to start using subprocess...")
+        # Method 2: If import fails, use subprocess with output redirected to current console
         process = subprocess.Popen(
             [sys.executable, "server.py"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
-            bufsize=1  # 行缓冲
+            bufsize=1  # Line buffering
         )
         
-        # 创建一个线程实时读取并显示服务器输出
+        # Create a thread to read and display server output in real-time
         def output_reader():
             for line in process.stdout:
                 print(f"[Server] {line.strip()}")
@@ -72,59 +72,59 @@ def start_server():
         return process
 
 def open_browser():
-    """打开浏览器前端页面"""
-    # 获取当前脚本的绝对路径
+    """Open the browser frontend page"""
+    # Get the absolute path of the current script
     current_dir = os.path.dirname(os.path.abspath(__file__))
     
-    # 构建前端HTML文件的路径
+    # Build the path to the frontend HTML file
     html_path = os.path.join(current_dir, "front.html")
     
-    # 检查文件是否存在
+    # Check if file exists
     if not os.path.exists(html_path):
-        print(f"错误: 找不到前端文件 {html_path}")
+        print(f"Error: Frontend file not found at {html_path}")
         return False
     
-    # 将文件路径转换为URL格式
+    # Convert file path to URL format
     file_url = f"file://{html_path}"
     if platform.system() == "Windows":
         file_url = file_url.replace("\\", "/")
     
-    print(f"正在打开浏览器: {file_url}")
+    print(f"Opening browser: {file_url}")
     webbrowser.open(file_url)
     return True
 
 def main():
-    """主函数"""
-    print("CheckCo 系统启动中...")
+    """Main function"""
+    print("CheckCo System starting...")
     
-    # 检查依赖
+    # Check dependencies
     check_dependencies()
     
-    # 启动服务器
+    # Start server
     server_process = start_server()
     
-    # 等待服务器启动
-    print("等待服务器启动...")
+    # Wait for server to start
+    print("Waiting for server to start...")
     time.sleep(3)
     
-    # 打开浏览器
+    # Open browser
     if not open_browser():
-        print("无法打开前端页面，请手动打开front.html文件")
+        print("Unable to open frontend page, please manually open front.html file")
     
-    print("\nCheckCo 系统已启动!")
-    print("服务器运行在: http://localhost:8000")
-    print("前端页面已在浏览器中打开")
-    print("按 Ctrl+C 停止服务器")
+    print("\nCheckCo System has started!")
+    print("Server running at: http://localhost:8000")
+    print("Frontend page has been opened in browser")
+    print("Press Ctrl+C to stop the server")
     
     try:
-        # 保持主程序运行，直到用户中断
+        # Keep main program running until user interrupts
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print("\n停止服务器...")
+        print("\nStopping server...")
         if isinstance(server_process, subprocess.Popen):
             server_process.terminate()
-        print("系统已关闭")
+        print("System has been shut down")
 
 if __name__ == "__main__":
     main()
