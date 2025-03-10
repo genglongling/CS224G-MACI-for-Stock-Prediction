@@ -170,7 +170,7 @@ except Exception:
     pass
 
 # Example: Complex Query Using Multiple Agents
-# example 1: search through founder (real-time data+historical data)
+# Function 1: real-time search, example: search through founder (real-time data+historical data)
 input_question = "Find the founder of FutureSmart AI and then do a web research on him"
 for s in graph.stream(
     {"messages": [("user", input_question)]},
@@ -180,7 +180,13 @@ for s in graph.stream(
     print(s)
     print("----")
 
-# example2: stock prediction
+
+# Function 2: Q\&A, example: what is apple stock price today?
+# Function 3: simple to complex calculation and induction, example: predict stock price of apple tomorrow
+# Function 4: advanced machine learning reasoning ability (e.g. LSTM), example: https://www.alphavantage.co/documentation/
+# Function 5: planning ability (e.g. meta planning, first planning, second planning), example: generate a plan, through pdf
+# Function 6: decision making ability (e.g. validation, self-evaluation), example: verify the plan again or reversion
+# Function 7: operation ability (e.g. replace some thought, generate plot, scheduling), example: generate plot, scheduling
 
 
 
