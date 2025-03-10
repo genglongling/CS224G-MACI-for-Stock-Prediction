@@ -1,0 +1,19 @@
+{
+    "users": {
+        "user@example.com": {
+            "name": "user",
+            "password": "",
+            "provider": "Google",
+            "api_keys": {
+                "tavily": "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",
+                "together": "5efb8de8e762c4b798de6885afb380513339c22cb37628c76e9420fce30b5bac"
+            }
+        },
+        "test@example.com": {
+            "name": "test",
+            "password": "",
+            "provider": "Google",
+            "api_keys": {}
+        }
+    }
+}

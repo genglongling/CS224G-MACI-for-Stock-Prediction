@@ -17,6 +17,8 @@ import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from IPython.display import Image, display
 
+import auth
+
 # Global variables to store API keys
 tavily_api_key = None
 together_api_key = None
@@ -312,13 +314,13 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         global tavily_api_key, together_api_key
         
-        if self.path == '/set-api-keys':
-            # Handle API key setting request
+        try:
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
+            data = json.loads(post_data)
             
-            try:
-                data = json.loads(post_data)
+            if self.path == '/set-api-keys':
+                # Handle API key setting request
                 tavily_api_key = data.get('tavily_api_key', '')
                 together_api_key = data.get('together_api_key', '')
                 user_info = data.get('user', {})
@@ -344,6 +346,9 @@ class RequestHandler(BaseHTTPRequestHandler):
                         'together_api_key': together_api_key
                     }
                     print(f"User {user_email} has set API keys")
+                    
+                    # Save user API keys to auth module
+                    auth.save_user_api_keys(user_email, tavily_api_key, together_api_key)
                 
                 # Set environment variables
                 os.environ["TAVILY_API_KEY"] = tavily_api_key
@@ -384,17 +389,114 @@ class RequestHandler(BaseHTTPRequestHandler):
                         'error': f'Error during initialization: {str(init_error)}'
                     }).encode())
                 
-            except Exception as e:
-                # Send error response for parsing/processing error
-                print(f"Error processing request: {str(e)}")
-                self.send_response(500)
+            elif self.path == '/login':
+                # Handle login request
+                email = data.get('email', '')
+                password = data.get('password', '')
+                
+                if not email or not password:
+                    self.send_response(400)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        'success': False,
+                        'error': 'Email and password are required'
+                    }).encode())
+                    return
+                
+                success, result = auth.verify_user(email, password)
+                
+                self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
+                
+                if success:
+                    # Login successful
+                    self.wfile.write(json.dumps({
+                        'success': True,
+                        'user': {
+                            'name': result['name'],
+                            'email': email,
+                            'provider': 'local'
+                        }
+                    }).encode())
+                else:
+                    # Login failed
+                    self.wfile.write(json.dumps({
+                        'success': False,
+                        'error': result
+                    }).encode())
+                    
+            elif self.path == '/register':
+                # Handle registration request
+                email = data.get('email', '')
+                password = data.get('password', '')
+                name = data.get('name', '')
+                
+                if not email or not password:
+                    self.send_response(400)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        'success': False,
+                        'error': 'Email and password are required'
+                    }).encode())
+                    return
+                
+                success, message = auth.register_user(email, password, name)
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                
                 self.wfile.write(json.dumps({
-                    'success': False, 
-                    'error': f'Server error: {str(e)}'
+                    'success': success,
+                    'message': message
                 }).encode())
+                
+            elif self.path == '/sso-login':
+                # Handle SSO login request
+                provider = data.get('provider', '')
+                email = data.get('email', '')
+                
+                if not provider or not email:
+                    self.send_response(400)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        'success': False,
+                        'error': 'Provider and email are required'
+                    }).encode())
+                    return
+                
+                success, user = auth.sso_login(provider, email)
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                
+                self.wfile.write(json.dumps({
+                    'success': success,
+                    'user': user
+                }).encode())
+                
+        except Exception as e:
+            # Handle any uncaught exceptions
+            print(f"Error processing request: {str(e)}")
+            self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'success': False, 
+                'error': f'Server error: {str(e)}'
+            }).encode())
 
     def do_GET(self):
         """Handle GET requests, mainly for SSE connections"""

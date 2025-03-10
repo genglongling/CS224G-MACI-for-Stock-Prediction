@@ -77,7 +77,7 @@ def open_browser():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Build the path to the frontend HTML file
-    html_path = os.path.join(current_dir, "front.html")
+    html_path = os.path.join(current_dir, "index.html")
     
     # Check if file exists
     if not os.path.exists(html_path):
@@ -109,7 +109,7 @@ def main():
     
     # Open browser
     if not open_browser():
-        print("Unable to open frontend page, please manually open front.html file")
+        print("Unable to open frontend page, please manually open index.html file")
     
     print("\nCheckCo System has started!")
     print("Server running at: http://localhost:8000")
