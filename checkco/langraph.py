@@ -185,11 +185,12 @@ for s in graph.stream(
 # Function 3: simple to complex calculation and induction, example: based the information of apple stock until today, predict stock price of apple tomorrow -> specialized fin-llm
 # Function 4: advanced machine learning reasoning ability (e.g. LSTM), example: https://www.alphavantage.co/documentation/ -> api
 # Function 5: planning ability (e.g. meta planning, first planning, second planning), example: constraints/members/tasks, generate a plan
-# Function 6: decision making ability (e.g. validation, self-evaluation), example: -> example: recommendation, human confirm button
+# Function 6: decision making ability (e.g. validation, self-evaluation), example: -> example: recommendation
 # Function 7: operation ability (e.g. replace some thought, generate plot, scheduling),
 # example: generate plot of apple stock trend, generate financial analysis plot of apple company, scheduling
 # example: recognize/generate latex, ppt, pdf, pictures of apple stock/company financial data 
 # exmaple: schedule a call/flight
+# before operation, human: confirm button
 # verify the plan again or reversion
 
 
