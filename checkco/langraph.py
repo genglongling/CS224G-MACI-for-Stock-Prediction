@@ -181,7 +181,7 @@ for s in graph.stream(
     print("----")
 
 
-# Function 2: Q\&A, example: what is apple stock price today?
+# Function 2: Q\&A, example: what is apple stock price today? ex: stock price
 # Function 3: simple to complex calculation and induction, example: predict stock price of apple tomorrow
 # Function 4: advanced machine learning reasoning ability (e.g. LSTM), example: https://www.alphavantage.co/documentation/
 # Function 5: planning ability (e.g. meta planning, first planning, second planning), example: generate a plan, through pdf
