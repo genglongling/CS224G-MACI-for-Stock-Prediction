@@ -186,7 +186,7 @@ for s in graph.stream(
 # Function 4: advanced machine learning reasoning ability (e.g. LSTM), example: https://www.alphavantage.co/documentation/
 # Function 5: planning ability (e.g. meta planning, first planning, second planning), example: generate a plan, through pdf
 # Function 6: decision making ability (e.g. validation, self-evaluation), example: verify the plan again or reversion
-# Function 7: operation ability (e.g. replace some thought, generate plot, scheduling), example: generate plot, scheduling
+# Function 7: operation ability (e.g. replace some thought, generate plot, scheduling), example: generate plot of apple stock trend, generate financial analysis plot of apple company, scheduling
 
 
 
