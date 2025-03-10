@@ -189,6 +189,7 @@ for s in graph.stream(
 # Function 7: operation ability (e.g. replace some thought, generate plot, scheduling),
 # example: generate plot of apple stock trend, generate financial analysis plot of apple company, scheduling
 # example: recognize/generate latex, ppt, pdf, pictures of apple stock/company financial data 
+# exmaple: schedule a call/flight
 # verify the plan again or reversion
 
 
