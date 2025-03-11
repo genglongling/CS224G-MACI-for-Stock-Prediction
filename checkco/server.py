@@ -195,193 +195,253 @@ def web_research_node(state: MessagesState) -> Command[Literal["supervisor"]]:
     )
 
 def process_query_streaming(handler, query):
-
     print(f"---- Start process_query_streaming: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
 
     """Process query and send results in real-time with clean, user-friendly output"""
-    global llm, websearch_agent
+    # Use local instances instead of global variables
+    local_llm = None
+    local_websearch_agent = None
     
-    # Check if API keys are set
-    print(f"---- Check if API keys are set: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-
-    if not os.getenv("TAVILY_API_KEY") or not os.getenv("TOGETHER_API_KEY"):
-        handler.send_sse_message({
-            "type": "error",
-            "data": "API keys are not set. Please refresh the page and enter your API keys."
-        })
-        return
-    
-    # Send an immediate update
-    handler.send_sse_message({
-        "type": "status_update",
-        "data": "Starting to process your query: " + query
-    })
-    
-    # Create processing graph
-    print(f"---- Creating processing graph: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-    builder = StateGraph(MessagesState)
-    builder.add_edge(START, "supervisor")
-    builder.add_node("supervisor", supervisor_node)
-    builder.add_node("web_researcher", web_research_node)
-    graph = builder.compile()
-
     try:
-        # No need to display technical graph visualization to users
-        print("Processing graph initialized")
-        print(f"---- Graph initialized: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+        # Check if API keys are set
+        print(f"---- Check if API keys are set: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+
+        if not os.getenv("TAVILY_API_KEY") or not os.getenv("TOGETHER_API_KEY"):
+            handler.send_sse_message({
+                "type": "error",
+                "data": "API keys are not set. Please refresh the page and enter your API keys."
+            })
+            return
+        
+        # Send an immediate update
         handler.send_sse_message({
             "type": "status_update",
-            "data": "Searching for relevant information..."
+            "data": "Starting to process your query: " + query
         })
-    except Exception as e:
-        print(f"---- Error encountered: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-        handler.send_sse_message({
-            "type": "error",
-            "data": f"Error in query processing: {str(e)}"
-        })
-    
-    # Collect search results and processing outputs
-    search_results = []
-    analysis_steps = []
-    final_analysis = ""
-    print(f"---- Create final_analysis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-    
-    # Execute graph flow and send updates incrementally
-    print(f"---- Starting graph execution: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-    step_counter = 0
-    try:
-        for s in graph.stream(
-                {"messages": [("user", query)]},
-                {"recursion_limit": 100},
-                subgraphs=True,
-        ):
-            # Convert output to readable string for logging
-            s_str = str(s)
-            print(s)  # Keep original terminal output
-            print(f"---- Print s: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-            
-            # Extract meaningful information from the step
-            if isinstance(s, tuple) and len(s) >= 2:
-                # Track which agent is processing
-                if s[0] and isinstance(s[0], str) and "web_researcher" in s[0]:
-                    print(f"---- Web researcher active: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-                    step_description = "Researching relevant information..."
-                    analysis_steps.append(step_description)
-                    handler.send_sse_message({
-                        "type": "processing_step",
-                        "data": step_description
-                    })
-                
-                # Extract search results if available
-                if isinstance(s[1], dict):
-                    # Extract tool responses (search results)
-                    if 'tools' in s[1] and 'messages' in s[1]['tools']:
-                        print(f"---- Processing tool messages: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-                        for msg in s[1]['tools']['messages']:
-                            if hasattr(msg, 'content') and msg.content and msg.name == 'tavily_search_results_json':
-                                try:
-                                    # Parse search results
-                                    print(f"---- Parsing search results: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-                                    import json
-                                    content = msg.content
-                                    if content.startswith('[') and content.endswith(']'):
-                                        items = json.loads(content)
-                                        for item in items:
-                                            if 'url' in item and 'content' in item:
-                                                # Add to search results if not already present
-                                                result_item = {
-                                                    'source': item['url'],
-                                                    'content': item['content']
-                                                }
-                                                if result_item not in search_results:
-                                                    search_results.append(result_item)
-                                                    
-                                        # Send search results update
-                                        print(f"---- Sending search results: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-                                        handler.send_sse_message({
-                                            "type": "search_results",
-                                            "items": search_results[-3:] if len(search_results) > 3 else search_results  # Send the latest results
-                                        })
-                                except Exception as e:
-                                    print(f"---- Error parsing results: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-                                    print(f"Error parsing search results: {str(e)}")
-                    
-                    # Extract AI analysis if available
-                    if 'agent' in s[1] and 'messages' in s[1]['agent']:
-                        print(f"---- Processing agent messages: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-                        for msg in s[1]['agent']['messages']:
-                            if hasattr(msg, 'content') and msg.content:
-                                # This is likely the AI's analysis
-                                print(f"---- Found AI analysis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-                                final_analysis = msg.content
-                                handler.send_sse_message({
-                                    "type": "main_response",
-                                    "data": final_analysis
-                                })
-            
-            step_counter += 1
-            if step_counter == 4:  # Limiting steps for now
-                print(f"---- Step limit reached: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-                break
-            
-            # Small delay to allow frontend to process
-            time.sleep(0.1)
-            
-    except Exception as e:
-        print(f"---- Exception in graph execution: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-        handler.send_sse_message({
-            "type": "error",
-            "data": f"Error processing query: {str(e)}"
-        })
-    
-    # If we haven't received a final analysis yet, generate one from the search results
-    print(f"---- Checking for final analysis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-    if not final_analysis and search_results:
+        
+        # Initialize local LLM and tools for this request
+        local_llm = ChatTogether(model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo")
+        web_search_tool = TavilySearchResults(max_results=5, api_key=os.getenv("TAVILY_API_KEY"))
+        local_websearch_agent = create_agent(local_llm, [web_search_tool])
+        
+        # Create processing graph
+        print(f"---- Creating processing graph: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+        builder = StateGraph(MessagesState)
+        builder.add_edge(START, "supervisor")
+        builder.add_node("supervisor", supervisor_node)
+        builder.add_node("web_researcher", web_research_node)
+        graph = builder.compile()
+
         try:
-            # Create a dynamic summary prompt based on the user's query
-            # This avoids hardcoding specific topics or expectations
-            print(f"---- Creating summary prompt: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-            summary_prompt = f"Based on the following information related to the user's query: '{query}', provide a concise and helpful summary. Information:\n\n"
-            for result in search_results:
-                summary_prompt += f"- {result['content']}\n\n"
-            
+            # No need to display technical graph visualization to users
+            print("Processing graph initialized")
+            print(f"---- Graph initialized: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
             handler.send_sse_message({
                 "type": "status_update",
-                "data": "Analyzing gathered information..."
-            })
-            
-            # Use the LLM to generate a summary
-            print(f"---- Invoking LLM for summary: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-            summary_response = llm.invoke(summary_prompt)
-            final_analysis = summary_response.content
-            print(f"---- final_analysis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-            print(final_analysis)
-            
-            # Send the generated summary
-            print(f"---- Sending final analysis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-            handler.send_sse_message({
-                "type": "main_response",
-                "data": final_analysis
+                "data": "Searching for relevant information..."
             })
         except Exception as e:
-            print(f"---- Error generating summary: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-            print(f"Error generating summary: {str(e)}")
-            final_analysis = "Unable to generate a summary from the search results. Please try refining your query."
+            print(f"---- Error encountered: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
             handler.send_sse_message({
-                "type": "main_response",
-                "data": final_analysis
+                "type": "error",
+                "data": f"Error in query processing: {str(e)}"
             })
-    
-    # Send final summary results
-    print(f"---- Preparing final response: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-    summary = {
-        "type": "final_response",
-        "main_response": final_analysis if final_analysis else "Analysis could not be completed. Please try again.",
-        "search_results": search_results
-    }
-    
-    print(f"---- Sending final summary: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
-    handler.send_sse_message(summary)
+        
+        # Collect search results and processing outputs
+        search_results = []
+        analysis_steps = []
+        final_analysis = ""
+        print(f"---- Create final_analysis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+        
+        # Execute graph flow and send updates incrementally
+        print(f"---- Starting graph execution: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+        step_counter = 0
+        try:
+            # Get iterator instead of using for loop directly
+            stream_iterator = graph.stream(
+                    {"messages": [("user", query)]},
+                    {"recursion_limit": 5},
+                    subgraphs=True,
+            )
+            
+            # Manually iterate to have better control
+            for s in stream_iterator:
+                # Convert output to readable string for logging
+                s_str = str(s)
+                print(s)  # Keep original terminal output
+                print(f"---- Print s: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                
+                # Extract meaningful information from the step
+                if isinstance(s, tuple) and len(s) >= 2:
+                    # Track which agent is processing
+                    if s[0] and isinstance(s[0], str) and "web_researcher" in s[0]:
+                        print(f"---- Web researcher active: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                        step_description = "Researching relevant information..."
+                        analysis_steps.append(step_description)
+                        handler.send_sse_message({
+                            "type": "processing_step",
+                            "data": step_description
+                        })
+                    
+                    # Extract search results if available
+                    if isinstance(s[1], dict):
+                        # Extract tool responses (search results)
+                        if 'tools' in s[1] and 'messages' in s[1]['tools']:
+                            print(f"---- Processing tool messages: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                            for msg in s[1]['tools']['messages']:
+                                if hasattr(msg, 'content') and msg.content and msg.name == 'tavily_search_results_json':
+                                    try:
+                                        # Parse search results
+                                        print(f"---- Parsing search results: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                                        import json
+                                        content = msg.content
+                                        if content.startswith('[') and content.endswith(']'):
+                                            items = json.loads(content)
+                                            for item in items:
+                                                if 'url' in item and 'content' in item:
+                                                    # Add to search results if not already present
+                                                    result_item = {
+                                                        'source': item['url'],
+                                                        'content': item['content']
+                                                    }
+                                                    if result_item not in search_results:
+                                                        search_results.append(result_item)
+                                                        
+                                            # Send search results update
+                                            print(f"---- Sending search results: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                                            handler.send_sse_message({
+                                                "type": "search_results",
+                                                "items": search_results[-3:] if len(search_results) > 3 else search_results  # Send the latest results
+                                            })
+                                    except Exception as e:
+                                        print(f"---- Error parsing results: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                                        print(f"Error parsing search results: {str(e)}")
+                        
+                        # Extract AI analysis if available
+                        if 'agent' in s[1] and 'messages' in s[1]['agent']:
+                            print(f"---- Processing agent messages: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                            for msg in s[1]['agent']['messages']:
+                                if hasattr(msg, 'content') and msg.content:
+                                    # This is likely the AI's analysis
+                                    print(f"---- Found AI analysis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                                    final_analysis = msg.content
+                                    handler.send_sse_message({
+                                        "type": "main_response",
+                                        "data": final_analysis
+                                    })
+                
+                step_counter += 1
+                if step_counter == 4:  # Limiting steps for now
+                    print(f"---- Step limit reached: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                    # Try to explicitly close the stream iterator (if supported)
+                    if hasattr(stream_iterator, 'close'):
+                        print(f"---- Closing stream iterator: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                        stream_iterator.close()
+                        print(f"---- stream_iterator closed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                    # Try to send a cancel signal to the graph (if supported)
+                    if hasattr(graph, 'cancel') and callable(graph.cancel):
+                        print(f"---- Cancelling graph: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                        graph.cancel()
+                    # Force break the loop regardless    
+                    break
+                
+                # Small delay to allow frontend to process
+                print(f"---- time.sleep(0.1): {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                time.sleep(0.1)
+            
+            # Execute next steps immediately after exiting the loop
+            print(f"---- Stream processing complete: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                
+        except Exception as e:
+            print(f"---- Exception in graph execution: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+            handler.send_sse_message({
+                "type": "error",
+                "data": f"Error processing query: {str(e)}"
+            })
+        
+        # If we haven't received a final analysis yet, generate one from the search results
+        print(f"---- Checking for final analysis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+        if not final_analysis and search_results:
+            try:
+                # Create a dynamic summary prompt based on the user's query
+                # This avoids hardcoding specific topics or expectations
+                print(f"---- Creating summary prompt: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                summary_prompt = f"Based on the following information related to the user's query: '{query}', provide a concise and helpful summary. Information:\n\n"
+                for result in search_results:
+                    summary_prompt += f"- {result['content']}\n\n"
+                
+                handler.send_sse_message({
+                    "type": "status_update",
+                    "data": "Analyzing gathered information..."
+                })
+                
+                # Use the LLM to generate a summary
+                print(f"---- Invoking LLM for summary: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                summary_response = local_llm.invoke(summary_prompt)
+                final_analysis = summary_response.content
+                print(f"---- final_analysis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                print(final_analysis)
+                
+                # Send the generated summary
+                print(f"---- Sending final analysis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                handler.send_sse_message({
+                    "type": "main_response",
+                    "data": final_analysis
+                })
+            except Exception as e:
+                print(f"---- Error generating summary: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+                print(f"Error generating summary: {str(e)}")
+                final_analysis = "Unable to generate a summary from the search results. Please try refining your query."
+                handler.send_sse_message({
+                    "type": "main_response",
+                    "data": final_analysis
+                })
+        
+        # Send final summary results
+        print(f"---- Preparing final response: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+        summary = {
+            "type": "final_response",
+            "main_response": final_analysis if final_analysis else "Analysis could not be completed. Please try again.",
+            "search_results": search_results
+        }
+        
+        print(f"---- Sending final summary: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+        print(final_analysis)
+        handler.send_sse_message(summary)
+        
+    except Exception as e:
+        # Handle any unexpected exceptions
+        print(f"---- Critical error in processing: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+        print(f"Error: {str(e)}")
+        handler.send_sse_message({
+            "type": "error",
+            "data": f"An unexpected error occurred: {str(e)}"
+        })
+    finally:
+        # Ensure resources are cleaned up
+        print(f"---- Cleaning up resources: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
+        
+        # Clean up LLM resources if possible
+        if local_llm and hasattr(local_llm, 'close'):
+            try:
+                local_llm.close()
+            except Exception as cleanup_error:
+                print(f"Error during LLM cleanup: {str(cleanup_error)}")
+        
+        # Clean up agent resources if possible
+        if local_websearch_agent and hasattr(local_websearch_agent, 'close'):
+            try:
+                local_websearch_agent.close()
+            except Exception as cleanup_error:
+                print(f"Error during agent cleanup: {str(cleanup_error)}")
+        
+        # Send completion event to ensure frontend knows processing is done
+        try:
+            handler.send_sse_message("Processing complete", event="complete")
+        except Exception as event_error:
+            print(f"Error sending completion event: {str(event_error)}")
+            
+        print(f"---- Request processing finished: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ----")
 
 # Modified request handler class to add API key setting method
 class RequestHandler(BaseHTTPRequestHandler):
