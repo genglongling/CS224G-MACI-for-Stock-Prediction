@@ -148,8 +148,7 @@
         position: relative;
         display: block; 
         word-wrap: break-word; 
-        word-break: break-all; 
-        overflow-wrap: break-word; 
+        overflow-wrap: break-word;
       }
 
       .llm-message {
@@ -164,8 +163,7 @@
         white-space: pre-line;
         display: block; 
         word-wrap: break-word; 
-        word-break: break-all; 
-        overflow-wrap: break-word;  
+        overflow-wrap: break-word;
       }
       
       
@@ -205,7 +203,7 @@
       }
 
       .loading-indicator span {
-        margin-left: 10px;
+        margin-left: 20px;
       }
 
       .dot-pulse {
@@ -386,6 +384,7 @@
       .cancel-button:hover {
         background-color: #e0e0e0;
       }
+      
 
       /* SSO Login Modal */
       .sso-modal {
@@ -482,292 +481,23 @@
   </head>
 
   <body>
-    <!-- Header with SSO login button -->
-    <header class="header">
-      <img src="public/pastedimage-no9b-1500h.png" alt="CheckCo Logo" class="logo">
-      <div class="header-right">
-        <div id="user-info" class="user-info">
-          <div class="user-avatar"></div>
-          <span id="username">User Name</span>
-        </div>
-        <button id="sign-in-button" class="sign-in-button">Sign In</button>
-      </div>
-    </header>
-
-    <!-- SSO Login Modal -->
-    <div id="ssoModal" class="sso-modal">
-      <div class="sso-modal-content">
-        <h2>Sign in to CheckCo</h2>
-        <p>Choose your preferred sign in method below</p>
-        
-        <div class="sso-buttons">
-          <button class="sso-button" id="google-sso">
-            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google">
-            Continue with Google
-          </button>
-          <button class="sso-button" id="microsoft-sso">
-            <img src="https://cdn-icons-png.flaticon.com/512/732/732221.png" alt="Microsoft">
-            Continue with Microsoft
-          </button>
-          <button class="sso-button" id="apple-sso">
-            <img src="https://cdn-icons-png.flaticon.com/512/0/747.png" alt="Apple">
-            Continue with Apple
-          </button>
-        </div>
-        
-        <div class="sso-divider">
-          <span class="sso-divider-text">or</span>
-        </div>
-        
-        <div class="traditional-login">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="Enter your email">
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Enter your password">
-          </div>
-          <div class="modal-buttons">
-            <button type="button" id="cancel-sso-button" class="modal-button cancel-button">Cancel</button>
-            <button type="button" id="login-button" class="modal-button submit-button">Sign In</button>
-          </div>
-          <div class="register-link" style="margin-top: 10px; text-align: center;">
-            <a href="#" id="show-register">Don't have an account? Register</a>
-          </div>
-        </div>
-        <div class="register-form" id="register-form" style="display: none;">
-          <div class="form-group">
-            <label for="register-name">Name</label>
-            <input type="text" id="register-name" placeholder="Enter your name">
-          </div>
-          <div class="form-group">
-            <label for="register-email">Email</label>
-            <input type="email" id="register-email" placeholder="Enter your email">
-          </div>
-          <div class="form-group">
-            <label for="register-password">Password</label>
-            <input type="password" id="register-password" placeholder="Enter your password">
-          </div>
-          <div class="modal-buttons">
-            <button type="button" id="back-to-login" class="modal-button cancel-button">Back to Login</button>
-            <button type="button" id="register-button" class="modal-button submit-button">Register</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Container (Hidden until logged in) -->
-    <div id="main-container">
-      <!-- API Key Modal -->
-      <div id="apiKeyModal" class="modal">
-        <div class="modal-content">
-          <h2>Enter API Keys</h2>
-          <form id="apiKeyForm">
-            <div class="form-group">
-              <label for="tavilyApiKey">Tavily API Key:</label>
-              <input type="password" id="tavilyApiKey" placeholder="Enter Tavily API Key" required>
-            </div>
-            <div class="form-group">
-              <label for="togetherApiKey">Together API Key:</label>
-              <input type="password" id="togetherApiKey" placeholder="Enter Together API Key" required>
-            </div>
-            <div class="modal-buttons">
-              <button type="button" id="cancelButton" class="modal-button cancel-button">Cancel</button>
-              <button type="submit" class="modal-button submit-button">Connect</button>
-            </div>
-          </form>
-        </div>
-      </div>
 
       <div class="chat-container">
         <div class="chat-header">Chat with LLM Assistant</div>
         <div class="chat-messages" id="chat-messages">
           <!-- Chat messages will be displayed here -->
+          <div class="llm-message">How can I help you today?</div>
         </div>
         <div class="chat-input-container">
-          <textarea id="chat-input" class="chat-input" placeholder="Type your message..." disabled></textarea>
-          <button id="chat-send" class="chat-send-button" disabled>Send</button>
+          <textarea id="chat-input" class="chat-input" placeholder="Type your message..." ></textarea>
+          <button id="chat-send" class="chat-send-button" >Send</button>
         </div>
       </div>
-    </div>
+    
 
     <script>
       
-      // Show the SSO login modal when the Sign In button is clicked
-      document.getElementById('sign-in-button').addEventListener('click', function() {
-        document.getElementById('ssoModal').style.display = 'block';
-      });
       
-      // Close the SSO modal when Cancel is clicked
-      document.getElementById('cancel-sso-button').addEventListener('click', function() {
-        document.getElementById('ssoModal').style.display = 'none';
-      });
-      
-      // Handle SSO login (simplified for demo)
-      function handleSSOLogin(provider) {
-        console.log(`Logging in with ${provider}...`);
-        // In a real implementation, this would redirect to the provider's OAuth page
-        
-        // For demo purposes, simulate a successful login
-        simulateSuccessfulLogin({
-          name: "Demo User",
-          email: "user@example.com",
-          provider: provider
-        });
-      }
-      
-      // Add click handlers for SSO buttons
-      document.getElementById('google-sso').addEventListener('click', async function() {
-          console.log("Google SSO button clicked");
-          try {
-              console.log("Sending request to server...");
-              const response = await fetch('http://localhost:8000/sso-login', {
-                  method: 'POST',
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify({
-                      provider: 'Google',
-                      email: 'user@example.com'
-                  })
-              });
-              
-              console.log("Server response status:", response.status);
-              
-              const data = await response.json();
-              console.log("Server response data:", data);
-              
-              if (data.success) {
-                  console.log("Login successful, updating UI...");
-                  document.getElementById('ssoModal').style.display = 'none';
-                  document.getElementById('username').textContent = data.user.name;
-                  document.getElementById('user-info').style.display = 'flex';
-                  document.getElementById('sign-in-button').style.display = 'none';
-                  document.getElementById('main-container').style.display = 'block';
-                  document.getElementById('apiKeyModal').style.display = 'block';
-                  window.currentUser = data.user;
-              } else {
-                  console.error("Login failed:", data.error);
-                  alert('SSO login failed: ' + data.error);
-              }
-          } catch (error) {
-              console.error('Error during SSO login:', error);
-              alert('Error connecting to server. Please make sure the server is running.');
-          }
-      });
-      
-
-      document.getElementById('microsoft-sso').addEventListener('click', async function() {
-          try {
-              const response = await fetch('http://localhost:8000/sso-login', {
-                  method: 'POST',
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify({
-                      provider: 'Microsoft',
-                      email: 'user@example.com'
-                  })
-              });
-              
-              const data = await response.json();
-              
-              if (data.success) {
-                  document.getElementById('ssoModal').style.display = 'none';
-                  document.getElementById('username').textContent = data.user.name;
-                  document.getElementById('user-info').style.display = 'flex';
-                  document.getElementById('sign-in-button').style.display = 'none';
-                  document.getElementById('main-container').style.display = 'block';
-                  document.getElementById('apiKeyModal').style.display = 'block';
-                  window.currentUser = data.user;
-              } else {
-                  alert('SSO login failed: ' + data.error);
-              }
-          } catch (error) {
-              console.error('Error during SSO login:', error);
-              alert('Error connecting to server.');
-          }
-      });
-
-      document.getElementById('apple-sso').addEventListener('click', async function() {
-          try {
-              const response = await fetch('http://localhost:8000/sso-login', {
-                  method: 'POST',
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify({
-                      provider: 'Apple',
-                      email: 'user@example.com'
-                  })
-              });
-              
-              const data = await response.json();
-              
-              if (data.success) {
-                  document.getElementById('ssoModal').style.display = 'none';
-                  document.getElementById('username').textContent = data.user.name;
-                  document.getElementById('user-info').style.display = 'flex';
-                  document.getElementById('sign-in-button').style.display = 'none';
-                  document.getElementById('main-container').style.display = 'block';
-                  document.getElementById('apiKeyModal').style.display = 'block';
-                  window.currentUser = data.user;
-              } else {
-                  alert('SSO login failed: ' + data.error);
-              }
-          } catch (error) {
-              console.error('Error during SSO login:', error);
-              alert('Error connecting to server.');
-          }
-      });
-      
-      // Handle traditional login
-      document.getElementById('login-button').addEventListener('click', async function() {
-          const email = document.getElementById('email').value;
-          const password = document.getElementById('password').value;
-          
-          if (!email || !password) {
-              alert('Please enter both email and password');
-              return;
-          }
-          
-          try {
-              // Send login request to server
-              const response = await fetch('http://localhost:8000/login', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                      email: email,
-                      password: password
-                  })
-              });
-              
-              const data = await response.json();
-              
-              if (data.success) {
-                  // Login successful
-                  // Hide login modal
-                  document.getElementById('ssoModal').style.display = 'none';
-                  
-                  // Update user info display
-                  document.getElementById('username').textContent = data.user.name;
-                  document.getElementById('user-info').style.display = 'flex';
-                  document.getElementById('sign-in-button').style.display = 'none';
-                  
-                  // Show main container
-                  document.getElementById('main-container').style.display = 'block';
-                  
-                  // Show API key modal
-                  document.getElementById('apiKeyModal').style.display = 'block';
-                  
-                  // Store user info
-                  window.currentUser = data.user;
-              } else {
-                  // Login failed
-                  alert('Login failed: ' + data.error);
-              }
-          } catch (error) {
-              console.error('Error during login:', error);
-              alert('Error connecting to server. Please make sure the server is running.');
-          }
-      });
       // Simulate a successful login
       /*
       function simulateSuccessfulLogin(user) {
@@ -789,144 +519,7 @@
         window.currentUser = user;
       }
         */
-      
-      // Handle the API key form submission
-      document.getElementById('apiKeyForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const tavilyApiKey = document.getElementById('tavilyApiKey').value.trim();
-        const togetherApiKey = document.getElementById('togetherApiKey').value.trim();
-        
-        if (!tavilyApiKey || !togetherApiKey) {
-          alert('Please enter both API keys');
-          return;
-        }
-        
-        // Send API keys to the server
-        sendApiKeys(tavilyApiKey, togetherApiKey);
-      });
-      
-      // Handle cancel button for API key modal
-      document.getElementById('cancelButton').addEventListener('click', function() {
-        document.getElementById('apiKeyModal').style.display = 'none';
-      });
-      
-      // Function to send API keys to the server
-    async function sendApiKeys(tavilyApiKey, togetherApiKey) {
-      try {
-        // Show loading state
-        const submitButton = document.querySelector('.submit-button');
-        const originalButtonText = submitButton.textContent;
-        submitButton.textContent = "Connecting...";
-        submitButton.disabled = true;
-        
-        // Display status message
-        const statusDiv = document.createElement('div');
-        statusDiv.id = 'status-message';
-        statusDiv.style.marginTop = '10px';
-        statusDiv.style.padding = '8px';
-        statusDiv.style.borderRadius = '4px';
-        statusDiv.style.backgroundColor = '#f8f9fa';
-        statusDiv.textContent = 'Connecting to API services...';
-        
-        // Add status div after the form
-        const form = document.getElementById('apiKeyForm');
-        if (form.nextElementSibling) {
-          form.parentNode.insertBefore(statusDiv, form.nextElementSibling);
-        } else {
-          form.parentNode.appendChild(statusDiv);
-        }
-        
-        // Make the API request
-        console.log('Sending API keys to server...');
-        const response = await fetch('http://localhost:8000/set-api-keys', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            tavily_api_key: tavilyApiKey,
-            together_api_key: togetherApiKey,
-            user: window.currentUser // Send user info to the server
-          })
-        });
-        
-        // Log response status
-        console.log('Server response status:', response.status);
-        
-        // Parse the response
-        const data = await response.json();
-        console.log('Server response data:', data);
-        
-        // Restore button state
-        submitButton.textContent = originalButtonText;
-        submitButton.disabled = false;
-        
-        if (data.success) {
-          // Update status message
-          statusDiv.style.backgroundColor = '#d4edda';
-          statusDiv.style.color = '#155724';
-          statusDiv.textContent = 'Connection successful!';
-          
-          // Close the modal after a brief delay
-          setTimeout(() => {
-            document.getElementById('apiKeyModal').style.display = 'none';
-            
-            // Remove the status message
-            if (statusDiv.parentNode) {
-              statusDiv.parentNode.removeChild(statusDiv);
-            }
-            
-            // Enable chat input and button
-            document.getElementById('chat-input').disabled = false;
-            document.getElementById('chat-send').disabled = false;
-            
-            // Add initial AI message
-            const initialMessageElement = document.createElement('div');
-            initialMessageElement.classList.add('llm-message');
-            initialMessageElement.textContent = 'How can I help you?';
-            document.getElementById('chat-messages').appendChild(initialMessageElement);
-          }, 1500);
-        } else {
-          // Update status with error message
-          statusDiv.style.backgroundColor = '#f8d7da';
-          statusDiv.style.color = '#721c24';
-          statusDiv.textContent = `Error: ${data.error || 'Failed to connect with the provided API keys.'}`;
-          
-          // Keep modal open so user can edit their API keys
-          console.error('Initialization failed:', data);
-        }
-      } catch (error) {
-        console.error('Error sending API keys:', error);
-        
-        // Find or create status div
-        let statusDiv = document.getElementById('status-message');
-        if (!statusDiv) {
-          statusDiv = document.createElement('div');
-          statusDiv.id = 'status-message';
-          statusDiv.style.marginTop = '10px';
-          statusDiv.style.padding = '8px';
-          statusDiv.style.borderRadius = '4px';
-          
-          // Add status div after the form
-          const form = document.getElementById('apiKeyForm');
-          if (form.nextElementSibling) {
-            form.parentNode.insertBefore(statusDiv, form.nextElementSibling);
-          } else {
-            form.parentNode.appendChild(statusDiv);
-          }
-        }
-        
-        // Update status with error message
-        statusDiv.style.backgroundColor = '#f8d7da';
-        statusDiv.style.color = '#721c24';
-        statusDiv.textContent = 'Error connecting to server. Please make sure the server is running.';
-        
-        // Restore button state
-        const submitButton = document.querySelector('.submit-button');
-        submitButton.textContent = "Connect";
-        submitButton.disabled = false;
-      }
-    }
+
 
       // Simple Markdown parsing function
       function parseMarkdown(text) {
@@ -958,6 +551,14 @@
           const message = input.value.trim();
 
           if (!message) return;
+
+          // Get URL parameters
+          const urlParams = new URLSearchParams(window.location.search);
+          const selectedFunction = urlParams.get('function') || 'function2';
+          const selectedModel = urlParams.get('model');
+
+          console.log("Using function:", selectedFunction);
+          console.log("Using model:", selectedModel);
 
           // Close any existing SSE connections
           if (eventSource) {
@@ -1006,10 +607,27 @@
           const chatMessages = document.getElementById('chat-messages');
           chatMessages.scrollTop = chatMessages.scrollHeight;
 
+
           try {
-              // Use SSE to connect to the server
-              eventSource = new EventSource(`http://localhost:8000/query?query=${encodeURIComponent(message)}&user=${encodeURIComponent(JSON.stringify(window.currentUser))}`);
+              // Build URL with model parameter
+              let eventUrl = `http://localhost:8000/query?query=${encodeURIComponent(message)}&function=${encodeURIComponent(selectedFunction)}`;
               
+              // Add model parameter if available
+              if (selectedModel) {
+                  eventUrl += `&model=${encodeURIComponent(selectedModel)}`;
+              }
+              
+              // Add user info if available
+              if (window.currentUser) {
+                  eventUrl += `&user=${encodeURIComponent(JSON.stringify(window.currentUser))}`;
+              }
+              
+              console.log("Connecting to:", eventUrl);
+              
+              // Use SSE to connect to the server
+              eventSource = new EventSource(eventUrl);
+              
+              // Keep the rest of the event handling code as is
               eventSource.onmessage = function(event) {
                   try {
                       const data = JSON.parse(event.data);
@@ -1224,15 +842,6 @@
       // Add the styles to the document head
       document.head.insertAdjacentHTML('beforeend', additionalStyles);
 
-      // Check for a login parameter in the URL
-      function checkForLoginParameter() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const showLogin = urlParams.get('showLogin');
-        
-        if (showLogin === 'true') {
-          document.getElementById('ssoModal').style.display = 'block';
-        }
-      }
 
       // Automatically resize the textarea based on content
       function autoResizeTextarea() {
@@ -1256,7 +865,31 @@
             textarea.style.height = '44px'; 
           }
         });
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedFunction = urlParams.get('function') || 'function2';
+        const selectedModel = urlParams.get('model');
+        
+        // Store parameters globally
+        window.selectedFunction = selectedFunction;
+        window.selectedModel = selectedModel;
+        
+        console.log("Chat interface initialized with function:", selectedFunction);
+        console.log("Chat interface initialized with model:", selectedModel);
       });
+
+      try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const userParam = urlParams.get('user');
+          if (userParam) {
+            window.currentUser = JSON.parse(decodeURIComponent(userParam));
+          } else {
+            window.currentUser = { name: "Guest User" };
+          }
+        } catch (e) {
+          console.error('Error parsing user parameter:', e);
+          window.currentUser = { name: "Guest User" };
+        }
 
       // Allow user to send message by pressing Enter key
       document.getElementById('chat-input').addEventListener('keypress', function(e) {
@@ -1266,69 +899,6 @@
           e.preventDefault(); 
           document.getElementById('chat-send').click(); 
         }
-      });
-
-
-
-      // Automatically show the SSO login modal after the page loads
-      document.addEventListener('DOMContentLoaded', function() {
-          checkForLoginParameter();
-          document.getElementById('main-container').style.display = 'none';
-      });
-
-      // show register page
-      document.getElementById('show-register').addEventListener('click', function(e) {
-          e.preventDefault();
-          document.querySelector('.traditional-login').style.display = 'none';
-          document.getElementById('register-form').style.display = 'block';
-      });
-
-      // back to login page
-      document.getElementById('back-to-login').addEventListener('click', function() {
-          document.querySelector('.traditional-login').style.display = 'block';
-          document.getElementById('register-form').style.display = 'none';
-      });
-
-      // deal with register request
-      document.getElementById('register-button').addEventListener('click', async function() {
-          const name = document.getElementById('register-name').value;
-          const email = document.getElementById('register-email').value;
-          const password = document.getElementById('register-password').value;
-          
-          if (!email || !password) {
-              alert('Please enter both email and password');
-              return;
-          }
-          
-          try {
-              // Send registration request to server
-              const response = await fetch('http://localhost:8000/register', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                      name: name,
-                      email: email,
-                      password: password
-                  })
-              });
-              
-              const data = await response.json();
-              
-              if (data.success) {
-                  // Registration successful, return to login form
-                  alert('Registration successful. Please log in.');
-                  document.querySelector('.traditional-login').style.display = 'block';
-                  document.getElementById('register-form').style.display = 'none';
-              } else {
-                  // Registration failed
-                  alert('Registration failed: ' + data.message);
-              }
-          } catch (error) {
-              console.error('Error during registration:', error);
-              alert('Error connecting to server. Please make sure the server is running.');
-          }
       });
     </script>
 

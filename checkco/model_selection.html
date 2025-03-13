@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>AI Model Selection</title>
+    <meta property="og:title" content="AI Model Selection" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+
+    <style data-tag="reset-style-sheet">
+      /* Reset styles */
+      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}html { scroll-behavior: smooth  }
+    </style>
+    <style data-tag="default-style-sheet">
+      html {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        font-size: 16px;
+      }
+
+      body {
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: normal;
+        line-height: 1.15;
+        color: #333;
+        background: #f5f5f5;
+        margin: 0;
+      }
+
+      /* Header styles */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+
+      .logo {
+        height: 40px;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .user-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ccc;
+        margin-right: 10px;
+      }
+
+      /* Model Selection styles */
+      .model-selection-container {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .selection-header {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .model-selection {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .model-select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 15px;
+      }
+
+      .back-button {
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 8px 16px;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .back-button:hover {
+        background-color: #e0e0e0;
+      }
+
+      .submit-button {
+        background-color: #5128f5;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .submit-button:hover {
+        background-color: #3a1fca;
+      }
+
+      .cancel-button {
+        background-color: #f0f0f0;
+        color: #333;
+        border: 1px solid #ddd;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-right: 10px;
+      }
+
+      .cancel-button:hover {
+        background-color: #e0e0e0;
+      }
+
+      .modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      /* Custom connection inputs */
+      .custom-connection {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        text-align: left;
+      }
+
+      .custom-connection h3 {
+        margin-bottom: 15px;
+        font-size: 18px;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      .toggle-custom {
+        text-align: center;
+        margin: 15px 0;
+        color: #5128f5;
+        font-weight: 500;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .toggle-custom:hover {
+        text-decoration: underline;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .model-selection-container {
+          margin: 10px;
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Header with user info -->
+    <header class="header">
+      <img src="public/pastedimage-no9b-1500h.png" alt="CheckCo Logo" class="logo">
+      <div class="header-right">
+        <div id="user-info" class="user-info">
+          <div class="user-avatar"></div>
+          <span id="username">User Name</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Model Selection Container -->
+    <div class="model-selection-container">
+      <div class="back-button" id="back-button">← Back</div>
+      
+      <div class="selection-header">Select AI Model</div>
+      
+      <p style="text-align: center; margin-bottom: 20px;">
+        Choose one of the available AI models below to get started.
+      </p>
+      
+      <div class="model-selection">
+        <div class="form-group">
+          <select id="modelSelector" class="model-select">
+            <option value="meta-llama/Llama-3.3-70B-Instruct-Turbo">Meta Llama 3.3 70B</option>
+            <option value="deepseek-ai/DeepSeek-V3">DeepSeek V3</option>
+            <option value="deepseek-ai/DeepSeek-R1">DeepSeek R1</option>
+            <option value="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo">Meta Llama 3.1 405B</option>
+            <option value="Qwen/Qwen2-VL-72B-Instruct">Qwen2 VL 72B</option>
+            <option value="meta-llama/Llama-Vision-Free">Meta Llama Vision Free</option>
+          </select>
+        </div>
+        
+        <div class="toggle-custom" id="toggleCustomConnection">
+          or connect to custom API URL
+        </div>
+        
+        <!-- Custom Connection Form (initially hidden) -->
+        <div id="customConnectionForm" class="custom-connection" style="display: none;">
+          <h3>Custom API Connection</h3>
+          <div class="form-group">
+            <label for="customApiUrl">API URL:</label>
+            <input 
+              type="text" 
+              id="customApiUrl" 
+              placeholder="Enter API URL (e.g., http://your-api-server.com/api)"
+            >
+          </div>
+          <div class="form-group">
+            <label for="customModelName">Model Name (optional):</label>
+            <input 
+              type="text" 
+              id="customModelName" 
+              placeholder="Enter model name (if required by the API)"
+            >
+          </div>
+        </div>
+        
+        <div class="modal-buttons">
+          <button type="button" id="cancel-button" class="cancel-button">Cancel</button>
+          <button type="button" id="confirm-model-button" class="submit-button">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Handle back button
+      document.getElementById('back-button').addEventListener('click', function() {
+        window.history.back();
+      });
+
+      // Handle cancel button
+      document.getElementById('cancel-button').addEventListener('click', function() {
+        window.history.back();
+      });
+      
+      // Toggle custom connection form
+      document.getElementById('toggleCustomConnection').addEventListener('click', function() {
+        const customForm = document.getElementById('customConnectionForm');
+        if (customForm.style.display === 'none') {
+          customForm.style.display = 'block';
+          this.textContent = 'or select from pre-configured models';
+          
+          // Hide the model selector when showing custom form
+          document.getElementById('modelSelector').parentElement.style.display = 'none';
+        } else {
+          customForm.style.display = 'none';
+          this.textContent = 'or connect to custom API URL';
+          
+          // Show the model selector when hiding custom form
+          document.getElementById('modelSelector').parentElement.style.display = 'block';
+        }
+      });
+
+      // Handle confirm button
+      document.getElementById('confirm-model-button').addEventListener('click', async function() {
+        // Check if we're using custom connection or predefined model
+        const isCustomConnection = document.getElementById('customConnectionForm').style.display !== 'none';
+        
+        let selectedModel, customApiUrl, customModelName;
+        
+        if (isCustomConnection) {
+          // Get custom connection details
+          customApiUrl = document.getElementById('customApiUrl').value.trim();
+          customModelName = document.getElementById('customModelName').value.trim();
+          
+          // Validate URL
+          if (!customApiUrl) {
+            alert('Please enter a valid API URL');
+            return;
+          }
+          
+          // Use custom model name if provided, otherwise use URL as identifier
+          selectedModel = customModelName || customApiUrl;
+          
+        } else {
+          // Get selected model from dropdown
+          selectedModel = document.getElementById('modelSelector').value;
+        }
+        
+        console.log("Model selected: " + selectedModel);
+        if (isCustomConnection) {
+          console.log("Custom API URL: " + customApiUrl);
+          if (customModelName) {
+            console.log("Custom Model Name: " + customModelName);
+          }
+        }
+        
+        try {
+          // Show loading state
+          const confirmButton = document.getElementById('confirm-model-button');
+          const originalButtonText = confirmButton.textContent;
+          confirmButton.textContent = "Setting model...";
+          confirmButton.disabled = true;
+          
+          // Save selected model to session storage
+          sessionStorage.setItem('selectedModel', selectedModel);
+          
+          // Save custom API details if using custom connection
+          if (isCustomConnection) {
+            sessionStorage.setItem('customApiUrl', customApiUrl);
+            if (customModelName) {
+              sessionStorage.setItem('customModelName', customModelName);
+            }
+            sessionStorage.setItem('isCustomApi', 'true');
+          } else {
+            sessionStorage.removeItem('customApiUrl');
+            sessionStorage.removeItem('customModelName');
+            sessionStorage.removeItem('isCustomApi');
+          }
+          
+          // Optional: try to send to server if connection is available
+          try {
+            const requestBody = {
+              model_name: selectedModel,
+              user: window.currentUser || { name: document.getElementById('username').textContent }
+            };
+            
+            // Add custom API details if using custom connection
+            if (isCustomConnection) {
+              requestBody.custom_api_url = customApiUrl;
+              if (customModelName) {
+                requestBody.custom_model_name = customModelName;
+              }
+              requestBody.is_custom_api = true;
+            }
+            
+            const response = await fetch('http://localhost:8000/set-model', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(requestBody)
+            });
+            
+            const data = await response.json();
+            console.log("Server response for set-model:", data);
+          } catch (serverError) {
+            console.warn("Could not connect to server, continuing with local storage:", serverError);
+          }
+          
+          // Redirect to API authentication page
+          setTimeout(() => {
+            // Restore button state
+            confirmButton.textContent = originalButtonText;
+            confirmButton.disabled = false;
+            
+            // Redirect to api_auth.html
+            window.location.href = `api_auth.html`;
+            
+          }, 1000);
+          
+        } catch (error) {
+          console.error('Error during model selection:', error);
+          
+          // Restore button state
+          const confirmButton = document.getElementById('confirm-model-button');
+          confirmButton.textContent = "Confirm";
+          confirmButton.disabled = false;
+        }
+      });
+
+      // Get username from URL parameters or session storage
+      function updateUserInfo() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username') || sessionStorage.getItem('username');
+        
+        if (username) {
+          document.getElementById('username').textContent = decodeURIComponent(username);
+        } else {
+          document.getElementById('username').textContent = "Guest User";
+        }
+      }
+
+      // Initialize on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        // Update user info
+        updateUserInfo();
+      });
+    </script>
+  </body>
+</html>

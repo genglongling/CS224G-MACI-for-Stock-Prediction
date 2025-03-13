@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>API Keys - AI Assistant</title>
+    <meta property="og:title" content="API Keys - AI Assistant" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+
+    <style data-tag="reset-style-sheet">
+      /* Reset styles */
+      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}html { scroll-behavior: smooth  }
+    </style>
+    <style data-tag="default-style-sheet">
+      html {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        font-size: 16px;
+      }
+
+      body {
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: normal;
+        line-height: 1.15;
+        color: #333;
+        background: #f5f5f5;
+        margin: 0;
+      }
+
+      /* Header styles */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+
+      .logo {
+        height: 40px;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .user-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ccc;
+        margin-right: 10px;
+      }
+
+      /* API Key Modal/Container */
+      .api-container {
+        display: block;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.4);
+      }
+
+      .api-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 10px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .modal-button {
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .submit-button {
+        background-color: #5128f5;
+        color: white;
+        border: none;
+      }
+
+      .submit-button:hover {
+        background-color: #3a1fca;
+      }
+
+      .cancel-button {
+        background-color: #f0f0f0;
+        color: #333;
+        border: 1px solid #ddd;
+      }
+
+      .cancel-button:hover {
+        background-color: #e0e0e0;
+      }
+
+      .custom-api-info {
+        margin: 10px 0;
+        padding: 10px;
+        background-color: #f0f8ff;
+        border-radius: 5px;
+        border-left: 3px solid #5128f5;
+      }
+
+      .custom-api-info p {
+        margin: 5px 0;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .api-content {
+          width: 90%;
+          margin: 25% auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Header with user info -->
+    <header class="header">
+      <img src="public/pastedimage-no9b-1500h.png" alt="CheckCo Logo" class="logo">
+      <div class="header-right">
+        <div id="user-info" class="user-info">
+          <div class="user-avatar"></div>
+          <span id="username">User Name</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- API Key Container (Always visible) -->
+    <div id="api-container" class="api-container">
+      <div class="api-content">
+        <h2>Enter API Keys</h2>
+        <p style="margin: 10px 0 20px 0;">Please provide your API keys to use the AI assistant.</p>
+        
+        <!-- Custom API info section (conditionally displayed) -->
+        <div id="customApiInfoSection" class="custom-api-info" style="display: none;">
+          <p><strong>You are connecting to a custom API:</strong></p>
+          <p id="customApiUrlDisplay">URL: </p>
+          <p id="customModelNameDisplay" style="display: none;">Model: </p>
+        </div>
+        
+        <form id="apiKeyForm">
+          <div class="form-group">
+            <label for="tavilyApiKey">Tavily API Key:</label>
+            <input type="password" id="tavilyApiKey" placeholder="Enter Tavily API Key" required>
+          </div>
+          <div class="form-group">
+            <label for="togetherApiKey">Together API Key:</label>
+            <input type="password" id="togetherApiKey" placeholder="Enter Together API Key" required>
+          </div>
+          <div class="modal-buttons">
+            <button type="button" id="back-button" class="modal-button cancel-button">Back</button>
+            <button type="submit" class="modal-button submit-button">Connect</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Update username in header
+      function updateUserInfo() {
+        const username = sessionStorage.getItem('username');
+        if (username) {
+          document.getElementById('username').textContent = username;
+        } else {
+          // If no username is in storage, use a default
+          document.getElementById('username').textContent = "Guest User";
+        }
+      }
+      
+      // Update display for custom API information if applicable
+      function updateCustomApiInfo() {
+        const isCustomApi = sessionStorage.getItem('isCustomApi') === 'true';
+        const customApiUrl = sessionStorage.getItem('customApiUrl');
+        const customModelName = sessionStorage.getItem('customModelName');
+        
+        if (isCustomApi && customApiUrl) {
+          // Show the custom API info section
+          document.getElementById('customApiInfoSection').style.display = 'block';
+          
+          // Update URL display
+          document.getElementById('customApiUrlDisplay').textContent = `URL: ${customApiUrl}`;
+          
+          // Update model name display if available
+          if (customModelName) {
+            document.getElementById('customModelNameDisplay').style.display = 'block';
+            document.getElementById('customModelNameDisplay').textContent = `Model: ${customModelName}`;
+          } else {
+            document.getElementById('customModelNameDisplay').style.display = 'none';
+          }
+        } else {
+          // Hide the custom API info section
+          document.getElementById('customApiInfoSection').style.display = 'none';
+        }
+      }
+      
+      // Handle the API key form submission
+      document.getElementById('apiKeyForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const tavilyApiKey = document.getElementById('tavilyApiKey').value.trim();
+        const togetherApiKey = document.getElementById('togetherApiKey').value.trim();
+        
+        if (!tavilyApiKey || !togetherApiKey) {
+          alert('Please enter both API keys');
+          return;
+        }
+        
+        // Send API keys to the server
+        sendApiKeys(tavilyApiKey, togetherApiKey);
+      });
+      
+      // Handle back button - go back to model selection
+      document.getElementById('back-button').addEventListener('click', function() {
+        window.location.href = 'model-selection.html';
+      });
+      
+      // Function to send API keys to the server
+      async function sendApiKeys(tavilyApiKey, togetherApiKey) {
+        try {
+          // Show loading state
+          const submitButton = document.querySelector('.submit-button');
+          const originalButtonText = submitButton.textContent;
+          submitButton.textContent = "Connecting...";
+          submitButton.disabled = true;
+          
+          // Display status message
+          const statusDiv = document.createElement('div');
+          statusDiv.id = 'status-message';
+          statusDiv.style.marginTop = '10px';
+          statusDiv.style.padding = '8px';
+          statusDiv.style.borderRadius = '4px';
+          statusDiv.style.backgroundColor = '#f8f9fa';
+          statusDiv.textContent = 'Connecting to API services...';
+          
+          // Add status div after the form
+          const form = document.getElementById('apiKeyForm');
+          if (form.nextElementSibling) {
+            form.parentNode.insertBefore(statusDiv, form.nextElementSibling);
+          } else {
+            form.parentNode.appendChild(statusDiv);
+          }
+          
+          // Retrieve user info from session storage
+          const username = sessionStorage.getItem('username') || 'Guest User';
+          const userEmail = sessionStorage.getItem('userEmail') || 'guest@example.com';
+          
+          // Create user object
+          const user = {
+            name: username,
+            email: userEmail
+          };
+          
+          // Get selected model from session storage
+          const selectedModel = sessionStorage.getItem('selectedModel');
+          
+          // Check if using custom API
+          const isCustomApi = sessionStorage.getItem('isCustomApi') === 'true';
+          const customApiUrl = sessionStorage.getItem('customApiUrl');
+          const customModelName = sessionStorage.getItem('customModelName');
+          
+          // Prepare request body
+          const requestBody = {
+            tavily_api_key: tavilyApiKey,
+            together_api_key: togetherApiKey,
+            model_name: selectedModel,
+            user: user
+          };
+          
+          // Add custom API details if using custom API
+          if (isCustomApi && customApiUrl) {
+            requestBody.is_custom_api = true;
+            requestBody.custom_api_url = customApiUrl;
+            if (customModelName) {
+              requestBody.custom_model_name = customModelName;
+            }
+          }
+          
+          // Make the API request
+          console.log('Sending API keys to server...');
+          const response = await fetch('http://localhost:8000/set-api-keys', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+          });
+          
+          // Log response status
+          console.log('Server response status:', response.status);
+          
+          // Parse the response
+          const data = await response.json();
+          console.log('Server response data:', data);
+          
+          // Restore button state
+          submitButton.textContent = originalButtonText;
+          submitButton.disabled = false;
+          
+          if (data.success) {
+            // Update status message
+            statusDiv.style.backgroundColor = '#d4edda';
+            statusDiv.style.color = '#155724';
+            statusDiv.textContent = 'Connection successful!';
+            
+            // Store API keys in session storage (optional)
+            sessionStorage.setItem('apiKeysVerified', 'true');
+            sessionStorage.setItem('tavilyApiKey', tavilyApiKey);
+            sessionStorage.setItem('togetherApiKey', togetherApiKey);
+            
+            // Close the modal after a brief delay
+            setTimeout(() => {
+              // Remove the status message
+              if (statusDiv.parentNode) {
+                statusDiv.parentNode.removeChild(statusDiv);
+              }
+              
+              // Redirect to front.html instead of function-selection.html
+              window.location.href = 'front.html';
+              
+            }, 1500);
+          } else {
+            // Update status with error message
+            statusDiv.style.backgroundColor = '#f8d7da';
+            statusDiv.style.color = '#721c24';
+            statusDiv.textContent = `Error: ${data.error || 'Failed to connect with the provided API keys.'}`;
+            
+            // Keep modal open so user can edit their API keys
+            console.error('Initialization failed:', data);
+          }
+        } catch (error) {
+          console.error('Error sending API keys:', error);
+          
+          // Create or find status div
+          let statusDiv = document.getElementById('status-message');
+          if (!statusDiv) {
+            statusDiv = document.createElement('div');
+            statusDiv.id = 'status-message';
+            statusDiv.style.marginTop = '10px';
+            statusDiv.style.padding = '8px';
+            statusDiv.style.borderRadius = '4px';
+            
+            // Add status div after the form
+            const form = document.getElementById('apiKeyForm');
+            if (form.nextElementSibling) {
+              form.parentNode.insertBefore(statusDiv, form.nextElementSibling);
+            } else {
+              form.parentNode.appendChild(statusDiv);
+            }
+          }
+          
+          // Update status with error message
+          statusDiv.style.backgroundColor = '#f8d7da';
+          statusDiv.style.color = '#721c24';
+          statusDiv.textContent = 'Error connecting to server. Please check your connection and try again.';
+          
+          // Restore button state
+          const submitButton = document.querySelector('.submit-button');
+          submitButton.textContent = "Connect";
+          submitButton.disabled = false;
+        }
+      }
+      
+      // Initialize page
+      document.addEventListener('DOMContentLoaded', function() {
+        // Update user info in header
+        updateUserInfo();
+        
+        // Update custom API info if applicable
+        updateCustomApiInfo();
+        
+        // Display selected model info if available
+        const selectedModel = sessionStorage.getItem('selectedModel');
+        if (selectedModel) {
+          const modelInfo = document.createElement('div');
+          modelInfo.style.margin = '10px 0';
+          modelInfo.style.fontStyle = 'italic';
+          modelInfo.textContent = `Selected model: ${selectedModel}`;
+          
+          // Don't show this if we're displaying custom API info
+          if (document.getElementById('customApiInfoSection').style.display === 'none') {
+            const container = document.querySelector('.api-content');
+            const paragraph = container.querySelector('p');
+            container.insertBefore(modelInfo, paragraph.nextSibling);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

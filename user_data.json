@@ -5,8 +5,8 @@
             "password": "",
             "provider": "Google",
             "api_keys": {
-                "tavily": "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",
-                "together": "52ef298d0ff52b14ced80352431451cf2227d6172770158d403b7494dc51151d"
+                "tavily": "5efb8de8e762c4b798de6885afb380513339c22cb37628c76e9420fce30b5bac",
+                "together": "5efb8de8e762c4b798de6885afb380513339c22cb37628c76e9420fce30b5bac"
             }
         },
         "test@example.com": {

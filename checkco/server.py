@@ -24,6 +24,10 @@ import auth
 tavily_api_key = None
 together_api_key = None
 users = {}  # Store user information and their API keys
+selected_model = "meta-llama/Llama-Vision-Free" # Default model
+custom_api_url = None  # Store custom API URL
+custom_model_name = None  # Store custom model name
+is_custom_api = False  # Flag to indicate custom API usage
 
 from typing import Literal
 from typing_extensions import TypedDict
@@ -52,11 +56,11 @@ system_prompt = (
 # Define router type for structured output
 class Router(TypedDict):
     """Worker to route to next. If no workers needed, route to FINISH."""
-    next: Literal["web_researcher", "FINISH"] # "rag", "nl2sql",
+    next: Literal["web_researcher", "rag", "nl2sql", "FINISH"]  # Add all workers here
 
 # Function to initialize LLM and tools
 def initialize_llm_and_tools():
-    global llm, web_search_tool, websearch_agent
+    global llm, web_search_tool, websearch_agent, selected_model, is_custom_api, custom_api_url, custom_model_name
     
     # Verify API keys are set
     if not os.getenv("TAVILY_API_KEY") or not os.getenv("TOGETHER_API_KEY"):
@@ -66,31 +70,31 @@ def initialize_llm_and_tools():
     try:
         # Try to initialize components without strict validation first
         try:
-            # Create components with the provided API keys
-            llm = ChatTogether(model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo")
+            # Create components with the provided API keys and selected model
+            llm = ChatTogether(model_name=selected_model)
             web_search_tool = TavilySearchResults(max_results=5, api_key=os.getenv("TAVILY_API_KEY"))
             websearch_agent = create_agent(llm, [web_search_tool])
             
-            # Simple test to verify the components work
-            # Test the LLM with a simple query
+            # 简单测试以验证组件是否正常工作
+            # 测试LLM
             test_response = llm.invoke("Hello, are you working?")
             print("LLM test response received")
             
-            # Test the search tool with a simple query
+            # 测试搜索工具
             test_search = web_search_tool.invoke("test query")
             print("Search tool test response received")
             
-            print("LLM and tools initialized and tested successfully")
+            print(f"LLM (model: {selected_model}) and tools initialized and tested successfully")
             return True
             
         except Exception as component_error:
             print(f"Component initialization error: {component_error}")
             
-            # If component initialization fails, try basic API validation
+            # 如果组件初始化失败，尝试基本API验证
             import requests
             from requests.exceptions import RequestException
             
-            # Basic validation for Tavily
+            # 基本验证Tavily
             try:
                 tavily_key = os.getenv("TAVILY_API_KEY")
                 tavily_test_url = "https://api.tavily.com/search"
@@ -119,7 +123,7 @@ def initialize_llm_and_tools():
                 print(f"Tavily API connection error: {e}")
                 return False
             
-            # Basic validation for Together API
+            # 基本验证Together API或自定义API
             try:
                 together_key = os.getenv("TOGETHER_API_KEY")
                 together_headers = {"Authorization": f"Bearer {together_key}"}
@@ -139,8 +143,7 @@ def initialize_llm_and_tools():
                 print(f"Together API connection error: {e}")
                 return False
                 
-            # If we got here, basic validation passed but component initialization failed
-            # This could indicate an issue with the API keys or with our code
+            # 如果基本验证通过但组件初始化失败
             print("API keys appear valid but component initialization failed")
             return False
             
@@ -149,7 +152,7 @@ def initialize_llm_and_tools():
         return False
 
 # Create supervisor node function
-def supervisor_node(state: MessagesState) -> Command[Literal["web_researcher", "__end__"]]: #"rag", "nl2sql",
+def supervisor_node(state: MessagesState) -> Command[Literal["web_researcher", "rag", "nl2sql", "__end__"]]:
     messages = [
         {"role": "system", "content": system_prompt},
     ] + state["messages"]
@@ -159,6 +162,30 @@ def supervisor_node(state: MessagesState) -> Command[Literal["web_researcher", "
     if goto == "FINISH":
         goto = END
     return Command(goto=goto)
+
+def rag_node(state: MessagesState) -> Command[Literal["supervisor"]]:
+    # 这里是RAG（检索增强生成）节点的实现
+    # 目前只返回一个简单的消息，实际应用中应该实现RAG功能
+    return Command(
+        update={
+            "messages": [
+                HumanMessage(content="RAG processing completed. No documents were retrieved at this time.", name="rag")
+            ]
+        },
+        goto="supervisor",
+    )
+
+def nl2sql_node(state: MessagesState) -> Command[Literal["supervisor"]]:
+    # 这里是自然语言到SQL查询节点的实现
+    # 目前只返回一个简单的消息，实际应用中应该实现NL2SQL功能
+    return Command(
+        update={
+            "messages": [
+                HumanMessage(content="NL2SQL processing completed. No SQL queries were generated at this time.", name="nl2sql")
+            ]
+        },
+        goto="supervisor",
+    )
 
 class AgentState(TypedDict):
     """The state of the agent."""
@@ -220,7 +247,7 @@ def process_query_streaming(handler, query):
         })
         
         # Initialize local LLM and tools for this request
-        local_llm = ChatTogether(model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo")
+        local_llm = ChatTogether(model_name=selected_model)
         web_search_tool = TavilySearchResults(max_results=5, api_key=os.getenv("TAVILY_API_KEY"))
         local_websearch_agent = create_agent(local_llm, [web_search_tool])
         
@@ -230,6 +257,11 @@ def process_query_streaming(handler, query):
         builder.add_edge(START, "supervisor")
         builder.add_node("supervisor", supervisor_node)
         builder.add_node("web_researcher", web_research_node)
+
+        # Add these nodes if they're implemented
+        builder.add_node("rag", rag_node)  # Make sure rag_node is implemented
+        builder.add_node("nl2sql", nl2sql_node)  # Make sure nl2sql_node is implemented
+
         graph = builder.compile()
 
         try:
@@ -455,6 +487,8 @@ class RequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         global tavily_api_key, together_api_key
+        # First, declare the global variables
+        global selected_model, custom_api_url, custom_model_name, is_custom_api
         
         try:
             content_length = int(self.headers['Content-Length'])
@@ -462,10 +496,18 @@ class RequestHandler(BaseHTTPRequestHandler):
             data = json.loads(post_data)
             
             if self.path == '/set-api-keys':
+                print("API key setting request received")
                 # Handle API key setting request
                 tavily_api_key = data.get('tavily_api_key', '')
                 together_api_key = data.get('together_api_key', '')
                 user_info = data.get('user', {})
+                
+                # 获取模型信息，如果有的话
+                model_name = data.get('model_name', '')
+                if model_name:
+                    global selected_model
+                    selected_model = model_name
+                    print(f"Model from API key request: {selected_model}")
                 
                 # Check if API keys are provided
                 if not tavily_api_key or not together_api_key:
@@ -487,6 +529,15 @@ class RequestHandler(BaseHTTPRequestHandler):
                         'tavily_api_key': tavily_api_key,
                         'together_api_key': together_api_key
                     }
+                    
+                    # 存储用户的自定义API设置，如果有的话
+                    global is_custom_api, custom_api_url, custom_model_name
+                    if is_custom_api and custom_api_url:
+                        users[user_email]['is_custom_api'] = is_custom_api
+                        users[user_email]['custom_api_url'] = custom_api_url
+                        if custom_model_name:
+                            users[user_email]['custom_model_name'] = custom_model_name
+                    
                     print(f"User {user_email} has set API keys")
                     
                     # Save user API keys to auth module
@@ -501,6 +552,12 @@ class RequestHandler(BaseHTTPRequestHandler):
                 # Initialize LLM and search tools and validate API keys
                 try:
                     print("Starting initialization and validation...")
+                    print(f"Using model: {selected_model}")
+                    if is_custom_api:
+                        print(f"Using custom API URL: {custom_api_url}")
+                        if custom_model_name:
+                            print(f"Using custom model name: {custom_model_name}")
+                            
                     init_success = initialize_llm_and_tools()
                     
                     # Send response
@@ -511,7 +568,13 @@ class RequestHandler(BaseHTTPRequestHandler):
                     
                     if init_success:
                         print("Initialization successful")
-                        self.wfile.write(json.dumps({'success': True}).encode())
+                        response_data = {'success': True}
+                        if is_custom_api:
+                            response_data['custom_api'] = True
+                            response_data['custom_api_url'] = custom_api_url
+                            if custom_model_name:
+                                response_data['custom_model_name'] = custom_model_name
+                        self.wfile.write(json.dumps(response_data).encode())
                     else:
                         error_msg = 'API validation failed. The API keys may be incorrect or the services may be unavailable.'
                         print(error_msg)
@@ -627,6 +690,98 @@ class RequestHandler(BaseHTTPRequestHandler):
                     'success': success,
                     'user': user
                 }).encode())
+
+            # Add a new handler for setting the model in the RequestHandler class
+            elif self.path == '/set-model':
+                
+                
+                # Handle model selection request
+                model_name = data.get('model_name', '')
+                user_info = data.get('user', {})
+                
+                # Check if we're using a custom API connection
+                is_custom = data.get('is_custom_api', False)
+                custom_url = data.get('custom_api_url', '')
+                custom_model = data.get('custom_model_name', '')
+                
+                # Check if model name is provided
+                if not model_name:
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        'success': False, 
+                        'error': 'Model name is required.'
+                    }).encode())
+                    return
+                
+                # Now set the variables after declaring them global
+                selected_model = model_name
+                is_custom_api = is_custom
+                
+                if is_custom:
+                    if not custom_url:
+                        self.send_response(200)
+                        self.send_header('Content-type', 'application/json')
+                        self.send_header('Access-Control-Allow-Origin', '*')
+                        self.end_headers()
+                        self.wfile.write(json.dumps({
+                            'success': False, 
+                            'error': 'Custom API URL is required when using custom API.'
+                        }).encode())
+                        return
+                        
+                    custom_api_url = custom_url
+                    custom_model_name = custom_model
+                    print(f"Custom API set to: {custom_api_url}")
+                    if custom_model_name:
+                        print(f"Custom model name: {custom_model_name}")
+                else:
+                    # Reset custom API settings when using predefined model
+                    custom_api_url = None
+                    custom_model_name = None
+                    
+                print(f"Model set to: {selected_model}")
+                
+                # If user info exists, update the user's model preference
+                if user_info and 'email' in user_info:
+                    user_email = user_info['email']
+                    if user_email in users:
+                        users[user_email]['selected_model'] = model_name
+                        if is_custom:
+                            users[user_email]['custom_api_url'] = custom_api_url
+                            users[user_email]['custom_model_name'] = custom_model_name
+                            users[user_email]['is_custom_api'] = is_custom
+                    else:
+                        users[user_email] = {
+                            'info': user_info,
+                            'selected_model': model_name
+                        }
+                        if is_custom:
+                            users[user_email]['custom_api_url'] = custom_api_url
+                            users[user_email]['custom_model_name'] = custom_model_name
+                            users[user_email]['is_custom_api'] = is_custom
+                            
+                    print(f"User {user_email} has set model to {model_name}")
+                    if is_custom:
+                        print(f"User {user_email} is using custom API: {custom_api_url}")
+
+                # Send success response
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                response_data = {
+                    'success': True,
+                    'model': selected_model
+                }
+                if is_custom:
+                    response_data['custom_api_url'] = custom_api_url
+                    if custom_model_name:
+                        response_data['custom_model_name'] = custom_model_name
+                        
+                self.wfile.write(json.dumps(response_data).encode())
                 
         except Exception as e:
             # Handle any uncaught exceptions
@@ -680,6 +835,31 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(json.dumps({'error': str(e)}).encode())
+        elif self.path == '/get-available-functions':
+            try:
+                # Send response headers
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')  # Allow CORS
+                self.send_header('Access-Control-Allow-Methods', 'GET')
+                self.end_headers()
+                
+                # Return the available functions (members list)
+                self.wfile.write(json.dumps({
+                    'success': True,
+                    'functions': members  # This is your global list of members
+                }).encode())
+                
+            except Exception as e:
+                print(f"Error serving available functions: {str(e)}")
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    'success': False, 
+                    'error': f'Server error: {str(e)}'
+                }).encode())
         else:
             # Handle other GET requests, such as static files
             self.send_response(200)
