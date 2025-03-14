@@ -313,11 +313,36 @@
             }
         }
         
-        // 原有的函数声明保留
-        function saveAgentConfig() {
-            // 原有逻辑
-            window.location.href = "index.html";
-        }
+        async function saveAgentConfig() {
+            const config = {
+                data_source: document.getElementById('data-source').value,
+                model_source: document.getElementById('model-source').value,
+                framework_source: document.getElementById('framework-source').value,
+                features: getSelectedFeatures(),
+                constraints: document.getElementById('constraint-name').value,
+                agent_name: document.getElementById('agent-name').value
+            };
+
+            await fetch('/save_agent_config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            });
+
+            window.location.href = 'index.html';
+            }
+
+            async function loadAgentConfig() {
+                const response = await fetch('/get_agent_config');
+                const config = await response.json();
+                
+                // 更新Agent信息、占位符、功能提示等
+                updateAgentInfo(config);
+                updateFeatureGuidance(config.features);
+                updateSampleQuestions(config.features);
+                updatePlaceholder(config.features);
+            }
+
         
         function saveAgentOnly() {
             // 原有逻辑

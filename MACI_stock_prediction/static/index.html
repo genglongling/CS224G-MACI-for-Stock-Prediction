@@ -289,6 +289,25 @@ function updatePlaceholder(features) {
           }
         }
 
+        // Limit to maximum 3 sample questions
+        questions = questions.slice(0, 3);
+        
+        if (questions.length > 0) {
+          sampleContainer.innerHTML = '<p><small><strong>Try asking:</strong> ' + 
+            questions.map(q => `<a href="#" onclick="setQuestion(this.textContent); return false;">${q}</a>`).join(' • ') +
+            '</small></p>';
+        }
+      } 
+
+      // Set question in input field (在函数外单独定义)
+      function setQuestion(question) {
+        const input = document.getElementById('stockSymbols');
+        if (input) {
+          input.value = question;
+        }
+      }
+
+
         
       
       // Set question in input field
@@ -298,7 +317,7 @@ function updatePlaceholder(features) {
           input.value = question;
         }
       }
-    }
+
     </script>
   </body>
 </html>
