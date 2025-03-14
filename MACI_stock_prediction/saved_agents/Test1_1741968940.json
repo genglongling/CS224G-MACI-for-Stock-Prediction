@@ -1,0 +1,12 @@
+{
+    "data_source": "alphavantage",
+    "model_source": "gpt-4o",
+    "framework_source": "single-agent",
+    "features": [
+        "ml-reasoning"
+    ],
+    "constraints": "",
+    "agent_name": "Test1",
+    "id": "Test1_1741968940",
+    "created_at": 1741968940.143076
+}

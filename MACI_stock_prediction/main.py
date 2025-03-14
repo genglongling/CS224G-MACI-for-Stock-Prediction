@@ -1,9 +1,12 @@
 import csv
 import os
+import json
+import time
 import requests
 from typing import Any, AsyncGenerator
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from magentic import (
     AssistantMessage,
     SystemMessage,
@@ -12,28 +15,132 @@ from magentic import (
     FunctionCall,
     UserMessage,
 )
+from pydantic import BaseModel
 
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-import os
-# export OPENAI_API_KEY
-# export AV_API_KEY
-AV_API_KEY = os.getenv("AV_API_KEY")
-#print(AV_API_KEY)
-
+# 初始化 FastAPI 应用
 app = FastAPI()
-# Serve static files (CSS, JS)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Serve index.html
+# Alpha Vantage API Key
+AV_API_KEY = os.getenv("AV_API_KEY") or "your_api_key_here"
+
+# Agent 配置模型
+class AgentConfig(BaseModel):
+    data_source: str
+    model_source: str
+    framework_source: str
+    features: list[str] | None = None
+    constraints: str | None = None
+    agent_name: str
+
+# 静态路由
 @app.get("/")
 async def serve_home():
     return FileResponse("static/index.html")
 
-
 @app.get("/generate_agent")
 async def serve_generate_agent():
     return FileResponse("static/generate_agent.html")
+
+# 保存 Agent 配置（临时用于会话）
+@app.post("/save_agent_config")
+async def save_agent_config(config: AgentConfig):
+    try:
+        # 这里可以简单返回成功，后续逻辑由前端处理
+        return {"success": True, "message": "Agent config saved for session"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save config: {str(e)}")
+
+# 保存 Agent 配置以供重用
+@app.post("/save_agent_for_reuse")
+async def save_agent_for_reuse(config: AgentConfig):
+    try:
+        save_dir = "saved_agents"
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        
+        # 使用时间戳和代理名称生成唯一 ID
+        agent_id = f"{config.agent_name}_{int(time.time())}"
+        filepath = os.path.join(save_dir, f"{agent_id}.json")
+        
+        # 保存配置
+        agent_data = config.dict()
+        agent_data["id"] = agent_id
+        agent_data["created_at"] = time.time()
+        
+        with open(filepath, "w") as f:
+            json.dump(agent_data, f, indent=4)
+        
+        return {"success": True, "agent_id": agent_id, "message": f"Agent saved as {agent_id}"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save agent: {str(e)}")
+
+# 列出所有保存的 Agent
+@app.get("/list_saved_agents")
+async def list_saved_agents():
+    try:
+        save_dir = "saved_agents"
+        if not os.path.exists(save_dir):
+            return {"success": True, "agents": []}
+        
+        agents = []
+        for filename in os.listdir(save_dir):
+            if filename.endswith(".json"):
+                with open(os.path.join(save_dir, filename), "r") as f:
+                    agent = json.load(f)
+                    agents.append({
+                        "id": agent["id"],
+                        "name": agent["agent_name"],
+                        "model": agent["model_source"],
+                        "features": agent["features"],
+                        "created_at": agent["created_at"]
+                    })
+        
+        return {"success": True, "agents": agents}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to list agents: {str(e)}")
+
+# 加载特定 Agent
+@app.get("/load_agent/{agent_id}")
+async def load_agent(agent_id: str):
+    try:
+        filepath = os.path.join("saved_agents", f"{agent_id}.json")
+        if not os.path.exists(filepath):
+            raise HTTPException(status_code=404, detail="Agent not found")
+        
+        with open(filepath, "r") as f:
+            agent = json.load(f)
+        
+        return {"success": True, "agent": agent}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load agent: {str(e)}")
+
+# 删除特定 Agent
+@app.delete("/delete_agent/{agent_id}")
+async def delete_agent(agent_id: str):
+    try:
+        filepath = os.path.join("saved_agents", f"{agent_id}.json")
+        if not os.path.exists(filepath):
+            raise HTTPException(status_code=404, detail="Agent not found")
+        
+        os.remove(filepath)
+        return {"success": True, "message": f"Agent {agent_id} deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete agent: {str(e)}")
+
+# 投资研究路由（已有）
+async def get_earnings_calendar(ticker: str, api_key: str = AV_API_KEY) -> dict:
+    url = f"https://www.alphavantage.co/query?function=EARNINGS_CALENDAR&symbol={ticker}&horizon=12month&apikey={api_key}"
+    response = requests.get(url, timeout=30)
+    decoded_content = response.content.decode("utf-8")
+    cr = csv.reader(decoded_content.splitlines(), delimiter=",")
+    data = list(cr)
+    return {"data": data}
+
+
+@app.get("/investment_research")
+async def investment_research(question: str):
+    return StreamingResponse(query(question), media_type="text/event-stream")
 
 async def get_earnings_calendar(ticker: str, api_key: str = AV_API_KEY) -> dict:
     """Fetches upcoming earnings dates for a given ticker."""
@@ -198,5 +305,4 @@ async def investment_research(question: str):
 
 if __name__ == "__main__":
     import uvicorn
-
-    uvicorn.run(app, host="127.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

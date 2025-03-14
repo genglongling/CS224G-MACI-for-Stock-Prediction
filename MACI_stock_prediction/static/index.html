@@ -4,26 +4,337 @@
     <title>MACI Stock Prediction</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="sidebar.css">
     <script defer src="script.js"></script>
+    <script defer src="sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+      .feature-guidance {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #f0f8ff;
+        border-left: 4px solid #4682b4;
+        display: none;
+      }
+      .info-icon {
+        cursor: pointer;
+        margin-left: 5px;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        text-align: center;
+        line-height: 18px;
+        border-radius: 50%;
+        background-color: #4682b4;
+        color: white;
+        font-size: 14px;
+      }
+      .agent-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+      }
+      .agent-info img {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+      }
+      .agent-details {
+        flex-grow: 1;
+      }
+      .agent-name {
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      .agent-capabilities {
+        font-size: 0.9em;
+        color: #666;
+      }
+      .tips-container {
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
-      <!-- Header Section -->
+    <!-- Header Section -->
     <header class="header">
-        <img src="images/logo.png" alt="MACI Logo" class="logo">
-        <span class="username">Welcome, Demo User</span>
+      <img src="images/logo.png" alt="MACI Logo" class="logo">
+      <span class="username">Welcome, Demo User</span>
     </header>
     <div class="container">
       <h1>MACI Stock Prediction</h1>
+      
+      <!-- Agent Information Section -->
+      <div class="agent-info">
+        <img src="images/agent-icon.png" alt="AI Agent" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0NjgyYjQiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMjAiIGhlaWdodD0iOCIgcng9IjIiIHJ5PSIyIj48L3JlY3Q+PHJlY3QgeD0iMiIgeT0iMTQiIHdpZHRoPSIyMCIgaGVpZ2h0PSI4IiByeD0iMiIgcnk9IjIiPjwvcmVjdD48bGluZSB4MT0iNiIgeTE9IjYiIHgyPSI2LjAxIiB5Mj0iNiI+PC9saW5lPjxsaW5lIHgxPSI2IiB5MT0iMTgiIHgyPSI2LjAxIiB5Mj0iMTgiPjwvbGluZT48L3N2Zz4='">
+        <div class="agent-details">
+          <div class="agent-name" id="agent-name">Investment Research Assistant</div>
+          <div class="agent-capabilities" id="agent-capabilities">Ready to assist with financial analysis</div>
+        </div>
+        <span class="info-icon" onclick="toggleFeatureGuidance()">i</span>
+      </div>
+      
+      <!-- Feature Guidance Section -->
+      <div id="feature-guidance" class="feature-guidance">
+        <div id="guidance-content">
+          Your AI assistant is ready to help with investment research. Ask any finance-related questions!
+        </div>
+      </div>
+      
+      <!-- Query Input Section -->
       <input type="text" id="stockSymbols" placeholder="Please enter any questions related to financial, stock (e.g., AAPL,GOOGL)" />
-      <button onclick="fetchStockData()">Get Predictions</button>
-      <button onclick="export">Save and Export Agent</button>
+      
+      <!-- Sample Questions Based on Features -->
+      <div class="tips-container" id="sample-questions">
+        <p><small><strong>Sample questions will appear here based on your agent's capabilities</strong></small></p>
+      </div>
+      
+      <button id="queryButton">Get Insights</button>
+      <button onclick="window.location.href='generate_agent.html'">Configure New Agent</button>
+      
       <div id="result"></div>
       <canvas id="stockChart"></canvas>
+      
+      <!-- Hidden debug output section -->
+      <div id="debug-output" style="display: none;"></div>
     </div>
+    
+    <script>
+      // Load agent configuration when page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        loadAgentConfig();
+      });
+      
+      // Toggle feature guidance visibility
+      function toggleFeatureGuidance() {
+        const guidanceDiv = document.getElementById('feature-guidance');
+        if (guidanceDiv.style.display === 'none' || guidanceDiv.style.display === '') {
+          guidanceDiv.style.display = 'block';
+        } else {
+          guidanceDiv.style.display = 'none';
+        }
+      }
+      
+// 在index.html的JavaScript部分，添加以下函数
+
+// 更新输入框占位文字
+function updatePlaceholder(features) {
+  const inputElement = document.getElementById('stockSymbols');
+  if (!inputElement) return;
+  
+  // 默认占位文字
+  let placeholder = "Please enter any questions related to financial, stock (e.g., AAPL,GOOGL)";
+  
+  // 根据选择的功能更新占位文字
+  if (features && features.length > 0) {
+    if (features.includes('simple-complex-calculation')) {
+      placeholder = "Ask about financial calculations (e.g., 'Calculate AAPL's 5-year growth rate')";
+    } 
+    else if (features.includes('ml-reasoning')) {
+      placeholder = "Ask about market patterns and trends (e.g., 'Analyze TSLA price patterns')";
+    }
+    else if (features.includes('planning')) {
+      placeholder = "Ask about research strategies (e.g., 'Plan research for evaluating tech stocks')";
+    }
+    else if (features.includes('validation')) {
+      placeholder = "Ask about data reliability (e.g., 'Validate recent MSFT earnings reports')";
+    }
+    else if (features.includes('decision-making')) {
+      placeholder = "Ask for investment recommendations (e.g., 'Should I invest in AMZN now?')";
+    }
+    else if (features.includes('operation')) {
+      placeholder = "Ask for summaries or visualizations (e.g., 'Summarize AAPL financial metrics')";
+    }
+  }
+  
+  // 应用新的占位文字
+  inputElement.placeholder = placeholder;
+}
+
+    // 修改loadAgentConfig函数，添加对占位文字的更新
+    async function loadAgentConfig() {
+      try {
+        const response = await fetch('/get_agent_config');
+        const config = await response.json();
+        
+        // 更新Agent信息
+        updateAgentInfo(config);
+        
+        // 更新功能指南
+        updateFeatureGuidance(config.features);
+        
+        // 更新示例问题
+        updateSampleQuestions(config.features);
+        
+        // 更新输入框占位文字 (新增)
+        updatePlaceholder(config.features);
+        
+      } catch (error) {
+        console.error("Error loading agent configuration:", error);
+      }
+    }
+      
+      // Update agent information display
+      function updateAgentInfo(config) {
+        const nameElement = document.getElementById('agent-name');
+        const capabilitiesElement = document.getElementById('agent-capabilities');
+        
+        if (nameElement && config.agent_name) {
+          nameElement.textContent = config.agent_name;
+        }
+        
+        if (capabilitiesElement) {
+          let capabilities = [];
+          
+          if (config.features && config.features.length > 0) {
+            if (config.features.includes('simple-complex-calculation')) capabilities.push('Calculation');
+            if (config.features.includes('ml-reasoning')) capabilities.push('ML Reasoning');
+            if (config.features.includes('planning')) capabilities.push('Planning');
+            if (config.features.includes('validation')) capabilities.push('Validation');
+            if (config.features.includes('decision-making')) capabilities.push('Decision Making');
+            if (config.features.includes('operation')) capabilities.push('Operations');
+          }
+          
+          if (capabilities.length > 0) {
+            capabilitiesElement.textContent = `Capabilities: ${capabilities.join(', ')}`;
+          } else {
+            capabilitiesElement.textContent = `Using ${config.model_source || 'AI'} model for financial analysis`;
+          }
+        }
+      }
+      
+      // Update feature guidance based on selected features
+      function updateFeatureGuidance(features) {
+        const guidanceContent = document.getElementById('guidance-content');
+        if (!guidanceContent) return;
+        
+        let guidance = "Your AI assistant is ready to help with investment research. ";
+        
+        if (features && features.length > 0) {
+          if (features.includes('simple-complex-calculation')) {
+            guidance += "It can perform financial calculations from basic to complex. ";
+          }
+          
+          if (features.includes('ml-reasoning')) {
+            guidance += "It can analyze patterns and trends using machine learning concepts. ";
+          }
+          
+          if (features.includes('planning')) {
+            guidance += "It uses strategic planning to break down complex research questions. ";
+          }
+          
+          if (features.includes('validation')) {
+            guidance += "It validates data and conclusions for reliability. ";
+          }
+          
+          if (features.includes('decision-making')) {
+            guidance += "It provides evidence-based investment recommendations. ";
+          }
+          
+          if (features.includes('operation')) {
+            guidance += "It can suggest visualizations and provide actionable summaries. ";
+          }
+        } else {
+          guidance += "Ask any finance-related questions!";
+        }
+        
+        guidanceContent.textContent = guidance;
+      }
+      
+      // Update sample questions based on selected features
+      function updateSampleQuestions(features) {
+        const sampleContainer = document.getElementById('sample-questions');
+        if (!sampleContainer) return;
+        
+        let questions = [];
+        
+        if (!features || features.length === 0) {
+          questions = [
+            "What's the current market outlook for AAPL?",
+            "Compare GOOGL and MSFT performance this quarter"
+          ];
+        } else {
+          if (features.includes('simple-complex-calculation')) {
+            questions.push("Calculate the compound annual growth rate for TSLA over the past 3 years");
+            questions.push("What's the volatility of AMZN compared to the S&P 500?");
+          }
+          
+          if (features.includes('ml-reasoning')) {
+            questions.push("Analyze AAPL price trends and identify potential patterns");
+            questions.push("What correlations exist between MSFT stock price and industry news sentiment?");
+          }
+          
+          if (features.includes('planning')) {
+            questions.push("Develop a research plan to evaluate if NVDA is currently overvalued");
+            questions.push("What factors should I consider when evaluating renewable energy stocks?");
+          }
+          
+          if (features.includes('validation')) {
+            questions.push("Validate the reliability of recent earnings reports for META");
+            questions.push("How confident should I be in analyst projections for AMD?");
+          }
+          
+          if (features.includes('decision-making')) {
+            questions.push("Should I invest in TSLA based on current market conditions?");
+            questions.push("What's the risk-reward profile for investing in semiconductor stocks now?");
+          }
+          
+          if (features.includes('operation')) {
+            questions.push("Summarize the key financial metrics for AMZN");
+            questions.push("What visualization would best show the relationship between GOOGL and AAPL stock movements?");
+          }
+        }
+
+        function updatePlaceholder(features) {
+          const inputElement = document.getElementById('stockSymbols');
+          if (!inputElement) return;
+          
+          // 默认占位文字
+          let placeholder = "Please enter any questions related to financial, stock (e.g., AAPL,GOOGL)";
+          
+          // 根据选择的功能更新占位文字
+          if (features && features.length > 0) {
+            if (features.includes('simple-complex-calculation')) {
+              placeholder = "Ask about financial calculations (e.g., 'Calculate AAPL's 5-year growth rate')";
+            } 
+            else if (features.includes('ml-reasoning')) {
+              placeholder = "Ask about market patterns and trends (e.g., 'Analyze TSLA price patterns')";
+            }
+            else if (features.includes('planning')) {
+              placeholder = "Ask about research strategies (e.g., 'Plan research for evaluating tech stocks')";
+            }
+            else if (features.includes('validation')) {
+              placeholder = "Ask about data reliability (e.g., 'Validate recent MSFT earnings reports')";
+            }
+            else if (features.includes('decision-making')) {
+              placeholder = "Ask for investment recommendations (e.g., 'Should I invest in AMZN now?')";
+            }
+            else if (features.includes('operation')) {
+              placeholder = "Ask for summaries or visualizations (e.g., 'Summarize AAPL financial metrics')";
+            }
+          }
+        
+        // Limit to maximum 3 sample questions
+        questions = questions.slice(0, 3);
+        
+        if (questions.length > 0) {
+          sampleContainer.innerHTML = '<p><small><strong>Try asking:</strong> ' + 
+            questions.map(q => `<a href="#" onclick="setQuestion(this.textContent); return false;">${q}</a>`).join(' • ') +
+            '</small></p>';
+        }
+      }
+      
+      // Set question in input field
+      function setQuestion(question) {
+        const input = document.getElementById('stockSymbols');
+        if (input) {
+          input.value = question;
+        }
+      }
+    </script>
   </body>
 </html>

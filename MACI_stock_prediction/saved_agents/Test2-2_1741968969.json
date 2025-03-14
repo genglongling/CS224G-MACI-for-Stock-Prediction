@@ -1,0 +1,12 @@
+{
+    "data_source": "alphavantage",
+    "model_source": "deepseek",
+    "framework_source": "single-agent",
+    "features": [
+        "planning"
+    ],
+    "constraints": "",
+    "agent_name": "Test2-2",
+    "id": "Test2-2_1741968969",
+    "created_at": 1741968969.5395627
+}
