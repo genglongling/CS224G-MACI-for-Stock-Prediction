@@ -1,0 +1,12 @@
+{
+    "data_source": "alphavantage",
+    "model_source": "gpt-4o",
+    "framework_source": "magnetic",
+    "features": [
+        "ml-reasoning"
+    ],
+    "constraints": "",
+    "agent_name": "Investment Research Assistant",
+    "id": "Investment Research Assistant_1741971604",
+    "created_at": 1741971604.8478513
+}

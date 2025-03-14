@@ -72,7 +72,7 @@ function createSidebarHTML() {
                 <i>🔧</i> Create New Agent
             </li>
             <li id="agent-settings-menu" onclick="toggleSavedAgentsList()">
-                <i>⚙️</i> Agent Settings
+                <i>⚙️</i> Settings
                 <div class="saved-agents-dropdown" id="saved-agents-list">
                     <div class="saved-agent-loading">Loading agents...</div>
                 </div>
@@ -303,10 +303,10 @@ function addCreateNewAgentMenu() {
         if (header && !document.getElementById('create-new-btn')) {
             const createNewBtn = document.createElement('button');
             createNewBtn.id = 'create-new-btn';
-            createNewBtn.textContent = 'Create New Agent';
+            createNewBtn.textContent = '';
             createNewBtn.style.fontSize = '0.8em';
-            createNewBtn.style.marginLeft = '15px';
-            createNewBtn.style.padding = '5px 10px';
+            createNewBtn.style.marginLeft = '0px';
+            createNewBtn.style.padding = '0px 0px';
             createNewBtn.onclick = function() {
                 // 调用script.js中的重置函数，如果可用
                 if (typeof window.resetAgentForm === 'function') {

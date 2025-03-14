@@ -1,0 +1,10 @@
+{
+    "data_source": "alphavantage",
+    "model_source": "gpt-4o",
+    "framework_source": "single-agent",
+    "features": [],
+    "constraints": "",
+    "agent_name": "Investment Research Assistant",
+    "id": "Investment Research Assistant_1741971272",
+    "created_at": 1741971272.1370885
+}

@@ -1,0 +1,12 @@
+{
+    "data_source": "alphavantage",
+    "model_source": "gpt-4o",
+    "framework_source": "magnetic",
+    "features": [
+        "decision-making"
+    ],
+    "constraints": "",
+    "agent_name": "test3-2",
+    "id": "test3-2_1741973279",
+    "created_at": 1741973279.087555
+}
