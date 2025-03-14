@@ -1,0 +1,190 @@
+/* sidebar.css - 侧边栏样式 */
+
+/* 侧边栏样式 */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    background-color: #292929;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: right 0.3s ease;
+    color: #fff;
+    padding: 20px 0;
+    overflow-y: auto;
+}
+
+.sidebar.active {
+    right: 0;
+}
+
+/* 侧边栏头部 */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 20px;
+    border-bottom: 1px solid #3c3c3c;
+    margin-bottom: 20px;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 1.3em;
+}
+
+.sidebar-close {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.sidebar-close:hover {
+    color: #fff;
+}
+
+/* 用户信息 */
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 0 20px 20px;
+    border-bottom: 1px solid #3c3c3c;
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #4682b4;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    color: white;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.user-email {
+    font-size: 0.85em;
+    color: #ccc;
+}
+
+/* 侧边栏菜单 */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-menu li:hover {
+    background-color: #3c3c3c;
+}
+
+.sidebar-menu li.active {
+    background-color: #4682b4;
+}
+
+.sidebar-menu li i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* 页面遮罩 */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+/* 用户头像按钮 */
+.user-avatar-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #4682b4;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2em;
+    border: none;
+    margin-left: 15px;
+}
+
+.user-avatar-btn:hover {
+    background-color: #3a6d99;
+}
+
+/* 保存的Agent列表 */
+.saved-agents-dropdown {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    margin-left: 30px;
+}
+
+.saved-agents-dropdown.active {
+    max-height: 500px;
+}
+
+.saved-agent-item {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #3c3c3c;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.saved-agent-item:hover {
+    background-color: #4d4d4d;
+}
+
+.saved-agent-name {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.saved-agent-details {
+    font-size: 0.8em;
+    color: #ccc;
+}
