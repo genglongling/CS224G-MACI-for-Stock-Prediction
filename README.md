@@ -189,6 +189,8 @@ then follow README file to set up your own multi-agent framework and pipeline.
 ✅ Step 1: Run FastAPI with Uvicorn
 Make sure you're in the same directory as main.py and then run:
 ```sh
+export OPENAI_API_KEY=
+export...
 uvicorn main:app --reload
 ```
 
