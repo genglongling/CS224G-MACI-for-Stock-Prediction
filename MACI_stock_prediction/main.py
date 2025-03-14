@@ -297,10 +297,20 @@ async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, 
     final_analysis = analyze_data(question, formatted_data)
     yield f"\n**Investment Insight:**\n{final_analysis}\n"
 
+from fastapi.responses import JSONResponse
 
 @app.get("/investment_research")
 async def investment_research(question: str):
     return StreamingResponse(query(question), media_type="text/event-stream")
+
+@app.get("/get_agent_config")
+async def get_agent_config():
+
+    return JSONResponse({
+        "agent_name": "Default Investment Research Assistant",
+        "features": ["simple-complex-calculation", "ml-reasoning"],
+        "model_source": "gpt-4o"
+    })
 
 
 if __name__ == "__main__":

@@ -1,12 +1,12 @@
 {
     "data_source": "alphavantage",
     "model_source": "gpt-4o",
-    "framework_source": "magnetic",
+    "framework_source": "single-agent",
     "features": [
         "validation"
     ],
     "constraints": "",
-    "agent_name": "test1",
-    "id": "test1_1741971963",
-    "created_at": 1741971963.4211235
+    "agent_name": "test2",
+    "id": "test2_1741975211",
+    "created_at": 1741975211.2506473
 }

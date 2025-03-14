@@ -289,44 +289,7 @@ function updatePlaceholder(features) {
           }
         }
 
-        function updatePlaceholder(features) {
-          const inputElement = document.getElementById('stockSymbols');
-          if (!inputElement) return;
-          
-          // 默认占位文字
-          let placeholder = "Please enter any questions related to financial, stock (e.g., AAPL,GOOGL)";
-          
-          // 根据选择的功能更新占位文字
-          if (features && features.length > 0) {
-            if (features.includes('simple-complex-calculation')) {
-              placeholder = "Ask about financial calculations (e.g., 'Calculate AAPL's 5-year growth rate')";
-            } 
-            else if (features.includes('ml-reasoning')) {
-              placeholder = "Ask about market patterns and trends (e.g., 'Analyze TSLA price patterns')";
-            }
-            else if (features.includes('planning')) {
-              placeholder = "Ask about research strategies (e.g., 'Plan research for evaluating tech stocks')";
-            }
-            else if (features.includes('validation')) {
-              placeholder = "Ask about data reliability (e.g., 'Validate recent MSFT earnings reports')";
-            }
-            else if (features.includes('decision-making')) {
-              placeholder = "Ask for investment recommendations (e.g., 'Should I invest in AMZN now?')";
-            }
-            else if (features.includes('operation')) {
-              placeholder = "Ask for summaries or visualizations (e.g., 'Summarize AAPL financial metrics')";
-            }
-          }
         
-        // Limit to maximum 3 sample questions
-        questions = questions.slice(0, 3);
-        
-        if (questions.length > 0) {
-          sampleContainer.innerHTML = '<p><small><strong>Try asking:</strong> ' + 
-            questions.map(q => `<a href="#" onclick="setQuestion(this.textContent); return false;">${q}</a>`).join(' • ') +
-            '</small></p>';
-        }
-      }
       
       // Set question in input field
       function setQuestion(question) {
