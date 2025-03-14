@@ -186,5 +186,30 @@ cd MACI_framework
 ```
 then follow README file to set up your own multi-agent framework and pipeline.
 
+✅ Step 1: Run FastAPI with Uvicorn
+Make sure you're in the same directory as main.py and then run:
+```sh
+uvicorn main:app --reload
+```
+
+✅ Step 2: 
+go to 127.0.0.1/static/front.html
+
+Check File Structure
+Your project should be organized like this:
+
+MACI-Stock-Prediction/
+│── main.py  # ✅ FastAPI app entry point
+│── static/  # ✅ HTML, CSS, and JavaScript for UI
+│   ├── index.html
+│   ├── style.css
+│   ├── script.js
+│── templates/  # (Optional) Jinja2 templates
+│── utils/  # ✅ Helper functions (e.g., API calls)
+│   ├── indicators.py
+│   ├── charts.py
+│── .env  # ✅ API Keys
+│── requirements.txt  # ✅ Python dependencies
+│── README.md  # ✅ Project documentation
 
 This **README** provides an overview of the **CS224G MACI for Stock Prediction** project, highlighting its **motivations, project plan, methodologies, demo, and future directions.** 🚀  
