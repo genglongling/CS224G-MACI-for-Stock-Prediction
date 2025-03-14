@@ -258,6 +258,14 @@
     </div>
   
     <script>
+        // 页面加载事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加按钮事件监听
+            document.getElementById('show-saved-btn').addEventListener('click', toggleSavedAgents);
+            document.getElementById('create-new-btn').addEventListener('click', function() {
+                document.getElementById('saved-agents-section').style.display = 'none';
+            });
+        });
         
         // 切换显示/隐藏已保存Agent列表
         function toggleSavedAgents() {
