@@ -42,14 +42,13 @@ async def serve_home():
 async def serve_generate_agent():
     return FileResponse("static/generate_agent.html")
 
-# 保存 Agent 配置（临时用于会话）
+session_config = {}  # 简单的临时全局存储
+
 @app.post("/save_agent_config")
 async def save_agent_config(config: AgentConfig):
-    try:
-        # 这里可以简单返回成功，后续逻辑由前端处理
-        return {"success": True, "message": "Agent config saved for session"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save config: {str(e)}")
+    global CURRENT_AGENT_CONFIG
+    CURRENT_AGENT_CONFIG = config.dict()
+    return {"success": True, "message": "Agent config saved for session"}
 
 # 保存 Agent 配置以供重用
 @app.post("/save_agent_for_reuse")
@@ -305,13 +304,17 @@ async def investment_research(question: str):
 
 @app.get("/get_agent_config")
 async def get_agent_config():
+    return JSONResponse(content=CURRENT_AGENT_CONFIG)
 
-    return JSONResponse({
-        "agent_name": "Default Investment Research Assistant",
-        "features": ["simple-complex-calculation", "ml-reasoning"],
-        "model_source": "gpt-4o"
-    })
-
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
+# 定义一个全局变量，暂时存储配置信息（更好的是session管理或数据库持久化）
+CURRENT_AGENT_CONFIG = {
+    "agent_name": "Investment Research Assistant",
+    "features": ["simple-complex-calculation", "planning"],
+    "model_source": "gpt-4o",
+    "constraints": "Additional constraints if any"
+}
 
 if __name__ == "__main__":
     import uvicorn
