@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>MACI for Stock Prediction Page</title>
+    <meta property="og:title" content="CheckCo Online Software Page" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+
+    <style data-tag="reset-style-sheet">
+      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;  -webkit-font-smoothing: antialiased;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;  color: inherit;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}details {  display: block;  margin: 0;  padding: 0;}summary::-webkit-details-marker {  display: none;}[data-thq="accordion"] [data-thq="accordion-content"] {  max-height: 0;  overflow: hidden;  transition: max-height 0.3s ease-in-out;  padding: 0;}[data-thq="accordion"] details[data-thq="accordion-trigger"][open] + [data-thq="accordion-content"] {  max-height: 1000vh;}details[data-thq="accordion-trigger"][open] summary [data-thq="accordion-icon"] {  transform: rotate(180deg);}html { scroll-behavior: smooth  }
+    </style>
+    <style data-tag="default-style-sheet">
+      html {
+        font-family: Inter;
+        font-size: 16px;
+      }
+
+      body {
+        font-weight: 400;
+        font-style:normal;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: normal;
+        line-height: 1.15;
+        color: var(--dl-color-gray-black);
+        background: var(--dl-color-gray-white);
+
+        fill: var(--dl-color-gray-black);
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/animate.css@4.1.1/animate.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css"
+    />
+    <style>
+       body::-webkit-scrollbar {
+         width: 0.5em;
+         z-index: 100;
+         background-color:transparent;
+       }
+
+
+      body::-webkit-scrollbar-thumb {
+         background-color:white;
+         box-shadow:0 -100vh 0 100vh #5128f5;
+       }
+    </style>
+  </head>
+  <body>
+    <link rel="stylesheet" href="./style.css" />
+    <div>
+      <link href="./index.css" rel="stylesheet" />
+
+      <div class="home-container10">
+        <section class="home-hero">
+          <header class="home-header1">
+            <div id="mobile-menu" class="home-mobile-navigation">
+              <img
+                alt="pastedImage"
+                src="images/logo.png"
+                class="home-logo1"
+              />
+              <div class="home-links1">
+                <span class="Link">Solutions</span>
+                <span class="Link">How it works</span>
+                <span class="Link">Prices</span>
+              </div>
+              <div id="close-mobile-menu" class="home-close-mobile-menu">
+                <svg viewBox="0 0 804.5714285714286 1024" class="home-icon10">
+                  <path
+                    d="M741.714 755.429c0 14.286-5.714 28.571-16 38.857l-77.714 77.714c-10.286 10.286-24.571 16-38.857 16s-28.571-5.714-38.857-16l-168-168-168 168c-10.286 10.286-24.571 16-38.857 16s-28.571-5.714-38.857-16l-77.714-77.714c-10.286-10.286-16-24.571-16-38.857s5.714-28.571 16-38.857l168-168-168-168c-10.286-10.286-16-24.571-16-38.857s5.714-28.571 16-38.857l77.714-77.714c10.286-10.286 24.571-16 38.857-16s28.571 5.714 38.857 16l168 168 168-168c10.286-10.286 24.571-16 38.857-16s28.571 5.714 38.857 16l77.714 77.714c10.286 10.286 16 24.571 16 38.857s-5.714 28.571-16 38.857l-168 168 168 168c10.286 10.286 16 24.571 16 38.857z"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div class="home-desktop-navigation">
+              <nav class="home-centered">
+                <div class="home-left1">
+                  <img
+                    alt="pastedImage"
+                    src="images/logo.png"
+                    class="home-logo2"
+                  />
+                  <div class="home-links2">
+                    <span class="Link">Solutions</span>
+                    <span class="Link">How it works</span>
+                    <span class="Link">Prices</span>
+                  </div>
+                </div>
+                <div class="home-right1">
+                  <span class="home-sign-in Link">Sign in</span>
+                  <div class="home-get-started1">
+                    <a href="login.html" class="home-text106">Get started</a>
+                  </div>
+                  <div id="open-mobile-menu" class="home-burger-menu">
+                    <img
+                      alt="pastedImage"
+                      src="public/pastedimage-yxbd.svg"
+                      class="home-mobile-menu-button"
+                    />
+                  </div>
+                </div>
+              </nav>
+            </div>
+            <div>
+              <div class="home-container12">
+                <script defer="">
+                  /*
+                  Mobile menu - Code Embed
+                  */
+
+                  // Mobile menu
+                  const mobileMenu = document.querySelector('#mobile-menu')
+
+                  // Buttons
+                  const closeButton = document.querySelector('#close-mobile-menu')
+                  const openButton = document.querySelector('#open-mobile-menu')
+
+                  // On openButton click, set the mobileMenu position left to -100vw
+                  openButton.addEventListener('click', function() {
+                      mobileMenu.style.transform = 'translateX(0%)'
+                  })
+
+                  // On closeButton click, set the mobileMenu position to 0vw
+                  closeButton.addEventListener('click', function() {
+                      mobileMenu.style.transform = 'translateX(100%)'
+                  })
+                </script>
+              </div>
+            </div>
+          </header>
+          <header class="home-content1">
+            <h1 class="home-text107">Check The Company!</h1>
+            <p class="home-text108">
+              Checking Your Investors, Investees, Collaborators, Competitors,
+              Big Tech, or medium to small business; Knowing Your Investors,
+              Business Holders, and Beneficiary relationships; Checking anything
+              with LLM support!
+            </p>
+            <div class="home-get-started2">
+              <a href="login.html" class="home-text106">Get started</a>
+            </div>
+          </header>
+          <div class="home-dashboard-preview">
+            <div class="home-outline">
+              <img
+                alt="pastedImage"
+                src="public/pastedimage-cdo-1000h.png"
+                loading="lazy"
+                class="home-image1"
+              />
+            </div>
+          </div>
+        </section>
+        <section class="home-features">
+          <div class="home-title">
+            <span class="home-text110">
+              Let's embrace your business authenticity
+            </span>
+            <span class="home-text111">
+              <span>
+                Checking basic information, business structure, beneficial
+                relationship, company people structure, performance, risk, news,
+                and other business-related information
+              </span>
+              <span>.</span>
+            </span>
+          </div>
+          <div class="home-cards1">
+            <div class="home-container13">
+              <div class="card">
+                <img
+                  alt="pastedImage"
+                  src="public/pastedimage-fii6m-200h.png"
+                  class="home-icon12"
+                />
+                <span class="home-text114">Company Progress Report</span>
+                <span class="home-text115">
+                  Summary of basic company information.&nbsp;
+                </span>
+              </div>
+              <div class="home-publish card">
+                <img
+                  alt="pastedImage"
+                  src="public/pastedimage-mimg-200h.png"
+                  class="home-icon13"
+                />
+                <span class="home-text116">Stock Prediction Analysis</span>
+                <span class="home-text117">
+                  Ask LLM any questions for the companies' stock!
+                </span>
+              </div>
+            </div>
+            <div class="home-container14">
+              <div class="card home-analyze">
+                <img
+                  alt="pastedImage"
+                  src="public/pastedimage-l6p-200h.png"
+                  class="home-icon14"
+                />
+                <span class="home-text118">Risk Analysis</span>
+                <span class="home-text119">
+                  Ask LLM any questions for the related news and risks within
+                  and in between companies!
+                </span>
+              </div>
+              <div class="card">
+                <img
+                  alt="pastedImage"
+                  src="public/pastedimage-vyi5-200h.png"
+                  class="home-icon15"
+                />
+                <span class="home-text120">LLM-powered Tools</span>
+                <span class="home-text121">
+                  Ask LLM any questions for the company and people!
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="home-quote-container">
+          <div class="home-quote1">
+            <span class="home-message">
+              “By using MACI framework, CheckCo could be your best unbiased,
+              transparent, supportive business analyst.”
+            </span>
+            <div class="home-author">
+              <img
+                alt="image"
+                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=Mnw5MTMyMXwwfDF8c2VhcmNofDV8fGdpcmx8ZW58MHx8fHwxNjY0ODA5MjE1&amp;ixlib=rb-1.2.1&amp;w=200"
+                class="home-avatar"
+              />
+              <span class="home-quote2">
+                <span class="home-text122">—&nbsp; MACI Team</span>
+                <span>, Founder and Boarding Member, CheckCo</span>
+              </span>
+            </div>
+          </div>
+        </section>
+        <section class="home-statistics">
+          <div class="home-container15">
+            <active-users-wrapper class="active-users-wrapper">
+              <!--ActiveUsers component-->
+              <div class="active-users-active-users metrics">
+                <span class="active-users-text1"><span>3.5M</span></span>
+                <span class="active-users-text2">
+                  <span>— Potential users</span>
+                </span>
+              </div>
+            </active-users-wrapper>
+            <active-users-wrapper-k7l2 class="active-users-wrapper-k7l2">
+              <!--ActiveUsers component-->
+              <div class="active-users-active-users1 metrics">
+                <span class="active-users-text3"><span>50k</span></span>
+                <span class="active-users-text4">
+                  <span>— Potential Companies</span>
+                </span>
+              </div>
+            </active-users-wrapper-k7l2>
+            <active-users-wrapper-f44g class="active-users-wrapper-f44g">
+              <!--ActiveUsers component-->
+              <div class="active-users-active-users2 metrics">
+                <span class="active-users-text5"><span>250K</span></span>
+                <span class="active-users-text6">
+                  <span>— Potential Accounts</span>
+                </span>
+              </div>
+            </active-users-wrapper-f44g>
+            <active-users-wrapper-2mi6 class="active-users-wrapper-2mi6">
+              <!--ActiveUsers component-->
+              <div class="active-users-active-users3 metrics">
+                <span class="active-users-text7"><span>30M</span></span>
+                <span class="active-users-text8">
+                  <span>— Potential Checks</span>
+                </span>
+              </div>
+            </active-users-wrapper-2mi6>
+          </div>
+        </section>
+        <section class="home-banners">
+          <div class="home-banner-manage">
+            <div class="home-container16">
+              <div class="home-left2">
+                <span class="sub-title">Content Management</span>
+                <span class="home-text125 title">
+                  Manage all your business correlations in just one place.
+                </span>
+                <span class="home-text126">
+                  Contact the specific company/people in one platform CheckCo.
+                </span>
+                <div class="home-get-started3 template-button">
+                  <a href="login.html" class="home-text106">Get started</a>
+                </div>
+              </div>
+              <div class="home-image-container1">
+                <img
+                  alt="pastedImage"
+                  src="public/pastedimage-wvmq%201-1200w.png"
+                  class="home-cards-image1"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="home-banner-advanced-analytics">
+            <div class="home-centered-container1">
+              <div class="home-image-container2">
+                <img
+                  alt="pastedImage"
+                  src="public/test-1200w.png"
+                  class="home-cards-image2"
+                />
+              </div>
+              <div class="home-right2">
+                <span class="sub-title">Reporting Metrics</span>
+                <h2 class="home-text129 title">
+                  Advanced analytics, easy to understand.
+                </h2>
+                <div class="home-category1">
+                  <span class="home-text130">LLM-Power reports</span>
+                  <span class="home-text131">
+                    LLM-powered forecasting and decision-making systems to
+                    answer your queries.&nbsp;
+                  </span>
+                  <span class="home-text132">Example -&gt;</span>
+                </div>
+                <div class="home-category2">
+                  <span class="home-text133">Ask Any Questions</span>
+                  <span class="home-text134">
+                    LLM-powered Q&amp;A Systems to answer your queries.
+                  </span>
+                  <span class="home-text135">Example -&gt;</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="home-banner">
+            <div class="home-container17">
+              <div class="home-left3">
+                <span class="home-text136">Improve Scheduling</span>
+                <h2 class="home-text137 title">
+                  Powerful tools that saves you time
+                </h2>
+                <span class="home-text138">
+                  Big Data Analytics and AI tools that combined data from 10+
+                  countries in the world, checking information across 20+
+                  platforms.
+                </span>
+                <div class="home-get-started4 template-button">
+                  <a href="login.html" class="home-text106">Get started</a>
+                </div>
+              </div>
+              <div class="home-image-container3">
+                <img
+                  alt="pastedImage"
+                  src="public/83d913a38a75e38d7cef4fea757ed7ed-1200w.png"
+                  class="home-cards-image3"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="home-integrations">
+          <div class="home-centered-container2">
+            <div class="home-heading1">
+              <span class="sub-title">Integrations</span>
+              <span class="title">
+                Integrated with the tools you know and love
+              </span>
+              <span class="home-text142">
+                Our information is based on the publicly disclosure, including
+                but not limited to the following sources:
+              </span>
+            </div>
+            <div class="home-pills-container">
+              <div class="home-pills">
+                <div class="home-container18">
+                  <you-tube-wrapper class="you-tube-wrapper">
+                    <!--YouTube component-->
+                    <div class="you-tube-you-tube">
+                      <img
+                        alt="pastedImage"
+                        src="public/logos/pastedimage-smjb.svg"
+                        class="you-tube-pasted-image"
+                      />
+                    </div>
+                  </you-tube-wrapper>
+                  <you-tube-wrapper-mmup class="you-tube-wrapper-mmup">
+                    <!--YouTube component-->
+                    <div class="you-tube-you-tube1">
+                      <img
+                        alt="pastedImage"
+                        src="public/logos/group%201012-200h.png"
+                        class="you-tube-pasted-image1"
+                      />
+                    </div>
+                  </you-tube-wrapper-mmup>
+                  <you-tube-wrapper-afqp class="you-tube-wrapper-afqp">
+                    <!--YouTube component-->
+                    <div class="you-tube-you-tube2">
+                      <img
+                        alt="pastedImage"
+                        src="public/logos/layer1-200h.png"
+                        class="you-tube-pasted-image2"
+                      />
+                    </div>
+                  </you-tube-wrapper-afqp>
+                  <you-tube-wrapper-5me9 class="you-tube-wrapper-5me9">
+                    <!--YouTube component-->
+                    <div class="you-tube-you-tube3">
+                      <img
+                        alt="pastedImage"
+                        src="public/logos/group-200h.png"
+                        class="you-tube-pasted-image3"
+                      />
+                    </div>
+                  </you-tube-wrapper-5me9>
+                </div>
+                <div class="home-container19">
+                  <you-tube-wrapper-bxo3 class="you-tube-wrapper-bxo3">
+                    <!--YouTube component-->
+                    <div class="you-tube-you-tube4">
+                      <img
+                        alt="pastedImage"
+                        src="public/logos/pinterest%20logo-200h.png"
+                        class="you-tube-pasted-image4"
+                      />
+                    </div>
+                  </you-tube-wrapper-bxo3>
+                  <you-tube-wrapper-z0oa class="you-tube-wrapper-z0oa">
+                    <!--YouTube component-->
+                    <div class="you-tube-you-tube5">
+                      <img
+                        alt="pastedImage"
+                        src="public/logos/group%201014-200h.png"
+                        class="you-tube-pasted-image5"
+                      />
+                    </div>
+                  </you-tube-wrapper-z0oa>
+                  <you-tube-wrapper-x8pp class="you-tube-wrapper-x8pp">
+                    <!--YouTube component-->
+                    <div class="you-tube-you-tube6">
+                      <img
+                        alt="pastedImage"
+                        src="public/logos/group%201015-200h.png"
+                        class="you-tube-pasted-image6"
+                      />
+                    </div>
+                  </you-tube-wrapper-x8pp>
+                  <you-tube-wrapper-qz7t class="you-tube-wrapper-qz7t">
+                    <!--YouTube component-->
+                    <div class="you-tube-you-tube7">
+                      <img
+                        alt="pastedImage"
+                        src="public/logos/group%201017-200h.png"
+                        class="you-tube-pasted-image7"
+                      />
+                    </div>
+                  </you-tube-wrapper-qz7t>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="home-how-it-works">
+          <div class="home-centered-container3">
+            <div class="home-heading2">
+              <span class="home-text143">How it works</span>
+              <span class="home-text144 title">
+                Being section analyzer and leader has never been easier
+              </span>
+            </div>
+            <div class="home-category3">
+              <div class="home-headng1">
+                <span class="home-text145">1 — Sign up</span>
+                <span class="home-text146">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  vv
+                </span>
+                <div class="home-get-started5 template-button">
+                  <a href="login.html" class="home-text106">Get started</a>
+                </div>
+              </div>
+              <div class="home-container20">
+                <img
+                  alt="pastedImage"
+                  src="public/pastedimage-k5xi%201-1200w.png"
+                  class="home-pasted-image1"
+                />
+              </div>
+            </div>
+            <div class="home-row">
+              <div class="home-category4">
+                <div class="home-headng2">
+                  <span class="home-text148">2 — Check</span>
+                  <span class="home-text149">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. vv
+                  </span>
+                </div>
+                <img
+                  alt="pastedImage"
+                  src="public/pastedimage-ibg-1200w.png"
+                  class="home-pasted-image2"
+                />
+              </div>
+              <div class="home-category5">
+                <div class="home-headng3">
+                  <span class="home-text150">3— Generate Report and Share</span>
+                  <span class="home-text151">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. vv
+                  </span>
+                </div>
+                <img
+                  alt="pastedImage"
+                  src="public/pastedimage-3c4o-1200w.png"
+                  class="home-pasted-image3"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="home-pricing">
+          <div class="home-centered-container4">
+            <div class="home-heading3">
+              <span class="home-text152 title">
+                Pricing for all kind of businesses
+              </span>
+              <span class="home-text153">
+                Create next-generation solutions for small business customers
+                with pricing options that accommodate everyone.
+              </span>
+              <div class="home-selection">
+                <span class="home-text154">Monthly</span>
+                <span class="home-text155">Yearly</span>
+              </div>
+            </div>
+            <div class="home-cards2">
+              <div class="home-card1">
+                <span class="home-text156">Free</span>
+                <span class="home-text157">Unlimited checking.</span>
+                <div class="home-get-started6 template-button">
+                  <span class="home-text158">Start for free</span>
+                </div>
+                <span class="home-text159">What's included</span>
+                <div class="home-bullet-points1">
+                  <div class="home-point10">
+                    <svg
+                      viewBox="0 0 877.7142857142857 1024"
+                      class="home-icon16"
+                    >
+                      <path
+                        d="M877.714 512c0 242.286-196.571 438.857-438.857 438.857s-438.857-196.571-438.857-438.857 196.571-438.857 438.857-438.857 438.857 196.571 438.857 438.857z"
+                      ></path>
+                    </svg>
+                    <span class="home-text160">
+                      Checking of basic information
+                    </span>
+                  </div>
+                  <div class="home-point11">
+                    <svg
+                      viewBox="0 0 877.7142857142857 1024"
+                      class="home-icon18"
+                    >
+                      <path
+                        d="M877.714 512c0 242.286-196.571 438.857-438.857 438.857s-438.857-196.571-438.857-438.857 196.571-438.857 438.857-438.857 438.857 196.571 438.857 438.857z"
+                      ></path>
+                    </svg>
+                    <span class="home-text161">
+                      Sharing information across third-party platforms&nbsp;
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="home-card2">
+                <span class="home-text162">Monthly</span>
+                <span class="home-text163">
+                  <span>Checking anything for $49/mo</span>
+                  <br />
+                  <span>LLM-powered tools</span>
+                </span>
+                <div class="home-get-started7 template-button">
+                  <span class="home-text167">
+                    <span>Upgrade now</span>
+                    <br />
+                  </span>
+                </div>
+                <span class="home-text170">What's included</span>
+                <div class="home-bullet-points2">
+                  <div class="home-point12">
+                    <svg
+                      viewBox="0 0 877.7142857142857 1024"
+                      class="home-icon20"
+                    >
+                      <path
+                        d="M877.714 512c0 242.286-196.571 438.857-438.857 438.857s-438.857-196.571-438.857-438.857 196.571-438.857 438.857-438.857 438.857 196.571 438.857 438.857z"
+                      ></path>
+                    </svg>
+                    <span class="home-text171">
+                      Checking of basic information, beneficiary, structures,
+                      etc.
+                    </span>
+                  </div>
+                  <div class="home-point13">
+                    <svg
+                      viewBox="0 0 877.7142857142857 1024"
+                      class="home-icon22"
+                    >
+                      <path
+                        d="M877.714 512c0 242.286-196.571 438.857-438.857 438.857s-438.857-196.571-438.857-438.857 196.571-438.857 438.857-438.857 438.857 196.571 438.857 438.857z"
+                      ></path>
+                    </svg>
+                    <span class="home-text172">
+                      Generating reports based on LLM&nbsp;
+                    </span>
+                  </div>
+                  <div class="home-point14">
+                    <svg
+                      viewBox="0 0 877.7142857142857 1024"
+                      class="home-icon24"
+                    >
+                      <path
+                        d="M877.714 512c0 242.286-196.571 438.857-438.857 438.857s-438.857-196.571-438.857-438.857 196.571-438.857 438.857-438.857 438.857 196.571 438.857 438.857z"
+                      ></path>
+                    </svg>
+                    <span class="home-text173">
+                      Sharing information across third-party platforms&nbsp;
+                    </span>
+                  </div>
+                  <div class="home-point15">
+                    <svg
+                      viewBox="0 0 877.7142857142857 1024"
+                      class="home-icon26"
+                    >
+                      <path
+                        d="M877.714 512c0 242.286-196.571 438.857-438.857 438.857s-438.857-196.571-438.857-438.857 196.571-438.857 438.857-438.857 438.857 196.571 438.857 438.857z"
+                      ></path>
+                    </svg>
+                    <span class="home-text174">Contact information, etc.</span>
+                  </div>
+                </div>
+              </div>
+              <div class="home-card3">
+                <span class="home-text175">Enterprise</span>
+                <span class="home-text176">
+                  <span>Custom-built, business-oriented solution.</span>
+                  <br />
+                </span>
+                <div class="home-get-started8 template-button">
+                  <span class="home-text179">
+                    <span>Contact us</span>
+                    <br />
+                  </span>
+                </div>
+                <span class="home-text182">What's included</span>
+                <div class="home-bullet-points3">
+                  <div class="home-point16">
+                    <svg
+                      viewBox="0 0 877.7142857142857 1024"
+                      class="home-icon28"
+                    >
+                      <path
+                        d="M877.714 512c0 242.286-196.571 438.857-438.857 438.857s-438.857-196.571-438.857-438.857 196.571-438.857 438.857-438.857 438.857 196.571 438.857 438.857z"
+                      ></path>
+                    </svg>
+                    <span class="home-text183">Basic month plan</span>
+                  </div>
+                  <div class="home-point17">
+                    <svg
+                      viewBox="0 0 877.7142857142857 1024"
+                      class="home-icon30"
+                    >
+                      <path
+                        d="M877.714 512c0 242.286-196.571 438.857-438.857 438.857s-438.857-196.571-438.857-438.857 196.571-438.857 438.857-438.857 438.857 196.571 438.857 438.857z"
+                      ></path>
+                    </svg>
+                    <span class="home-text184">Other advanced features</span>
+                  </div>
+                  <div class="home-point18">
+                    <svg
+                      viewBox="0 0 877.7142857142857 1024"
+                      class="home-icon32"
+                    >
+                      <path
+                        d="M877.714 512c0 242.286-196.571 438.857-438.857 438.857s-438.857-196.571-438.857-438.857 196.571-438.857 438.857-438.857 438.857 196.571 438.857 438.857z"
+                      ></path>
+                    </svg>
+                    <span class="home-text185">In coming</span>
+                  </div>
+                  <div class="home-point19">
+                    <svg
+                      viewBox="0 0 877.7142857142857 1024"
+                      class="home-icon34"
+                    >
+                      <path
+                        d="M877.714 512c0 242.286-196.571 438.857-438.857 438.857s-438.857-196.571-438.857-438.857 196.571-438.857 438.857-438.857 438.857 196.571 438.857 438.857z"
+                      ></path>
+                    </svg>
+                    <span class="home-text186">In coming</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="home-testimonals">
+          <div class="home-left4">
+            <span class="home-text187">Testimonals</span>
+            <span class="home-text188 title">
+              What people say about CheckCo
+            </span>
+          </div>
+          <div class="home-right3">
+            <div class="home-column1">
+              <testimonal-wrapper class="testimonal-wrapper">
+                <!--Testimonal component-->
+                <div class="testimonal-testimonal testimonal">
+                  <span class="testimonal-text">
+                    <span>
+                      "Pellentesque sodales libero nulla, ac imperdiet ante
+                      tincidunt vel. Fusce auctor augue sed massa finibus, et
+                      dictum sem mollis. In luctus.”
+                    </span>
+                  </span>
+                  <div class="testimonal-author">
+                    <div class="testimonal-avatar">
+                      <img
+                        alt="image"
+                        src="public/image552912-e3yq-200h.png"
+                        class="testimonal-image"
+                      />
+                    </div>
+                    <div class="testimonal-user">
+                      <span class="testimonal-name">
+                        <span>Andy Smith</span>
+                      </span>
+                      <span class="testimonal-divider">—</span>
+                      <span class="testimonal-from">
+                        <span>Vista Social</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </testimonal-wrapper>
+              <testimonal-wrapper-0ti7 class="testimonal-wrapper-0ti7">
+                <!--Testimonal component-->
+                <div class="testimonal-testimonal1 testimonal">
+                  <span class="testimonal-text1">
+                    <span>
+                      “Sed ut perspiciatis unde omnis iste natus error sit
+                      voluptatem accusantium doloremque laudantium, totam rem
+                      aperiam, eaque ipsa quae ab illo.  Inventore veritatis et
+                      quasi architecto beatae vitae dicta sunt explicabo.”
+                    </span>
+                  </span>
+                  <div class="testimonal-author1">
+                    <div class="testimonal-avatar1">
+                      <img
+                        alt="image"
+                        src="public/image312912-mvsg-200h.png"
+                        class="testimonal-image1"
+                      />
+                    </div>
+                    <div class="testimonal-user1">
+                      <span class="testimonal-name1">
+                        <span>Jessica Smith</span>
+                      </span>
+                      <span class="testimonal-divider1">—</span>
+                      <span class="testimonal-from1">
+                        <span>Social Club</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </testimonal-wrapper-0ti7>
+              <testimonal-wrapper-yqn2 class="testimonal-wrapper-yqn2">
+                <!--Testimonal component-->
+                <div class="testimonal-testimonal2 testimonal">
+                  <span class="testimonal-text2">
+                    <span>
+                      “Totam rem aperiam, eaque ipsa quae ab illo inventore
+                      veritatis et quasi architecto beatae vitae dicta sunt
+                      explicabo..”
+                    </span>
+                  </span>
+                  <div class="testimonal-author2">
+                    <div class="testimonal-avatar2">
+                      <img
+                        alt="image"
+                        src="public/image502912-6wy-200h.png"
+                        class="testimonal-image2"
+                      />
+                    </div>
+                    <div class="testimonal-user2">
+                      <span class="testimonal-name2">
+                        <span>Logan Boy</span>
+                      </span>
+                      <span class="testimonal-divider2">—</span>
+                      <span class="testimonal-from2"><span>BeMe</span></span>
+                    </div>
+                  </div>
+                </div>
+              </testimonal-wrapper-yqn2>
+              <testimonal-wrapper-8u1f class="testimonal-wrapper-8u1f">
+                <!--Testimonal component-->
+                <div class="testimonal-testimonal3 testimonal">
+                  <span class="testimonal-text3">
+                    <span>
+                      “Rem aperiam, eaque ipsa quae ab illo inventore veritatis
+                      et quasi architecto beatae vitae.”
+                    </span>
+                  </span>
+                  <div class="testimonal-author3">
+                    <div class="testimonal-avatar3">
+                      <img
+                        alt="image"
+                        src="public/image202912-zekh-200h.png"
+                        class="testimonal-image3"
+                      />
+                    </div>
+                    <div class="testimonal-user3">
+                      <span class="testimonal-name3">
+                        <span>Laraine Summers</span>
+                      </span>
+                      <span class="testimonal-divider3">—</span>
+                      <span class="testimonal-from3">
+                        <span>Hello W.</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </testimonal-wrapper-8u1f>
+            </div>
+            <div class="home-column2">
+              <testimonal-wrapper-y93r class="testimonal-wrapper-y93r">
+                <!--Testimonal component-->
+                <div class="testimonal-testimonal4 testimonal">
+                  <span class="testimonal-text4">
+                    <span>
+                      "Excepteur sint occaecat cupidatat non proident, sunt in
+                      culpa qui officia deserunt mollit anim id est laborum.
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                      sed do eiusmod tempor incididunt ut labore et dolore magna
+                      aliqua.”
+                    </span>
+                  </span>
+                  <div class="testimonal-author4">
+                    <div class="testimonal-avatar4">
+                      <img
+                        alt="image"
+                        src="public/image572912-0d3-200h.png"
+                        class="testimonal-image4"
+                      />
+                    </div>
+                    <div class="testimonal-user4">
+                      <span class="testimonal-name4">
+                        <span>William McPau</span>
+                      </span>
+                      <span class="testimonal-divider4">—</span>
+                      <span class="testimonal-from4"><span>Handsly</span></span>
+                    </div>
+                  </div>
+                </div>
+              </testimonal-wrapper-y93r>
+              <testimonal-wrapper-lypd class="testimonal-wrapper-lypd">
+                <!--Testimonal component-->
+                <div class="testimonal-testimonal5 testimonal">
+                  <span class="testimonal-text5">
+                    <span>
+                      “Duis aute irure dolor in reprehenderit in voluptate velit
+                      esse cillum dolore eu fugiat nulla pariatur.”
+                    </span>
+                  </span>
+                  <div class="testimonal-author5">
+                    <div class="testimonal-avatar5">
+                      <img
+                        alt="image"
+                        src="public/image632913-swij-200h.png"
+                        class="testimonal-image5"
+                      />
+                    </div>
+                    <div class="testimonal-user5">
+                      <span class="testimonal-name5">
+                        <span>Mariah Mae</span>
+                      </span>
+                      <span class="testimonal-divider5">—</span>
+                      <span class="testimonal-from5"><span>Share</span></span>
+                    </div>
+                  </div>
+                </div>
+              </testimonal-wrapper-lypd>
+              <testimonal-wrapper-iurd class="testimonal-wrapper-iurd">
+                <!--Testimonal component-->
+                <div class="testimonal-testimonal6 testimonal">
+                  <span class="testimonal-text6">
+                    <span>
+                      "Excepteur sint occaecat cupidatat non proident, sunt in
+                      culpa qui officia deserunt mollit anim id est laborum.”
+                    </span>
+                  </span>
+                  <div class="testimonal-author6">
+                    <div class="testimonal-avatar6">
+                      <img
+                        alt="image"
+                        src="public/image102913-x4z8-200h.png"
+                        class="testimonal-image6"
+                      />
+                    </div>
+                    <div class="testimonal-user6">
+                      <span class="testimonal-name6">
+                        <span>John Finati</span>
+                      </span>
+                      <span class="testimonal-divider6">—</span>
+                      <span class="testimonal-from6"><span>Gather</span></span>
+                    </div>
+                  </div>
+                </div>
+              </testimonal-wrapper-iurd>
+              <testimonal-wrapper-0o3a class="testimonal-wrapper-0o3a">
+                <!--Testimonal component-->
+                <div class="testimonal-testimonal7 testimonal">
+                  <span class="testimonal-text7">
+                    <span>
+                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                      sed do eiusmod tempor incididunt ut labore et dolore magna
+                      aliqua. Excepteur sint occaecat cupidatat non proident,
+                      sunt in culpa qui officia deserunt mollit anim id est
+                      laborum. ”
+                    </span>
+                  </span>
+                  <div class="testimonal-author7">
+                    <div class="testimonal-avatar7">
+                      <img
+                        alt="image"
+                        src="public/image562913-ycff-200h.png"
+                        class="testimonal-image7"
+                      />
+                    </div>
+                    <div class="testimonal-user7">
+                      <span class="testimonal-name7">
+                        <span>Mary Pau</span>
+                      </span>
+                      <span class="testimonal-divider7">—</span>
+                      <span class="testimonal-from7"><span>Zigo</span></span>
+                    </div>
+                  </div>
+                </div>
+              </testimonal-wrapper-0o3a>
+            </div>
+          </div>
+          <span class="home-text189">
+            <span>Show more</span>
+            <br />
+          </span>
+        </section>
+        <section class="home-action-bar">
+          <div class="home-action">
+            <div class="home-heading4">
+              <span class="home-text192 title">
+                <span>Get leads now&nbsp;</span>
+                <br />
+                <span>with CheckCo!</span>
+              </span>
+              <span class="home-text196">Explore your business.</span>
+              <div class="home-get-started9 template-button">
+                <span class="home-text197">
+                  <span>Start free</span>
+                  <br />
+                </span>
+              </div>
+            </div>
+            <div class="home-images">
+              <img
+                alt="image"
+                src="public/e564eaa3c4fab71792794d666a281742-1200w.png"
+                class="home-image2"
+              />
+            </div>
+          </div>
+        </section>
+        <section class="home-faq">
+          <div class="home-heading5">
+            <span class="home-text200 title">Frequently asked questions</span>
+            <span class="home-text201">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. vv
+            </span>
+          </div>
+          <div class="home-accordion">
+            <div data-faq="closed" class="accordionContainer">
+              <div class="home-header2">
+                <span class="home-text202">
+                  — What is sit amet, consectetur adipiscing elit, sed do?
+                </span>
+                <svg viewBox="0 0 1024 1024" class="accordionIcon">
+                  <path
+                    d="M316 366l196 196 196-196 60 60-256 256-256-256z"
+                  ></path>
+                </svg>
+              </div>
+              <div class="accordionContent">
+                <span class="home-text203">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Excepteur sint occaecat cupidatat non proident, sunt in culpa
+                  qui officia deserunt mollit anim id est laborum.
+                </span>
+              </div>
+            </div>
+            <div class="accordionContainer">
+              <div class="home-header3">
+                <span class="home-text204">
+                  — Why is dolore magna aliqua excepteur sint
+                </span>
+                <svg viewBox="0 0 1024 1024" class="accordionIcon">
+                  <path
+                    d="M316 366l196 196 196-196 60 60-256 256-256-256z"
+                  ></path>
+                </svg>
+              </div>
+              <div class="accordionContent">
+                <span class="home-text205">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Excepteur sint occaecat cupidatat non proident, sunt in culpa
+                  qui officia deserunt mollit anim id est laborum.
+                </span>
+              </div>
+            </div>
+            <div data-faq="closed" class="accordionContainer">
+              <div class="home-header4">
+                <span class="home-text206">
+                  — Is excepteur sint occaecat cupidatat non proident, sunt in
+                  culpa qui officia deserunt mollit anim id est laborum?
+                </span>
+                <svg viewBox="0 0 1024 1024" class="accordionIcon">
+                  <path
+                    d="M316 366l196 196 196-196 60 60-256 256-256-256z"
+                  ></path>
+                </svg>
+              </div>
+              <div class="accordionContent">
+                <span class="home-text207">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Excepteur sint occaecat cupidatat non proident, sunt in culpa
+                  qui officia deserunt mollit anim id est laborum.
+                </span>
+              </div>
+            </div>
+            <div data-faq="closed" class="accordionContainer">
+              <div class="home-header5">
+                <span class="home-text208">
+                  — Who quasi architecto beatae vitae dicta sunt explicabo. Nemo
+                  enim ipsam voluptatem quia voluptas sit aspernatur aut odit
+                  aut fugit, sed quia consequuntur magni
+                </span>
+                <svg viewBox="0 0 1024 1024" class="accordionIcon">
+                  <path
+                    d="M316 366l196 196 196-196 60 60-256 256-256-256z"
+                  ></path>
+                </svg>
+              </div>
+              <div class="accordionContent">
+                <span class="home-text209">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Excepteur sint occaecat cupidatat non proident, sunt in culpa
+                  qui officia deserunt mollit anim id est laborum.
+                </span>
+              </div>
+            </div>
+            <div data-faq="closed" class="accordionContainer">
+              <div class="home-header6">
+                <span class="home-text210">
+                  — Is minim veniam quis nostrud exercitation ullamco laboris
+                  nisi ut aliquip ex ea commodo consequat.
+                </span>
+                <svg viewBox="0 0 1024 1024" class="accordionIcon">
+                  <path
+                    d="M316 366l196 196 196-196 60 60-256 256-256-256z"
+                  ></path>
+                </svg>
+              </div>
+              <div class="accordionContent">
+                <span class="home-text211">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Excepteur sint occaecat cupidatat non proident, sunt in culpa
+                  qui officia deserunt mollit anim id est laborum.
+                </span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="home-container22">
+              <script>
+                // Accordion - Code Embed
+
+                const accordionContainers = document.querySelectorAll('.accordionContainer'); // All accordion containers
+                const accordionContents = document.querySelectorAll('.accordionContent'); // All accordion content
+                const accordionIcons = document.querySelectorAll('.accordionIcon'); // All accordion icons
+
+                accordionContents.forEach((accordionContent) => {
+                    accordionContent.style.display = 'none'; //Hides all accordion contents
+                });
+
+                accordionContainers.forEach((accordionContainer, index) => {
+                    accordionContainer.addEventListener('click', () => {
+                        accordionContents.forEach((accordionContent) => {
+                            accordionContent.style.display = 'none'; //Hides all accordion contents
+                        });
+
+                        accordionIcons.forEach((accordionIcon) => {
+                            accordionIcon.style.transform = 'rotate(0deg)'; // Resets all icon transforms to 0deg (default)
+                        });
+
+                        if (accordionContainer.classList.contains('accordion-open')) { // Checks if this container has class 'accordion-open'
+                            accordionContainer.classList.remove('accordion-open'); // Removes class 'accordion-open'
+                        } else {
+                            accordionContainers.forEach((accordionContainer) => {
+                                accordionContainer.classList.remove('accordion-open'); // Removes class 'accordion-open' from all containers
+                            });
+
+                            accordionContainer.classList.add('accordion-open'); // Adds class 'accordion-open' to this container
+                            accordionContents[index].style.display = 'flex'; // Shows accordion content
+                            accordionIcons[index].style.transform = 'rotate(180deg)'; // Rotates accordion icon 180deg
+                        }
+                    });
+                });
+
+                /*
+                Here's what the above is doing:
+                    1. Selects all accordion containers, contents, and icons
+                    2. Hides all accordion contents
+                    3. Adds an event listener to each accordion container
+                    4. When an accordion container is clicked, it:
+                        - Hides all accordion contents
+                        - Resets all icon transforms to 0deg (default)
+                        - Checks if this container has class 'accordion-open'
+                            - If it does, it removes class 'accordion-open'
+                            - If it doesn't, it:
+                                - Removes class 'accordion-open' from all containers
+                                - Adds class 'accordion-open' to this container
+                                - Shows accordion content
+                                - Rotates accordion icon 180deg
+                */
+              </script>
+            </div>
+          </div>
+        </section>
+        <footer class="home-footer">
+          <div class="home-top">
+            <div class="home-left5">
+              <span class="home-text212">Subscribe to our newsletter</span>
+              <div class="home-subscription">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  class="home-textinput input"
+                />
+                <div class="home-subscribe">
+                  <span class="home-text213">Subscribe</span>
+                </div>
+              </div>
+              <span class="home-text214">
+                By subscribing to our newsletter you agree with our Terms and
+                Conditions.
+              </span>
+              <div class="home-contact">
+                <span class="home-text215">Contact</span>
+                <a
+                  href="mailto:use@active-app.com?subject=Support"
+                  class="home-link"
+                >
+                  use@active-app.com
+                </a>
+              </div>
+            </div>
+            <div class="home-right4">
+              <div class="home-category6">
+                <span class="home-text216">Solutions</span>
+                <div class="home-links3">
+                  <span class="home-text217">Responsive Web Design</span>
+                  <span class="home-text218">Responsive Prototypesv</span>
+                  <span class="home-text219">Design to Code</span>
+                  <span class="home-text220">Static Website Builder</span>
+                  <span class="home-text221">Static Website Generator</span>
+                </div>
+              </div>
+              <div class="home-category7">
+                <span class="home-text222">Company</span>
+                <div class="home-links4">
+                  <span class="home-text223">About</span>
+                  <span class="home-text224">Team</span>
+                  <span class="home-text225">News</span>
+                  <span class="home-text226">Partners</span>
+                  <span class="home-text227">Careers</span>
+                  <span class="home-text228">Press &amp; Media</span>
+                </div>
+              </div>
+              <div class="home-category8">
+                <span class="home-text229">Solutions</span>
+                <div class="home-links5">
+                  <span class="home-text230">Twitter</span>
+                  <span class="home-text231">Linkedin</span>
+                  <span class="home-text232">Crunchbase</span>
+                  <span class="home-text233">Instagram</span>
+                  <span class="home-text234">Facebook</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="home-bottom">
+            <img
+              alt="pastedImage"
+              src="images/logo.png"
+              class="home-branding"
+            />
+            <span class="home-text235">Copyright © MACI - 2025</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

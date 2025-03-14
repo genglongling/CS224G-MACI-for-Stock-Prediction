@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Agent - MACI</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <img src="images/logo.png" alt="MACI Logo" class="logo">
+        <span class="username">Welcome, Demo User</span>
+    </header>
+
+    <h1>MACI - Agent Setting </h1>
+
+    <div class="selection-box">
+        <h3>Data Selection</h3>
+        <select id="data-source">
+            <option value="alphavantage">AlphaVantage</option>
+            <option value="yahoo">Yahoo Finance</option>
+            <option value="other">Upload Your URL</option>
+        </select>
+    </div>
+
+    <div class="selection-box">
+        <h3>LLM Model Selection</h3>
+        <select id="model-source">
+            <option value="gpt-4o">GPT-4o</option>
+            <option value="llama-v3">Llama V3</option>
+            <option value="deepseek">DeepSeek</option>
+            <option value="others">Upload Your Model</option>
+        </select>
+    </div>
+
+    <div class="selection-box">
+        <h3>Agent Framework Selection</h3>
+        <select id="framework-source">
+            <option value="single-agent">Langraph</option>
+            <option value="magnetic">Magnetic</option>
+            <option value="langchain">Langchain</option>
+            <option value="crewai">CrewAI</option>
+            <option value="others">Upload Your Framework</option>
+        </select>
+    </div>
+
+    <div class="selection-box">
+        <h3>Agent Feature Selection</h3>
+        <label><input type="checkbox" value="simple-complex-calculation"> Simple to Complex Calculation</label><br>
+        <label><input type="checkbox" value="ml-reasoning"> Advanced Machine Learning Reasoning (LSTM, API)</label><br>
+        <label><input type="checkbox" value="planning"> Planning Ability (Meta Planner, First Planner, Second Planner)</label><br>
+        <label><input type="checkbox" value="decision-making"> Validation Ability (Validation, Self-Evaluation)</label><br>
+        <label><input type="checkbox" value="decision-making"> Decision Making (Validation, Self-Evaluation)</label><br>
+        <label><input type="checkbox" value="operation"> Operational Ability (Plot Generation, Export A Summary, Scheduling A Call, Transaction)</label><br>
+
+    </div>
+
+    <div class="selection-box">
+        <h3>Agent Constraints Specification</h3>
+        <input type="text" id="constraint-name" placeholder="Enter Any Constraints for agent">
+    </div>
+
+    <div class="selection-box">
+        <h3>Agent Name Specification</h3>
+        <input type="text" id="agent-name" placeholder="Enter Agent Name">
+    </div>
+
+
+    <button onclick="goToIndex()">Generate Agent</button>
+
+    <script>
+        function goToIndex() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

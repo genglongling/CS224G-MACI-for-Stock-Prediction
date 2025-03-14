@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>MACI Stock Prediction</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+    </style>
+  </head>
+  <body>
+      <!-- Header Section -->
+    <header class="header">
+        <img src="images/logo.png" alt="MACI Logo" class="logo">
+        <span class="username">Welcome, Demo User</span>
+    </header>
+    <div class="container">
+      <h1>MACI Stock Prediction</h1>
+      <input type="text" id="stockSymbols" placeholder="Please enter any questions related to financial, stock (e.g., AAPL,GOOGL)" />
+      <button onclick="fetchStockData()">Get Predictions</button>
+      <button onclick="export">Save and Export Agent</button>
+      <div id="result"></div>
+      <canvas id="stockChart"></canvas>
+    </div>
+  </body>
+</html>

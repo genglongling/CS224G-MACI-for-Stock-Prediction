@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Brainstorming Agent Development with LLM Assistant</title>
+    <meta property="og:title" content="Chat with LLM Assistant" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+
+    <style data-tag="reset-style-sheet">
+      /* Reset styles */
+      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}html { scroll-behavior: smooth  }
+    </style>
+    <style data-tag="default-style-sheet">
+      html {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        font-size: 16px;
+      }
+
+      body {
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: normal;
+        line-height: 1.15;
+        color: #333;
+        background: #f5f5f5;
+        margin: 0;
+      }
+
+      /* Header styles */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+
+      .logo {
+        height: 40px;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+      }
+
+      .sign-in-button {
+        background-color: #5128f5;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-left: 15px;
+      }
+
+      .user-info {
+        display: none;
+        align-items: center;
+      }
+
+      .user-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ccc;
+        margin-right: 10px;
+      }
+
+      /* Chat-specific styles */
+      .chat-container {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        height: calc(100vh - 100px);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-header {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        padding: 10px;
+      }
+
+      .chat-input-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+      }
+
+      .chat-input {
+        width: 85%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .chat-send-button {
+        padding: 12px 20px;
+        background-color: #5128f5;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .chat-send-button:hover {
+        background-color: #3a1fca;
+      }
+
+      .user-message {
+        text-align: right;
+        background-color: #dcf8c6;
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin: 8px 0;
+        max-width: 80%;
+        margin-left: auto;
+        line-height: 1.4;
+        position: relative;
+      }
+
+      .llm-message {
+        text-align: left;
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin: 8px 0;
+        max-width: 80%;
+        line-height: 1.4;
+        white-space: pre-line;
+      }
+
+      .ai-response-container {
+        text-align: left;
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin: 8px 0;
+        max-width: 80%;
+        line-height: 1.4;
+      }
+
+      .search-result {
+        margin-bottom: 10px;
+        padding: 8px;
+        border-left: 3px solid #5128f5;
+        background-color: #f8f8f8;
+      }
+
+      .search-result-source {
+        font-weight: bold;
+        color: #5128f5;
+        margin-bottom: 5px;
+      }
+
+      .search-result-content {
+        color: #333;
+        font-size: 0.9em;
+      }
+
+      .loading-indicator {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+      }
+
+      .loading-indicator span {
+        margin-left: 10px;
+      }
+
+      .dot-pulse {
+        position: relative;
+        left: -9999px;
+        width: 10px;
+        height: 10px;
+        border-radius: 5px;
+        background-color: #5128f5;
+        color: #5128f5;
+        box-shadow: 9999px 0 0 -5px;
+        animation: dot-pulse 1.5s infinite linear;
+        animation-delay: 0.25s;
+      }
+
+      .dot-pulse::before, .dot-pulse::after {
+        content: "";
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 5px;
+        background-color: #5128f5;
+        color: #5128f5;
+      }
+
+      .dot-pulse::before {
+        box-shadow: 9984px 0 0 -5px;
+        animation: dot-pulse-before 1.5s infinite linear;
+        animation-delay: 0s;
+      }
+
+      .dot-pulse::after {
+        box-shadow: 10014px 0 0 -5px;
+        animation: dot-pulse-after 1.5s infinite linear;
+        animation-delay: 0.5s;
+      }
+
+      @keyframes dot-pulse-before {
+        0% { box-shadow: 9984px 0 0 -5px; }
+        30% { box-shadow: 9984px 0 0 2px; }
+        60%, 100% { box-shadow: 9984px 0 0 -5px; }
+      }
+
+      @keyframes dot-pulse {
+        0% { box-shadow: 9999px 0 0 -5px; }
+        30% { box-shadow: 9999px 0 0 2px; }
+        60%, 100% { box-shadow: 9999px 0 0 -5px; }
+      }
+
+      @keyframes dot-pulse-after {
+        0% { box-shadow: 10014px 0 0 -5px; }
+        30% { box-shadow: 10014px 0 0 2px; }
+        60%, 100% { box-shadow: 10014px 0 0 -5px; }
+      }
+
+      /* Add Markdown support styles */
+      .llm-message h1, .llm-message h2, .llm-message h3 {
+        margin-top: 15px;
+        margin-bottom: 8px;
+      }
+
+      .llm-message p {
+        margin-bottom: 8px;
+      }
+
+      .llm-message ul, .llm-message ol {
+        margin-left: 20px;
+        margin-bottom: 8px;
+      }
+
+      .llm-message code {
+        background-color: #f8f8f8;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+
+      .llm-message pre {
+        background-color: #f8f8f8;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+        margin-bottom: 8px;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .chat-container {
+          margin: 0;
+          height: 100vh;
+          border-radius: 0;
+        }
+
+        .user-message, .llm-message, .ai-response-container {
+          max-width: 90%;
+        }
+
+        .chat-input {
+          width: 75%;
+        }
+      }
+
+      /* API Key Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.4);
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 10px;
+      }
+
+      .modal h2 {
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .modal-button {
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .submit-button {
+        background-color: #5128f5;
+        color: white;
+        border: none;
+      }
+
+      .submit-button:hover {
+        background-color: #3a1fca;
+      }
+
+      .cancel-button {
+        background-color: #f0f0f0;
+        color: #333;
+        border: 1px solid #ddd;
+      }
+
+      .cancel-button:hover {
+        background-color: #e0e0e0;
+      }
+
+      /* SSO Login Modal */
+      .sso-modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.4);
+      }
+
+      .sso-modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 10px;
+      }
+
+      .sso-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .sso-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        transition: background-color 0.3s;
+      }
+
+      .sso-button:hover {
+        background-color: #f5f5f5;
+      }
+
+      .sso-button img {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+      }
+
+      .sso-divider {
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+      }
+
+      .sso-divider::before, .sso-divider::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .sso-divider-text {
+        padding: 0 10px;
+        color: #777;
+      }
+
+      .traditional-login {
+        margin-top: 20px;
+      }
+
+      #main-container {
+        display: none;
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <!-- Header with SSO login button -->
+    <header class="header">
+      <img src="images/logo.png" alt="CheckCo Logo" class="logo">
+      <div class="header-right">
+        <div id="user-info" class="user-info">
+          <div class="user-avatar"></div>
+          <span id="username">User Name</span>
+        </div>
+        <button id="sign-in-button" class="sign-in-button">Sign In</button>
+      </div>
+    </header>
+
+    <!-- SSO Login Modal -->
+    <div id="ssoModal" class="sso-modal">
+      <div class="sso-modal-content">
+        <h2>Sign in to CheckCo</h2>
+        <p>Choose your preferred sign in method below</p>
+
+        <div class="sso-buttons">
+          <button class="sso-button" id="google-sso">
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google">
+            Continue with Google
+          </button>
+          <button class="sso-button" id="microsoft-sso">
+            <img src="https://cdn-icons-png.flaticon.com/512/732/732221.png" alt="Microsoft">
+            Continue with Microsoft
+          </button>
+          <button class="sso-button" id="apple-sso">
+            <img src="https://cdn-icons-png.flaticon.com/512/0/747.png" alt="Apple">
+            Continue with Apple
+          </button>
+        </div>
+
+        <div class="sso-divider">
+          <span class="sso-divider-text">or</span>
+        </div>
+
+        <div class="traditional-login">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter your email">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password">
+          </div>
+          <div class="modal-buttons">
+            <button type="button" id="cancel-sso-button" class="modal-button cancel-button">Cancel</button>
+            <button type="button" id="login-button" class="modal-button submit-button">Sign In</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Container (Hidden until logged in) -->
+    <div id="main-container">
+      <!-- API Key Modal -->
+      <div id="apiKeyModal" class="modal">
+        <div class="modal-content">
+          <h2>Enter API Keys</h2>
+          <form id="apiKeyForm">
+            <div class="form-group">
+              <label for="tavilyApiKey">Tavily API Key:</label>
+              <input type="password" id="tavilyApiKey" placeholder="Enter Tavily API Key" required>
+            </div>
+            <div class="form-group">
+              <label for="togetherApiKey">Together API Key:</label>
+              <input type="password" id="togetherApiKey" placeholder="Enter Together API Key" required>
+            </div>
+            <div class="modal-buttons">
+              <button type="button" id="cancelButton" class="modal-button cancel-button">Cancel</button>
+              <button type="button" class="modal-button submit-button" onclick="window.location.href='generate_agent.html'">Connect</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="chat-container">
+        <div class="chat-header">Brainstorming Agent Development with LLM Assistant</div>
+        <div class="chat-messages" id="chat-messages">
+          <!-- Chat messages will be displayed here -->
+        </div>
+        <div class="chat-input-container">
+          <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." disabled />
+          <button id="chat-send" class="chat-send-button" disabled>Send</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Show the SSO login modal when the Sign In button is clicked
+      document.getElementById('sign-in-button').addEventListener('click', function() {
+        document.getElementById('ssoModal').style.display = 'block';
+      });
+
+      // Close the SSO modal when Cancel is clicked
+      document.getElementById('cancel-sso-button').addEventListener('click', function() {
+        document.getElementById('ssoModal').style.display = 'none';
+      });
+
+      // Handle SSO login (simplified for demo)
+      function handleSSOLogin(provider) {
+        console.log(`Logging in with ${provider}...`);
+        // In a real implementation, this would redirect to the provider's OAuth page
+
+        // For demo purposes, simulate a successful login
+        simulateSuccessfulLogin({
+          name: "Demo User",
+          email: "user@example.com",
+          provider: provider
+        });
+      }
+
+      // Add click handlers for SSO buttons
+      document.getElementById('google-sso').addEventListener('click', function() {
+        handleSSOLogin('Google');
+      });
+
+      document.getElementById('microsoft-sso').addEventListener('click', function() {
+        handleSSOLogin('Microsoft');
+      });
+
+      document.getElementById('apple-sso').addEventListener('click', function() {
+        handleSSOLogin('Apple');
+      });
+
+      // Handle traditional login
+      document.getElementById('login-button').addEventListener('click', function() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        if (!email || !password) {
+          alert('Please enter both email and password');
+          return;
+        }
+
+        // In a real implementation, this would validate credentials with a server
+
+        // For demo purposes, simulate a successful login
+        simulateSuccessfulLogin({
+          name: email.split('@')[0],
+          email: email,
+          provider: 'Traditional'
+        });
+      });
+
+      // Simulate a successful login
+      function simulateSuccessfulLogin(user) {
+        // Hide the SSO modal
+        document.getElementById('ssoModal').style.display = 'none';
+
+        // Update the UI to show the logged in user
+        document.getElementById('username').textContent = user.name;
+        document.getElementById('user-info').style.display = 'flex';
+        document.getElementById('sign-in-button').style.display = 'none';
+
+        // Show the main container
+        document.getElementById('main-container').style.display = 'block';
+
+        // Show the API key modal after login
+        document.getElementById('apiKeyModal').style.display = 'block';
+
+        // Store user info (in a real app, you might use localStorage or a more secure method)
+        window.currentUser = user;
+      }
+
+      // Simple Markdown parsing function
+      function parseMarkdown(text) {
+        // Handle headings
+        text = text.replace(/## (.*?)\n/g, '<h2>$1</h2>');
+        text = text.replace(/### (.*?)\n/g, '<h3>$1</h3>');
+        
+        // Handle bold text
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Handle italic text
+        text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+        // Handle links
+        text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+        
+        // Handle line breaks, preserve original breaks
+        text = text.replace(/\n/g, '<br>');
+        
+        return text;
+      }
+
+      let eventSource = null;
+
+      document.getElementById('chat-send').addEventListener('click', async function() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // Close any existing SSE connections
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
+
+        // Display user message
+        const userMessage = document.createElement('div');
+        userMessage.classList.add('user-message');
+        userMessage.textContent = message;
+        document.getElementById('chat-messages').appendChild(userMessage);
+
+        input.value = ''; // Clear input field
+
+        // Create response container
+        const responseContainer = document.createElement('div');
+        responseContainer.classList.add('ai-response-container');
+        document.getElementById('chat-messages').appendChild(responseContainer);
+
+        // Add main response area
+        const mainResponseDiv = document.createElement('div');
+        mainResponseDiv.classList.add('llm-message');
+        responseContainer.appendChild(mainResponseDiv);
+
+        // Add search results area
+        const searchResultsDiv = document.createElement('div');
+        searchResultsDiv.classList.add('search-results');
+        responseContainer.appendChild(searchResultsDiv);
+
+        // Add loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.classList.add('loading-indicator');
+        loadingDiv.innerHTML = '<div class="dot-pulse"></div><span>Processing...</span>';
+        responseContainer.appendChild(loadingDiv);
+
+        // Scroll to the bottom
+        const chatMessages = document.getElementById('chat-messages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        try {
+            // Use SSE to connect to the server
+            eventSource = new EventSource(`http://localhost:8000/query?query=${encodeURIComponent(message)}&user=${encodeURIComponent(JSON.stringify(window.currentUser))}`);
+            
+            eventSource.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    
+                    // Handle different types of messages
+                    if (data.type === "main_response") {
+                        // Display main response from terminal output
+                        mainResponseDiv.innerHTML = parseMarkdown(data.data);
+                    } else if (data.type === "search_results" && data.items) {
+                        // Display search results
+                        data.items.forEach(item => {
+                            const resultDiv = document.createElement('div');
+                            resultDiv.classList.add('search-result');
+                            
+                            const sourceDiv = document.createElement('div');
+                            sourceDiv.classList.add('search-result-source');
+                            sourceDiv.innerHTML = `<a href="${item.source}" target="_blank">${item.source}</a>`;
+                            
+                            const contentDiv = document.createElement('div');
+                            contentDiv.classList.add('search-result-content');
+                            contentDiv.textContent = item.content;
+                            
+                            resultDiv.appendChild(sourceDiv);
+                            resultDiv.appendChild(contentDiv);
+                            searchResultsDiv.appendChild(resultDiv);
+                        });
+                      } else if (data.type === "final_response") {
+                        // Display final response
+                        if (data.main_response) {
+                            mainResponseDiv.innerHTML = parseMarkdown(data.main_response);
+                        }
+                        
+                        // Display search results if present
+                        if (data.search_results && data.search_results.length > 0) {
+                            data.search_results.forEach(item => {
+                                const resultDiv = document.createElement('div');
+                                resultDiv.classList.add('search-result');
+                                
+                                const sourceDiv = document.createElement('div');
+                                sourceDiv.classList.add('search-result-source');
+                                sourceDiv.innerHTML = `<a href="${item.source}" target="_blank">${item.source}</a>`;
+                                
+                                const contentDiv = document.createElement('div');
+                                contentDiv.classList.add('search-result-content');
+                                contentDiv.textContent = item.content;
+                                
+                                resultDiv.appendChild(sourceDiv);
+                                resultDiv.appendChild(contentDiv);
+                                searchResultsDiv.appendChild(resultDiv);
+                            });
+                        }
+                    } else if (data.type === "error") {
+                        // Display error message
+                        mainResponseDiv.innerHTML = `<span style="color: red;">${data.data}</span>`;
+                        loadingDiv.style.display = 'none';
+                    }
+                    
+                    // Scroll to the bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } catch (error) {
+                    console.error("Error parsing SSE message:", error, event.data);
+                }
+            };
+            eventSource.addEventListener('complete', function(event) {
+                // When processing is complete
+                loadingDiv.style.display = 'none';
+                
+                // If no search results were found, show a message
+                if (searchResultsDiv.childNodes.length === 0) {
+                    const noResultsDiv = document.createElement('div');
+                    noResultsDiv.textContent = "No search results found.";
+                    searchResultsDiv.appendChild(noResultsDiv);
+                }
+                
+                eventSource.close();
+            });
+
+            eventSource.onerror = function(error) {
+                console.error("SSE error:", error);
+                loadingDiv.style.display = 'none';
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.style.color = 'red';
+                errorDiv.textContent = "Error connecting to server";
+                responseContainer.appendChild(errorDiv);
+                
+                eventSource.close();
+            };
+            
+        } catch (error) {
+            console.error('Error:', error);
+            loadingDiv.style.display = 'none';
+            
+            // Display error message
+            const errorMessage = document.createElement('div');
+            errorMessage.style.color = 'red';
+            errorMessage.textContent = "Error: Could not connect to server";
+            responseContainer.appendChild(errorMessage);
+        }
+      });
+
+      // Allow user to send message by pressing Enter key
+      document.getElementById('chat-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          document.getElementById('chat-send').click();
+        }
+      });
+
+      // Automatically show the SSO login modal after the page loads
+      document.addEventListener('DOMContentLoaded', function() {
+          document.getElementById('ssoModal').style.display = 'block';
+          document.getElementById('main-container').style.display = 'none';
+      });
+    </script>
+
+    
+
+  </body>
+</html>
