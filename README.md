@@ -197,7 +197,7 @@ go to 127.0.0.1/static/front.html
 
 Check File Structure
 Your project should be organized like this:
-
+```sh
 MACI-Stock-Prediction/
 │── main.py  # ✅ FastAPI app entry point
 │── static/  # ✅ HTML, CSS, and JavaScript for UI
@@ -211,5 +211,5 @@ MACI-Stock-Prediction/
 │── .env  # ✅ API Keys
 │── requirements.txt  # ✅ Python dependencies
 │── README.md  # ✅ Project documentation
-
+```
 This **README** provides an overview of the **CS224G MACI for Stock Prediction** project, highlighting its **motivations, project plan, methodologies, demo, and future directions.** 🚀  
