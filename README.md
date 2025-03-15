@@ -214,7 +214,7 @@ uvicorn main:app --reload
 ```
 
 ✅ Step 2: 
-go to 127.0.0.1/static/front.html
+go to 127.0.0.1.8000/static/front.html
 
 Check File Structure
 Your project should be organized like this:
