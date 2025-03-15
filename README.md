@@ -20,7 +20,7 @@
    - **[LiteLLM:](https://docs.litellm.ai/)** 
    - **or any other OpenAI schema-compatible model** 
    - **FinAgent(ours)**
-   - **Your Self-developed LLMs(ours)*
+   - **Your Self-developed LLMs(ours)**
    - **Access to financial database such as [Alphavantage](https://www.alphavantage.co/documentation/), and yahoo api.** adapts to unexpected changes in real-time financial information.
 
 # 🤖 **Interactive Back-End App**  
