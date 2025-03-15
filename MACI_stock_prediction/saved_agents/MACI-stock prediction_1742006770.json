@@ -1,0 +1,16 @@
+{
+    "data_source": "alphavantage",
+    "model_source": "gpt-4o",
+    "framework_source": "single-agent",
+    "features": [
+        "ml-reasoning",
+        "planning",
+        "validation",
+        "decision-making",
+        "operation"
+    ],
+    "constraints": "safety words",
+    "agent_name": "MACI-stock prediction",
+    "id": "MACI-stock prediction_1742006770",
+    "created_at": 1742006770.099236
+}

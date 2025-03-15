@@ -4,10 +4,10 @@
     <title>MACI Stock Prediction</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="sidebar.css">
-    <script defer src="script.js"></script>
-    <script defer src="sidebar.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/sidebar.css">
+    <script defer src="/static/script.js"></script>
+    <script defer src="/static/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       .feature-guidance {
@@ -57,12 +57,21 @@
       .tips-container {
         margin-top: 10px;
       }
+      .result-container {
+        width: 100%;
+        /*box-sizing: border-box; !* Ensures padding and border are included in the width *!*/
+        /*overflow-wrap: break-word; !* Prevents overflow for long text *!*/
+        /*padding: 10px; !* Optional: add some padding *!*/
+        /*border: 1px solid #ccc; !* Optional: border for better visibility *!*/
+        background-color: #f9f9f9; /* Optional: light background */
+      }
+
     </style>
   </head>
   <body>
     <!-- Header Section -->
     <header class="header">
-      <img src="images/logo.png" alt="MACI Logo" class="logo">
+      <img src="/static/images/logo.png" alt="MACI Logo" class="logo">
       <span class="username">Welcome, Demo User</span>
     </header>
     <div class="container">
@@ -70,7 +79,7 @@
       
       <!-- Agent Information Section -->
       <div class="agent-info">
-        <img src="images/agent-icon.png" alt="AI Agent" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0NjgyYjQiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMjAiIGhlaWdodD0iOCIgcng9IjIiIHJ5PSIyIj48L3JlY3Q+PHJlY3QgeD0iMiIgeT0iMTQiIHdpZHRoPSIyMCIgaGVpZ2h0PSI4IiByeD0iMiIgcnk9IjIiPjwvcmVjdD48bGluZSB4MT0iNiIgeTE9IjYiIHgyPSI2LjAxIiB5Mj0iNiI+PC9saW5lPjxsaW5lIHgxPSI2IiB5MT0iMTgiIHgyPSI2LjAxIiB5Mj0iMTgiPjwvbGluZT48L3N2Zz4='">
+        <img src="/static/images/agent-icon.png" alt="AI Agent" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM0NjgyYjQiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMjAiIGhlaWdodD0iOCIgcng9IjIiIHJ5PSIyIj48L3JlY3Q+PHJlY3QgeD0iMiIgeT0iMTQiIHdpZHRoPSIyMCIgaGVpZ2h0PSI4IiByeD0iMiIgcnk9IjIiPjwvcmVjdD48bGluZSB4MT0iNiIgeTE9IjYiIHgyPSI2LjAxIiB5Mj0iNiI+PC9saW5lPjxsaW5lIHgxPSI2IiB5MT0iMTgiIHgyPSI2LjAxIiB5Mj0iMTgiPjwvbGluZT48L3N2Zz4='">
         <div class="agent-details">
           <div class="agent-name" id="agent-name">Investment Research Assistant</div>
           <div class="agent-capabilities" id="agent-capabilities">Ready to assist with financial analysis</div>
@@ -87,20 +96,22 @@
       
       <!-- Query Input Section -->
       <input type="text" id="stockSymbols" placeholder="Please enter any questions related to financial, stock (e.g., AAPL,GOOGL)" />
-      
+
       <!-- Sample Questions Based on Features -->
       <div class="tips-container" id="sample-questions">
         <p><small><strong>Sample questions will appear here based on your agent's capabilities</strong></small></p>
       </div>
-      
-      <button id="queryButton">Get Insights</button>
+
+
+      <!--      <button id="queryButton">Get Insights</button>-->
+      <button onclick="fetchStockData()">Get Insights</button>
       <button onclick="window.location.href='generate_agent.html'">Configure New Agent</button>
-      
+      <!-- Hidden debug output section -->
+      <div class="result-container" id="result" style="width: 100%">Results will appear here...</div>
 
       <canvas id="stockChart"></canvas>
       
-      <!-- Hidden debug output section -->
-      <div id="debug-output" style="display: none;"></div>
+
     </div>
     
     <script>
@@ -297,19 +308,8 @@ function updatePlaceholder(features) {
             questions.map(q => `<a href="#" onclick="setQuestion(this.textContent); return false;">${q}</a>`).join(' • ') +
             '</small></p>';
         }
-      } 
-
-      // Set question in input field (在函数外单独定义)
-      function setQuestion(question) {
-        const input = document.getElementById('stockSymbols');
-        if (input) {
-          input.value = question;
-        }
       }
 
-
-        
-      
       // Set question in input field
       function setQuestion(question) {
         const input = document.getElementById('stockSymbols');
@@ -317,6 +317,8 @@ function updatePlaceholder(features) {
           input.value = question;
         }
       }
+
+
 
     </script>
   </body>

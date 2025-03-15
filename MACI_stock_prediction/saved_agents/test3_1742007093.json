@@ -1,0 +1,12 @@
+{
+    "data_source": "yahoo",
+    "model_source": "deepseek",
+    "framework_source": "crewai",
+    "features": [
+        "decision-making"
+    ],
+    "constraints": "none",
+    "agent_name": "test3",
+    "id": "test3_1742007093",
+    "created_at": 1742007093.649492
+}
