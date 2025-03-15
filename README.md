@@ -180,9 +180,9 @@ python3 server.py
 ```
 then open front.html
 
-## D. MACI Demo (NEW)
+## D. MACI for Stock Prediction Demo (final)
 ```sh
-cd MACI_framework
+cd MACI_stock_prediction
 ```
 then follow README file to set up your own multi-agent framework and pipeline.
 
