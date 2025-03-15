@@ -7,6 +7,29 @@
 ## - Paper: [MACI Framework](https://arxiv.org/abs/2502.18836)
 ## - Code: cd MACI_framework
 
+
+# 🏗️ **7 Multi-Agent tools**  
+   - Our newest version MACI support Magentic multi-agent tool.
+   - Our previous MACI-framework could support multi-agent tools: LangGraph, AutoGen, Crewai, LangChain, and to be extended on LlamaIndex, Haystack.
+
+# 🤝 **20+ LLM Agents**  
+   - **[OpenAI LLMs:](https://openai.com/)** including gpt-4, gpt-4o, gpt-4o-mini, etc.
+   - **[Ollama:](https://ollama.com/)** including Llama 3.3, DeepSeek-R1, Phi-4, Mistral, Gemma 2, etc.
+   - **[Anthropic:](https://www.anthropic.com/)** including Claud 3.7.
+   - **[Mistral:](https://mistral.ai/)** 
+   - **[LiteLLM:](https://docs.litellm.ai/)** 
+   - **or any other OpenAI schema-compatible model** 
+   - **FinAgent(ours)**
+   - **Your Self-developed LLMs(ours)**
+
+# 📡 **Interactive Front-End App**  
+   - User could interact with LLMs.
+   - Adapts to unexpected changes in real-time.
+  
+# 🤖 **Interactive Back-End App**  
+   - Access to financial database such as [Alphavantage](https://www.alphavantage.co/documentation/), and yahoo api.
+   - Adapts to unexpected changes in real-time financial information. 
+
 ## ⚠️ 1. LLM Limitations in Complex Planning  
 
 Large Language Models (LLMs) excel at pattern recognition but struggle with complex planning tasks that require:  
