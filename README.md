@@ -3,7 +3,7 @@
 ## [Sprint 4 - NEW UPDATE]
 ## - Please review section How To Run The Code Part D for the app
 ## - Code: cd MACI_stock_prediction
-## [Sprint 3 - NEW UPDATE]
+## [Sprint 3 - UPDATE]
 ## - Paper: [MACI Framework](https://arxiv.org/abs/2502.18836)
 ## - Code: cd MACI_framework
 
