@@ -70,23 +70,23 @@ async function saveAgentConfig() {
       const data = await response.json();
       
       if (data.success) {
-          console.log("Agent配置成功保存用于当前会话");
+          console.log("Agent is set correctly for this conversation");
           
           // 根据是否在编辑模式决定是更新还是保存
           if (window.currentEditingAgentId) {
               // 使用删除后重建的方式来更新
               const newAgentId = await deleteAndReCreateAgent(window.currentEditingAgentId);
               if (newAgentId) {
-                  alert("Agent更新成功! 正在重定向到股票预测页面...");
+                  alert("Agent is updated successfully! Redirecting to your stock prediction workspace...");
               } else {
-                  alert("Agent更新过程有问题，但配置已保存。正在重定向...");
+                  alert("Agent has problem during update，but new update is saved。Redirecting now...");
               }
           } else {
               // 询问是否保存此Agent供将来使用
-              if (confirm("Agent配置成功! 您想保存这个Agent配置以便将来使用吗?")) {
+              if (confirm("Agent is updated successfully! Do you want to save this Agent for future use?")) {
                   await saveAgentForReuse();
               }
-              alert("正在重定向到股票预测页面...");
+              alert("Redirecting to your stock prediction workspace...");
           }
           
           // 无论成功或失败都重定向
@@ -94,12 +94,12 @@ async function saveAgentConfig() {
               window.location.href = "index.html";
           }, 500);
       } else {
-          console.error("保存agent配置时出错:", data.message);
-          alert("保存agent配置时出错: " + (data.message || "未知错误"));
+          console.error("Agent has problem during setting:", data.message);
+          alert("Agent has problem during saving: " + (data.message || "unknown mistake"));
       }
   } catch (error) {
-      console.error("保存agent配置时出错:", error);
-      alert("保存agent配置时出错，请重试。");
+      console.error("Agent has problem during saving:", error);
+      alert("Agent has problem during saving, please retry.");
   }
 }
 
@@ -473,90 +473,90 @@ function resetAgentForm() {
 }
 
 // 获取股票数据 - 保留原有功能并增强
-async function fetchStockData() {
-    let symbols = document.getElementById("stockSymbols").value;
-    let resultDiv = document.getElementById("result");
-    
-    if (!symbols) {
-        resultDiv.innerHTML = "<p style='color: red;'>Please enter stock symbols or a question about stocks.</p>";
-        return;
-    }
-    
-    resultDiv.innerHTML = "<p>Processing your query with configured AI agent...</p>";
-    
-    try {
-        // 使用事件源获取流式响应
-        const eventSource = new EventSource(`/investment_research?question=${encodeURIComponent(symbols)}`);
-        
-        // 处理流式响应
-        eventSource.onmessage = function(event) {
-            try {
-                const data = JSON.parse(event.data);
-                
-                // 如果是普通消息，直接添加
-                if (typeof data === 'object' && data.message) {
-                    resultDiv.innerHTML += `<div>${data.message}</div>`;
-                } 
-                // 如果是最终响应，替换整个内容
-                else if (data.type === 'final_response') {
-                    resultDiv.innerHTML = `<div class="final-result">${data.main_response}</div>`;
-                    
-                    // 如果有搜索结果，添加
-                    if (data.has_search_results) {
-                        let searchResultsHtml = '<div class="search-results"><h3>Search Results</h3>';
-                        data.search_results.forEach(result => {
-                            searchResultsHtml += `
-                                <div class="search-result">
-                                    <h4><a href="${result.source}" target="_blank">${result.source}</a></h4>
-                                    <p>${result.content}</p>
-                                </div>
-                            `;
-                        });
-                        searchResultsHtml += '</div>';
-                        resultDiv.innerHTML += searchResultsHtml;
-                    }
-                }
-                // 如果是终端输出，添加到调试区域
-                else if (data.type === 'terminal_output') {
-                    // 可以添加到一个隐藏的调试区域
-                    const debugDiv = document.getElementById("debug-output");
-                    if (debugDiv) {
-                        debugDiv.innerHTML += `<pre>${data.data}</pre>`;
-                    }
-                }
-                // 如果是主响应更新，替换主内容区域
-                else if (data.type === 'main_response') {
-                    resultDiv.innerHTML = `<div class="main-response">${data.data}</div>`;
-                }
-                // 否则尝试将其作为字符串添加
-                else if (typeof event.data === 'string') {
-                    resultDiv.innerHTML += `<div>${event.data}</div>`;
-                }
-                
-                // 自动滚动到底部
-                window.scrollTo(0, document.body.scrollHeight);
-            } catch (e) {
-                // 如果解析JSON失败，直接添加文本
-                resultDiv.innerHTML += `<div>${event.data}</div>`;
-            }
-        };
-        
-        // 处理完成事件
-        eventSource.addEventListener('complete', function(event) {
-            console.log("Query processing complete");
-            eventSource.close();
-        });
-        
-        // 处理错误
-        eventSource.onerror = function(event) {
-            console.error("EventSource error:", event);
-            resultDiv.innerHTML += `<p style='color: red;'>Error during data processing. Please try again.</p>`;
-            eventSource.close();
-        };
-    } catch (error) {
-        resultDiv.innerHTML = `<p style='color: red;'>Failed to fetch stock data: ${error.message}</p>`;
-    }
-}
+// async function fetchStockData() {
+//     let symbols = document.getElementById("stockSymbols").value;
+//     let resultDiv = document.getElementById("result");
+//
+//     if (!symbols) {
+//         resultDiv.innerHTML = "<p style='color: red;'>Please enter stock symbols or a question about stocks.</p>";
+//         return;
+//     }
+//
+//     resultDiv.innerHTML = "<p>Processing your query with configured AI agent...</p>";
+//
+//     try {
+//         // 使用事件源获取流式响应
+//         const eventSource = new EventSource(`/investment_research?question=${encodeURIComponent(symbols)}`);
+//
+//         // 处理流式响应
+//         eventSource.onmessage = function(event) {
+//             try {
+//                 const data = JSON.parse(event.data);
+//
+//                 // 如果是普通消息，直接添加
+//                 if (typeof data === 'object' && data.message) {
+//                     resultDiv.innerHTML += `<div>${data.message}</div>`;
+//                 }
+//                 // 如果是最终响应，替换整个内容
+//                 else if (data.type === 'final_response') {
+//                     resultDiv.innerHTML = `<div class="final-result">${data.main_response}</div>`;
+//
+//                     // 如果有搜索结果，添加
+//                     if (data.has_search_results) {
+//                         let searchResultsHtml = '<div class="search-results"><h3>Search Results</h3>';
+//                         data.search_results.forEach(result => {
+//                             searchResultsHtml += `
+//                                 <div class="search-result">
+//                                     <h4><a href="${result.source}" target="_blank">${result.source}</a></h4>
+//                                     <p>${result.content}</p>
+//                                 </div>
+//                             `;
+//                         });
+//                         searchResultsHtml += '</div>';
+//                         resultDiv.innerHTML += searchResultsHtml;
+//                     }
+//                 }
+//                 // 如果是终端输出，添加到调试区域
+//                 else if (data.type === 'terminal_output') {
+//                     // 可以添加到一个隐藏的调试区域
+//                     const debugDiv = document.getElementById("debug-output");
+//                     if (debugDiv) {
+//                         debugDiv.innerHTML += `<pre>${data.data}</pre>`;
+//                     }
+//                 }
+//                 // 如果是主响应更新，替换主内容区域
+//                 else if (data.type === 'main_response') {
+//                     resultDiv.innerHTML = `<div class="main-response">${data.data}</div>`;
+//                 }
+//                 // 否则尝试将其作为字符串添加
+//                 else if (typeof event.data === 'string') {
+//                     resultDiv.innerHTML += `<div>${event.data}</div>`;
+//                 }
+//
+//                 // 自动滚动到底部
+//                 window.scrollTo(0, document.body.scrollHeight);
+//             } catch (e) {
+//                 // 如果解析JSON失败，直接添加文本
+//                 resultDiv.innerHTML += `<div>${event.data}</div>`;
+//             }
+//         };
+//
+//         // 处理完成事件
+//         eventSource.addEventListener('complete', function(event) {
+//             console.log("Query processing complete");
+//             eventSource.close();
+//         });
+//
+//         // 处理错误
+//         eventSource.onerror = function(event) {
+//             console.error("EventSource error:", event);
+//             resultDiv.innerHTML += `<p style='color: red;'>Error during data processing. Please try again.</p>`;
+//             eventSource.close();
+//         };
+//     } catch (error) {
+//         resultDiv.innerHTML = `<p style='color: red;'>Failed to fetch stock data: ${error.message}</p>`;
+//     }
+// }
 
 // 原有函数，保留为兼容性
 function generateAndExportAgent() {
@@ -643,6 +643,32 @@ if (typeof loadSavedAgentsList !== 'function') {
             console.error("Error loading saved agents:", error);
             listContainer.innerHTML = '<p>Error loading saved agents. Please try again.</p>';
         }
+    }
+}
+
+async function fetchStockData() {
+    let symbols = document.getElementById("stockSymbols").value;
+    let resultDiv = document.getElementById("result");
+
+    if (!symbols) {
+      resultDiv.innerHTML = "<p style='color: red; '>Please enter stock symbols.</p>";
+      return;
+    }
+
+    resultDiv.innerHTML = "<p>Fetching data...</p>";
+
+    try {
+      let response = await fetch(`/investment_research?question=${encodeURIComponent(symbols)}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      let data = await response.text(); // Get raw response as text
+      resultDiv.innerHTML = `<pre>${data}</pre>`; // Display full raw response
+
+    } catch (error) {
+      resultDiv.innerHTML = `<p style='color: red;'>Failed to fetch stock data: ${error.message}</p>`;
     }
 }
 
