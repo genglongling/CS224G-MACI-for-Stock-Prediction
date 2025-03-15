@@ -20,16 +20,11 @@
    - **[LiteLLM:](https://docs.litellm.ai/)** 
    - **or any other OpenAI schema-compatible model** 
    - **FinAgent(ours)**
-   - **Your Self-developed LLMs(ours)**
+   - **Your Self-developed LLMs(ours)*
+   - **Access to financial database such as [Alphavantage](https://www.alphavantage.co/documentation/), and yahoo api.**
+   - **Adapts to unexpected changes in real-time financial information. **
 
-# 📡 **Interactive Front-End App**  
-   - User could interact with LLMs.
-   - Adapts to unexpected changes in real-time.
-  
 # 🤖 **Interactive Back-End App**  
-   - Access to financial database such as [Alphavantage](https://www.alphavantage.co/documentation/), and yahoo api.
-   - Adapts to unexpected changes in real-time financial information. 
-
 ## ⚠️ 1. LLM Limitations in Complex Planning  
 
 Large Language Models (LLMs) excel at pattern recognition but struggle with complex planning tasks that require:  
