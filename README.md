@@ -126,7 +126,7 @@ All experiments will utilize publicly available data from sources like:
 
 1. 📄 **Paper: Multi-Agent Collaborative Intelligence for Robust Temporal Planning** – *Edward Y. Chang*  
 2. 📄 **Paper: REALM-Bench: A Real-World Planning Benchmark for LLMs and Multi-Agent Systems** – *Longling Gloria Geng, Edward Y. Chang*  
-3. 💻 **GitHub Setup and Experiments** – *Longling Gloria Geng*  
+3. 💻 **GitHub Setup, App Development, and Experiments** – *Longling Gloria Geng*  
 
 ---
 # 🚀 How to Run the Code
