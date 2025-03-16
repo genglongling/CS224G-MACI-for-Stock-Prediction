@@ -90,7 +90,7 @@ MACI is designed to overcome these LLM limitations using a three-layer approach:
 ### 🤖 3.4 Multi-Agent App Development:  
 
 - 🔍 **(1) LLM Specializatio✅**: Different LLMs tailored for **Stock Prediction, Company Analysis, Personal Insights, and Job Market Trends**.  
-- 🏗 **(2) Overall Architecture[TO BE FINISHED]**: Using **MACI Framework with website**, Multi-Agents selection and collaboration, to generate holistic financial and career insights.  
+- 🏗 **(2) Overall Architecture✅**: Using **MACI Framework with website**, Multi-Agents selection and collaboration, to generate holistic financial and career insights.  
 - 📈 **(3) Agent 1 & 2✅: Stock Prediction & Company Analysis**: Real-time data integration, LLMs for market trends and company analysis.  
 - 👥 **(4) Agent 3 & 4✅: Investment Expert Analysis & Job Analysis**: AI-driven investment, career suggestion, and matching based on market shifts.  
 - 🚀 **(5) Milestones**: Iterative development, testing, and user feedback loops.
