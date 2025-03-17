@@ -32,6 +32,7 @@ class AgentConfig(BaseModel):
     features: list[str] | None = None
     constraints: str | None = None
     agent_name: str
+    api_key: str | None = None
 
 # 静态路由
 @app.get("/")
