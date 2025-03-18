@@ -291,7 +291,7 @@ async function loadAgentAndRedirect(agentId) {
         alert(`Agent "${agent.agent_name}" has been loaded! Redirecting to workspace...`);
         
         setTimeout(() => {
-            window.location.href = "index.html";
+            window.location.href = `index.html?agentId=${encodeURIComponent(agentId)}`;
         }, 500);
         
     } catch (error) {

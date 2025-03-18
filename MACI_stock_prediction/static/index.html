@@ -169,25 +169,36 @@ function updatePlaceholder(features) {
     // 修改loadAgentConfig函数，添加对占位文字的更新
     async function loadAgentConfig() {
       try {
-        const response = await fetch('/get_agent_config');
-        const config = await response.json();
+        // 从 URL 参数获取 agentId
+        const urlParams = new URLSearchParams(window.location.search);
+        const agentId = urlParams.get('agentId');
         
-        // 更新Agent信息
+        if (!agentId) {
+          console.error("No agentId found in URL");
+          throw new Error("No agentId provided");
+        }
+
+        const response = await fetch(`/load_agent/${agentId}`);
+        if (!response.ok) throw new Error("Failed to load agent");
+
+        const responseConfig = await fetch('/get_agent_config');
+        const config = await responseConfig.json();
+        
+        console.log("Loaded config:", config);
+        
         updateAgentInfo(config);
-        
-        // 更新功能指南
         updateFeatureGuidance(config.features);
-        
-        // 更新示例问题
         updateSampleQuestions(config.features);
-        
-        // 更新输入框占位文字 (新增)
         updatePlaceholder(config.features);
         
       } catch (error) {
         console.error("Error loading agent configuration:", error);
       }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadAgentConfig(); // 从 URL 获取 agentId
+    });
       
       // Update agent information display
       function updateAgentInfo(config) {

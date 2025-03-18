@@ -48,7 +48,9 @@ session_config = {}  # 简单的临时全局存储
 @app.post("/save_agent_config")
 async def save_agent_config(config: AgentConfig):
     global CURRENT_AGENT_CONFIG
-    CURRENT_AGENT_CONFIG = config.dict()
+    CURRENT_AGENT_CONFIG = config.model_dump()
+    print("save_agent_config:", CURRENT_AGENT_CONFIG)
+
     return {"success": True, "message": "Agent config saved for session"}
 
 # 保存 Agent 配置以供重用
@@ -94,6 +96,7 @@ async def list_saved_agents():
                         "model": agent["model_source"],
                         "features": agent["features"],
                         "created_at": agent["created_at"]
+
                     })
         
         return {"success": True, "agents": agents}
@@ -109,9 +112,14 @@ async def load_agent(agent_id: str):
             raise HTTPException(status_code=404, detail="Agent not found")
         
         with open(filepath, "r") as f:
-            agent = json.load(f)
+            loaded_config = json.load(f)
         
-        return {"success": True, "agent": agent}
+        # 更新全局变量 CURRENT_AGENT_CONFIG
+        global CURRENT_AGENT_CONFIG
+        CURRENT_AGENT_CONFIG = loaded_config
+        
+        print("Loaded and updated CURRENT_AGENT_CONFIG:", CURRENT_AGENT_CONFIG)  # 调试输出
+        return {"success": True, "agent": loaded_config}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to load agent: {str(e)}")
 
@@ -305,6 +313,7 @@ async def investment_research(question: str):
 
 @app.get("/get_agent_config")
 async def get_agent_config():
+    print("get_agent_config:", CURRENT_AGENT_CONFIG)
     return JSONResponse(content=CURRENT_AGENT_CONFIG)
 
 from fastapi import FastAPI, HTTPException

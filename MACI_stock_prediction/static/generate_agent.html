@@ -337,16 +337,7 @@
             }
         }
 
-        async function loadAgentConfig() {
-            const response = await fetch('/get_agent_config');
-            const config = await response.json();
-            
-            // 更新Agent信息、占位符、功能提示等
-            updateAgentInfo(config);
-            updateFeatureGuidance(config.features);
-            updateSampleQuestions(config.features);
-            updatePlaceholder(config.features);
-        }
+
 
     </script>
 </body>

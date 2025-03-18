@@ -160,6 +160,90 @@ function toggleSavedAgentsList() {
     }
 }
 
+// 保存Agent配置到后端
+async function saveAgentConfig() {
+    // 获取数据源
+    const dataSource = document.getElementById('data-source').value;
+    
+    // 获取LLM模型
+    const modelSource = document.getElementById('model-source').value;
+    
+    // 获取框架
+    const frameworkSource = document.getElementById('framework-source').value;
+    
+    // 获取所有选中的功能
+    const featureCheckboxes = document.querySelectorAll('.selection-box input[type="checkbox"]:checked');
+    const features = Array.from(featureCheckboxes).map(checkbox => checkbox.value);
+    
+    // 获取约束条件
+    const constraints = document.getElementById('constraint-name').value;
+    
+    // 获取Agent名称
+    const agentName = document.getElementById('agent-name').value || "Investment Research Assistant";
+    
+    // 创建配置对象
+    const config = {
+        data_source: dataSource,
+        model_source: modelSource,
+        framework_source: frameworkSource,
+        features: features,
+        constraints: constraints,
+        agent_name: agentName
+    };
+    
+    console.log("Saving agent configuration:", config);
+    
+    try {
+      // 保存当前配置用于会话
+      const response = await fetch('/save_agent_config', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(config)
+      });
+      
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+          console.log("Agent is set correctly for this conversation");
+          
+          // 根据是否在编辑模式决定是更新还是保存
+          if (window.currentEditingAgentId) {
+              // 使用删除后重建的方式来更新
+              const newAgentId = await deleteAndReCreateAgent(window.currentEditingAgentId);
+              if (newAgentId) {
+                  alert("Agent is updated successfully! Redirecting to your stock prediction workspace...");
+              } else {
+                  alert("Agent has problem during update，but new update is saved。Redirecting now...");
+              }
+          } else {
+              // 询问是否保存此Agent供将来使用
+              if (confirm("Agent is updated successfully! Do you want to save this Agent for future use?")) {
+                  await saveAgentForReuse();
+              }
+              alert("Redirecting to your stock prediction workspace...");
+          }
+          
+          // 无论成功或失败都重定向
+          setTimeout(() => {
+              window.location.href = "index.html";
+          }, 500);
+      } else {
+          console.error("Agent has problem during setting:", data.message);
+          alert("Agent has problem during saving: " + (data.message || "unknown mistake"));
+      }
+  } catch (error) {
+      console.error("Agent has problem during saving:", error);
+      alert("Agent has problem during saving, please retry.");
+  }
+}
+
+
 // 加载保存的Agent列表到侧边栏
 async function loadSavedAgentsToSidebar() {
     const agentsList = document.getElementById('saved-agents-list');
@@ -282,9 +366,9 @@ async function loadAgentAndRedirectInternal(agentId) {
         if (data.success) {
             alert(`Agent "${data.agent.agent_name}" has been loaded! Redirecting to workspace...`);
             
-            // 跳转到index页面
+            // 跳转到 index.html 并传递 agentId 作为 URL 参数
             setTimeout(() => {
-                window.location.href = "index.html";
+                window.location.href = `index.html?agentId=${encodeURIComponent(agentId)}`;
             }, 500);
         } else {
             alert("Error loading agent: " + (data.error || "Unknown error"));
