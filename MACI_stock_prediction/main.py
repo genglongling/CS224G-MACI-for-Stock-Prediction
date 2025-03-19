@@ -16,6 +16,7 @@ from magentic import (
     UserMessage,
 )
 from pydantic import BaseModel
+from model_manager import configure_model
 
 # 初始化 FastAPI 应用
 app = FastAPI()
@@ -107,21 +108,36 @@ async def list_saved_agents():
 @app.get("/load_agent/{agent_id}")
 async def load_agent(agent_id: str):
     try:
+        # 构造代理配置文件路径
         filepath = os.path.join("saved_agents", f"{agent_id}.json")
         if not os.path.exists(filepath):
             raise HTTPException(status_code=404, detail="Agent not found")
         
+        # 读取配置文件
         with open(filepath, "r") as f:
             loaded_config = json.load(f)
         
-        # 更新全局变量 CURRENT_AGENT_CONFIG
+        # 更新全局变量
         global CURRENT_AGENT_CONFIG
         CURRENT_AGENT_CONFIG = loaded_config
         
-        print("Loaded and updated CURRENT_AGENT_CONFIG:", CURRENT_AGENT_CONFIG)  # 调试输出
+        # 获取模型和 API 密钥
+        model_source = loaded_config.get("model_source")
+        api_key = loaded_config.get("api_key")
+        
+        # 配置模型（独立到 model_manager 中）
+        if model_source and api_key:
+            success = configure_model(model_source, api_key)
+            if not success:
+                print("模型配置失败")
+        else:
+            print("配置文件中缺少 model_source 或 api_key")
+        
+        # 返回结果
+        print("已加载代理配置:", CURRENT_AGENT_CONFIG)
         return {"success": True, "agent": loaded_config}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to load agent: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"加载代理失败: {str(e)}")
 
 # 删除特定 Agent
 @app.delete("/delete_agent/{agent_id}")
