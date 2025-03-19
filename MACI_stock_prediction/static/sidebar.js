@@ -210,29 +210,35 @@ async function saveAgentConfig() {
       const data = await response.json();
       
       if (data.success) {
-          console.log("Agent is set correctly for this conversation");
-          
-          // 根据是否在编辑模式决定是更新还是保存
-          if (window.currentEditingAgentId) {
-              // 使用删除后重建的方式来更新
-              const newAgentId = await deleteAndReCreateAgent(window.currentEditingAgentId);
-              if (newAgentId) {
-                  alert("Agent is updated successfully! Redirecting to your stock prediction workspace...");
-              } else {
-                  alert("Agent has problem during update，but new update is saved。Redirecting now...");
-              }
-          } else {
-              // 询问是否保存此Agent供将来使用
-              if (confirm("Agent is updated successfully! Do you want to save this Agent for future use?")) {
-                  await saveAgentForReuse();
-              }
-              alert("Redirecting to your stock prediction workspace...");
-          }
-          
-          // 无论成功或失败都重定向
-          setTimeout(() => {
-              window.location.href = "index.html";
-          }, 500);
+        console.log("Agent is set correctly for this conversation");
+        
+        // 根据是否在编辑模式决定是更新还是保存
+        let newAgentId;
+        
+        if (window.currentEditingAgentId) {
+            // 使用删除后重建的方式来更新
+            newAgentId = await deleteAndReCreateAgent(window.currentEditingAgentId);
+            alert("Agent is updated successfully! Redirecting to your stock prediction workspace...");
+        } else {
+            // 询问是否保存此Agent供将来使用
+            if (confirm("Agent is updated successfully! Do you want to save this Agent for future use?")) {
+                // 获取saveAgentForReuse返回的agent_id
+                newAgentId = await saveAgentForReuse();
+                console.log("New Agent ID 1:", newAgentId);
+                
+            }
+            alert("Redirecting to your stock prediction workspace...");
+        }
+        
+        // 无论成功或失败都重定向
+        setTimeout(() => {
+            if (newAgentId) {
+                console.log("New Agent ID 2:", newAgentId);
+                window.loadAgentAndRedirect(newAgentId);
+                console.log("loadAgentAndRedirect(newAgentId):", newAgentId);
+            }
+            window.location.href = "index.html";
+        }, 500);
       } else {
           console.error("Agent has problem during setting:", data.message);
           alert("Agent has problem during saving: " + (data.message || "unknown mistake"));

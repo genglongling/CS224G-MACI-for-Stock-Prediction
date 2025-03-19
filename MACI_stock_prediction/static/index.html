@@ -173,12 +173,13 @@ function updatePlaceholder(features) {
         const urlParams = new URLSearchParams(window.location.search);
         const agentId = urlParams.get('agentId');
         
+ 
+
+        const response = await fetch(`/load_agent/${agentId}`);
         if (!agentId) {
           console.error("No agentId found in URL");
           throw new Error("No agentId provided");
         }
-
-        const response = await fetch(`/load_agent/${agentId}`);
         if (!response.ok) throw new Error("Failed to load agent");
 
         const responseConfig = await fetch('/get_agent_config');
