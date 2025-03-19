@@ -17,6 +17,7 @@ from magentic import (
 )
 from pydantic import BaseModel
 from model_manager import configure_model
+from model_manager import litellm_completion
 
 # 初始化 FastAPI 应用
 app = FastAPI()
@@ -249,6 +250,23 @@ def iterative_search(
 )
 def analyze_data(question: str, collected_data: dict[str, Any]) -> str: ...
 
+# 添加一个使用LiteLLM的替代函数
+def analyze_data_litellm(question: str, collected_data: str) -> str:
+    """使用LiteLLM分析数据并回答问题"""
+    # 获取当前配置的模型
+    model = CURRENT_AGENT_CONFIG.get("model_source", "openai/gpt-3.5-turbo")
+    
+    messages = [
+        {"role": "system", "content": "You are an investment research assistant. Only use retrieved data for your analysis."},
+        {"role": "user", "content": f"You need to answer this question: {question}\nAnalyze the following data: {collected_data}"}
+    ]
+    
+    try:
+        response = litellm_completion(messages=messages, model=model)
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"分析数据时出错: {str(e)}"
+
 
 def format_collected_data(collected_data: dict[str, Any]) -> str:
     formatted_data = []
@@ -257,6 +275,24 @@ def format_collected_data(collected_data: dict[str, Any]) -> str:
     return "\n".join(formatted_data)
 
 
+# 添加一个使用LiteLLM的替代函数
+def analyze_data_litellm(question: str, collected_data: str) -> str:
+    """使用LiteLLM分析数据并回答问题"""
+    # 获取当前配置的模型
+    model = CURRENT_AGENT_CONFIG.get("model_source", "openai/gpt-3.5-turbo")
+    
+    messages = [
+        {"role": "system", "content": "You are an investment research assistant. Only use retrieved data for your analysis."},
+        {"role": "user", "content": f"You need to answer this question: {question}\nAnalyze the following data: {collected_data}"}
+    ]
+    
+    try:
+        response = litellm_completion(messages=messages, model=model)
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"分析数据时出错: {str(e)}"
+
+# 修改query函数
 async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, None]:
     """
     Runs iterative retrieval and streams LLM analysis.
@@ -272,12 +308,62 @@ async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, 
             """
         )
     ]
+    
+    # 检查是否使用LiteLLM
+    use_litellm = False
+    if CURRENT_AGENT_CONFIG and "model_source" in CURRENT_AGENT_CONFIG:
+        model_source = CURRENT_AGENT_CONFIG.get("model_source", "")
+        if "/" in model_source or model_source == "deepseek":  # 如果是LiteLLM格式或deepseek
+            use_litellm = True
+            yield f"\n**使用LiteLLM与模型 {model_source} 通信**\n"
 
     while iteration < max_iterations:
         iteration += 1
         yield f"\n**Iteration {iteration}...**\n"
 
-        function_call = iterative_search(question, called_functions, chat_history)
+        # 使用magentic的原始函数或自定义litellm调用
+        if not use_litellm:
+            function_call = iterative_search(question, called_functions, chat_history)
+        else:
+            # 这里需要实现一个litellm版本的iterative_search
+            # 简化示例，实际可能需要更复杂的实现
+            messages = [
+                {"role": "system", "content": "You are an investment research assistant. Retrieve data iteratively."},
+                {"role": "user", "content": f"You need to answer the user's question: {question}\nWhat data do you need? Called functions: {called_functions}"}
+            ]
+            model = CURRENT_AGENT_CONFIG.get("model_source", "openai/gpt-3.5-turbo")
+            
+            try:
+                response = litellm_completion(messages=messages, model=model)
+                content = response.choices[0].message.content.lower()
+                
+                # 简单解析，查找需要调用的函数
+                if "daily_price" in content and "get_daily_price" not in called_functions:
+                    function_name = "get_daily_price"
+                    # 提取ticker (简化实现)
+                    ticker = "TSLA" if "tsla" in question.lower() else "AAPL"
+                    function_call = type('obj', (object,), {
+                        '_function': globals()[function_name],
+                        'arguments': {"ticker": ticker}
+                    })
+                elif "company_overview" in content and "get_company_overview" not in called_functions:
+                    function_name = "get_company_overview"
+                    ticker = "TSLA" if "tsla" in question.lower() else "AAPL"
+                    function_call = type('obj', (object,), {
+                        '_function': globals()[function_name],
+                        'arguments': {"ticker": ticker}
+                    })
+                elif "sector_performance" in content and "get_sector_performance" not in called_functions:
+                    function_name = "get_sector_performance"
+                    function_call = type('obj', (object,), {
+                        '_function': globals()[function_name],
+                        'arguments': {}
+                    })
+                else:
+                    function_call = None
+            except Exception as e:
+                yield f"\n**LiteLLM调用错误: {str(e)}**\n"
+                function_call = None
 
         if function_call is None:
             yield "\n**LLM is satisfied with the data. Analyzing now...**\n"
@@ -314,11 +400,18 @@ async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, 
         collected_data[function_name] = result
         yield f"\n**Retrieved data from {function_name}** ✅\n"
 
-        chat_history.append(UserMessage(f"Retrieved {function_name} data: {result}"))
-        chat_history.append(AssistantMessage(f"Storing data from {function_name}."))
+        if not use_litellm:
+            chat_history.append(UserMessage(f"Retrieved {function_name} data: {result}"))
+            chat_history.append(AssistantMessage(f"Storing data from {function_name}."))
 
     formatted_data = format_collected_data(collected_data)
-    final_analysis = analyze_data(question, formatted_data)
+    
+    # 根据使用的模型选择分析方法
+    if not use_litellm:
+        final_analysis = analyze_data(question, formatted_data)
+    else:
+        final_analysis = analyze_data_litellm(question, formatted_data)
+        
     yield f"\n**Investment Insight:**\n{final_analysis}\n"
 
 from fastapi.responses import JSONResponse
