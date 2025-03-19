@@ -224,7 +224,7 @@ async function saveAgentConfig() {
             if (confirm("Agent is updated successfully! Do you want to save this Agent for future use?")) {
                 // 获取saveAgentForReuse返回的agent_id
                 newAgentId = await saveAgentForReuse();
-                console.log("New Agent ID 1:", newAgentId);
+                console.log("saveAgentForReuse():", newAgentId);
                 
             }
             alert("Redirecting to your stock prediction workspace...");
@@ -233,11 +233,8 @@ async function saveAgentConfig() {
         // 无论成功或失败都重定向
         setTimeout(() => {
             if (newAgentId) {
-                console.log("New Agent ID 2:", newAgentId);
                 window.loadAgentAndRedirect(newAgentId);
-                console.log("loadAgentAndRedirect(newAgentId):", newAgentId);
             }
-            window.location.href = "index.html";
         }, 500);
       } else {
           console.error("Agent has problem during setting:", data.message);
