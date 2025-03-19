@@ -1,0 +1,13 @@
+{
+    "data_source": "alphavantage",
+    "model_source": "gpt-4o",
+    "framework_source": "single-agent",
+    "features": [
+        "simple-complex-calculation"
+    ],
+    "constraints": "",
+    "agent_name": "1",
+    "api_key": null,
+    "id": "1_1742395776",
+    "created_at": 1742395776.4203665
+}

@@ -313,7 +313,7 @@ async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, 
     use_litellm = False
     if CURRENT_AGENT_CONFIG and "model_source" in CURRENT_AGENT_CONFIG:
         model_source = CURRENT_AGENT_CONFIG.get("model_source", "")
-        if "/" in model_source or model_source == "deepseek":  # 如果是LiteLLM格式或deepseek
+        if "/" in model_source or model_source == "deepseek" or model_source == "llama-v3":
             use_litellm = True
             yield f"\n**使用LiteLLM与模型 {model_source} 通信**\n"
 
@@ -325,11 +325,10 @@ async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, 
         if not use_litellm:
             function_call = iterative_search(question, called_functions, chat_history)
         else:
-            # 这里需要实现一个litellm版本的iterative_search
-            # 简化示例，实际可能需要更复杂的实现
+            # 这里实现一个litellm版本的iterative_search
             messages = [
                 {"role": "system", "content": "You are an investment research assistant. Retrieve data iteratively."},
-                {"role": "user", "content": f"You need to answer the user's question: {question}\nWhat data do you need? Called functions: {called_functions}"}
+                {"role": "user", "content": f"You need to answer the user's question: {question}\nWhat data do you need? Called functions: {list(called_functions)}"}
             ]
             model = CURRENT_AGENT_CONFIG.get("model_source", "openai/gpt-3.5-turbo")
             
@@ -358,6 +357,20 @@ async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, 
                     function_call = type('obj', (object,), {
                         '_function': globals()[function_name],
                         'arguments': {}
+                    })
+                elif "news_sentiment" in content and "get_news_sentiment" not in called_functions:
+                    function_name = "get_news_sentiment"
+                    ticker = "TSLA" if "tsla" in question.lower() else "AAPL"
+                    function_call = type('obj', (object,), {
+                        '_function': globals()[function_name],
+                        'arguments': {"ticker": ticker}
+                    })
+                elif "earnings_calendar" in content and "get_earnings_calendar" not in called_functions:
+                    function_name = "get_earnings_calendar"
+                    ticker = "TSLA" if "tsla" in question.lower() else "AAPL"
+                    function_call = type('obj', (object,), {
+                        '_function': globals()[function_name],
+                        'arguments': {"ticker": ticker}
                     })
                 else:
                     function_call = None

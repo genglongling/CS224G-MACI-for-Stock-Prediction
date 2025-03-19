@@ -162,23 +162,12 @@ function toggleSavedAgentsList() {
 
 // 保存Agent配置到后端
 async function saveAgentConfig() {
-    // 获取数据源
     const dataSource = document.getElementById('data-source').value;
-    
-    // 获取LLM模型
     const modelSource = document.getElementById('model-source').value;
-    
-    // 获取框架
     const frameworkSource = document.getElementById('framework-source').value;
-    
-    // 获取所有选中的功能
     const featureCheckboxes = document.querySelectorAll('.selection-box input[type="checkbox"]:checked');
     const features = Array.from(featureCheckboxes).map(checkbox => checkbox.value);
-    
-    // 获取约束条件
     const constraints = document.getElementById('constraint-name').value;
-    
-    // 获取Agent名称
     const agentName = document.getElementById('agent-name').value || "Investment Research Assistant";
     
     // 创建配置对象

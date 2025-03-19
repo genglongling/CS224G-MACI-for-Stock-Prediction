@@ -1,0 +1,13 @@
+{
+    "data_source": "alphavantage",
+    "model_source": "llama-v3",
+    "framework_source": "single-agent",
+    "features": [
+        "simple-complex-calculation"
+    ],
+    "constraints": "",
+    "agent_name": "llama",
+    "api_key": "5efb8de8e762c4b798de6885afb380513339c22cb37628c76e9420fce30b5bac",
+    "id": "llama_1742396774",
+    "created_at": 1742396774.949594
+}

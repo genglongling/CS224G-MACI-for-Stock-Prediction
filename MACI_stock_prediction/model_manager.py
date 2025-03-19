@@ -1,7 +1,6 @@
 import os
 from typing import Optional, Any
 
-# 添加litellm导入
 try:
     import litellm
 except ImportError:
@@ -28,9 +27,9 @@ def configure_model(model_source: str, api_key: str) -> bool:
                 os.environ["ANTHROPIC_API_KEY"] = api_key
             elif provider.lower() == "deepseek":
                 os.environ["DEEPSEEK_API_KEY"] = api_key
-            elif provider.lower() == "ollama":
-                # Ollama通常不需要API密钥，但可能需要设置基础URL
-                os.environ["OLLAMA_API_BASE"] = api_key if api_key else "http://localhost:11434"
+            elif provider.lower() in ["together", "togetherai"]: 
+                os.environ["TOGETHERAI_API_KEY"] = api_key 
+                print(f"已为 Together.ai 设置API密钥")
             else:
                 # 通用处理，使用全大写的provider名称作为环境变量前缀
                 os.environ[f"{provider.upper()}_API_KEY"] = api_key
@@ -43,13 +42,20 @@ def configure_model(model_source: str, api_key: str) -> bool:
             "openai": "OPENAI_API_KEY",
             "gpt-4o": "OPENAI_API_KEY",
             "deepseek": "DEEPSEEK_API_KEY",
-            "llama-v3": "LLAMA_API_KEY"
+            "llama-v3": "TOGETHERAI_API_KEY"  # 为llama-v3添加TogetherAI支持
         }
 
         if model_source in model_env_map:
             env_var = model_env_map[model_source]
             os.environ[env_var] = api_key
             print(f"已为 {model_source} 设置环境变量 {env_var} {api_key}")
+            
+            # 如果是llama-v3，添加全局变量标记使用together
+            if model_source == "llama-v3":
+                global LLAMA_MODEL
+                LLAMA_MODEL = "together_ai/meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
+                print(f"Llama模型将通过Together.ai调用: {LLAMA_MODEL}")
+                
             return True
         else:
             print(f"不支持的模型: {model_source}")
@@ -83,8 +89,15 @@ def litellm_completion(
                 model = f"openai/{model if not model == 'openai' else 'gpt-3.5-turbo'}"
             elif "deepseek" in model:
                 model = f"deepseek/{model if not model == 'deepseek' else 'deepseek-chat'}"
-            elif "llama" in model:
-                model = f"ollama/{model}"
+            elif "llama" in model or model == "llama-v3":
+                # 使用Together.ai的指定Llama模型
+                model = "together_ai/meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
+                
+                # 检查是否设置了全局模型
+                if 'LLAMA_MODEL' in globals():
+                    model = LLAMA_MODEL
+        
+        print(f"LiteLLM调用模型: {model}")
         
         # 调用LiteLLM的completion函数
         response = litellm.completion(
