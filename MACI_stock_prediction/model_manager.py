@@ -12,6 +12,8 @@ def configure_model(model_source: str, api_key: str) -> bool:
     model_env_map = {
         "openai": "OPENAI_API_KEY",
         "gpt-4o": "OPENAI_API_KEY",
+        "deepseek": "DEEPSEEK_API_KEY",
+        "llama-v3": "LLAMA_API_KEY",
         # 未来可以添加更多模型，例如：
         # "other_model": "OTHER_MODEL_API_KEY"
     }
