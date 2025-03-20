@@ -71,11 +71,8 @@ function createSidebarHTML() {
             <li id="create-agent-menu" onclick="navigateTo('generate_agent.html')">
                 <i>🔧</i> Create New Agent
             </li>
-            <li id="agent-settings-menu" onclick="toggleSavedAgentsList()">
+            <li id="agent-settings-menu" onclick="openSettingsModal()">
                 <i>⚙️</i> Settings
-                <div class="saved-agents-dropdown" id="saved-agents-list">
-                    <div class="saved-agent-loading">Loading agents...</div>
-                </div>
             </li>
             <li id="new-workspace-menu" onclick="openAgentSelectionModal()">
                 <i>🚀</i> New Workspace
@@ -107,7 +104,103 @@ function createSidebarHTML() {
     
     // Add Agent selection modal
     createAgentSelectionModal();
+    
+    // Add Settings modal
+    createSettingsModal();
 }
+
+// Open Agent Settings modal
+function createSettingsModal() {
+    const modal = document.createElement('div');
+    modal.id = 'settings-modal';
+    modal.className = 'modal';
+    modal.style.display = 'none';
+    
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Agent Settings</h2>
+                <span class="modal-close">×</span>
+            </div>
+            <div class="modal-body">
+                <p>Select an agent to edit:</p>
+                <div id="modal-settings-list">
+                    <p>Loading agents...</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Add event listeners
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+}
+
+async function openSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    const agentList = document.getElementById('modal-settings-list');
+    
+    if (!modal || !agentList) return;
+    
+    // Show modal
+    modal.style.display = 'block';
+    
+    // Load Agents list
+    agentList.innerHTML = '<p>Loading agents...</p>';
+    
+    try {
+        // Use function from script.js if available
+        const agents = typeof window.listSavedAgents === 'function' 
+            ? await window.listSavedAgents() 
+            : await listSavedAgentsInternal();
+        
+        if (agents.length === 0) {
+            agentList.innerHTML = `
+                <p>No saved agents found. Please create an agent first.</p>
+                <button onclick="navigateTo('generate_agent.html')">Create New Agent</button>
+            `;
+            return;
+        }
+        
+        // Create Agents list HTML
+        let html = '';
+        
+        agents.forEach(agent => {
+            const features = agent.features && agent.features.length > 0 
+                ? `<div>Features: ${agent.features.join(', ')}</div>` 
+                : '';
+            
+            html += `
+                <div class="modal-agent-item" onclick="navigateToAgentSettings('${agent.id}')">
+                    <div style="font-weight: bold; font-size: 1.1em;">${agent.name || 'Unnamed Agent'}</div>
+                    <div>Model: ${agent.model || 'Unknown model'}</div>
+                    ${features}
+                </div>
+            `;
+        });
+        
+        agentList.innerHTML = html;
+        
+    } catch (error) {
+        console.error("Error loading saved agents:", error);
+        agentList.innerHTML = '<p>Error loading agents. Please try again.</p>';
+    }
+    
+    // Close sidebar
+    toggleSidebar();
+}
+
 
 // Add sidebar event listeners
 function addSidebarEventListeners() {
