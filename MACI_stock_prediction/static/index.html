@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <title>MACI Stock Prediction</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -59,11 +60,114 @@
       }
       .result-container {
         width: 100%;
-        /*box-sizing: border-box; !* Ensures padding and border are included in the width *!*/
-        /*overflow-wrap: break-word; !* Prevents overflow for long text *!*/
-        /*padding: 10px; !* Optional: add some padding *!*/
-        /*border: 1px solid #ccc; !* Optional: border for better visibility *!*/
-        background-color: #f9f9f9; /* Optional: light background */
+        height: inherit;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        padding: 15px;
+        margin-top: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden;
+      }
+
+      /* Iteration Step Styles */
+      .llm-iteration {
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-left: 4px solid #4682b4;
+        border-radius: 4px;
+      }
+
+      .llm-iteration-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+      }
+
+      /* Data Retrieval Status Styles */
+      .llm-retrieval {
+        display: flex;
+        align-items: center;
+        padding: 8px 10px;
+        background-color: #f0f7ff;
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+
+      .llm-retrieval-success {
+        border-left: 4px solid #28a745;
+      }
+
+      .llm-retrieval-error {
+        border-left: 4px solid #dc3545;
+      }
+
+      .llm-status-icon {
+        margin-right: 10px;
+        font-size: 16px;
+      }
+
+      /* Final Analysis Result Styles */
+      .llm-analysis {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8fdff;
+        border: 1px solid #e1f0fb;
+        border-radius: 8px;
+      }
+
+      .llm-analysis-title {
+        font-weight: bold;
+        font-size: 18px;
+        color: #0056b3;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e1f0fb;
+      }
+
+      .llm-analysis-content {
+        line-height: 1.6;
+        color: #333;
+      }
+
+      /* Model Information Styles */
+      .llm-model-info {
+        padding: 8px 12px;
+        background-color: #eaf4ff;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #0066cc;
+        display: inline-block;
+      }
+
+      /* Formula/Math Expression Styles */
+      .llm-math {
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+        overflow-x: auto;
+      }
+
+      /* List Styles */
+      .llm-list {
+        margin-left: 20px;
+        margin-bottom: 15px;
+      }
+
+      .llm-list-item {
+        margin-bottom: 8px;
+        position: relative;
+        padding-left: 8px;
+      }
+
+      .llm-list-item:before {
+        content: "•";
+        position: absolute;
+        left: -12px;
+        color: #4682b4;
       }
 
     </style>
@@ -329,6 +433,186 @@ function updatePlaceholder(features) {
           input.value = question;
         }
       }
+
+      // Format LLM Output Content
+      function formatLLMOutput(outputText) {
+        let processedText = outputText;
+        
+        let formattedHTML = '<div class="llm-formatted-output">';
+        
+        const lines = processedText.split('\n');
+        let inAnalysisSection = false;
+        let currentIteration = null;
+        let inListSection = false;
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line === '') continue;
+            
+            let cleanContent = line.replace(/\*\*/g, '');
+            
+            if (line.includes("Using LiteLLM with model")) {
+                formattedHTML += `
+                    <div style="padding: 8px 12px; background-color: #eaf4ff; border-radius: 4px; 
+                        margin-bottom: 15px; font-size: 14px; color: #0066cc; display: inline-block;">
+                        ${cleanContent}
+                    </div>`;
+                continue;
+            }
+            
+            if (line.includes("Iteration") && /\d+/.test(line)) {
+                if (currentIteration !== null) {
+                    formattedHTML += '</div>';
+                }
+                
+                const iterNum = line.match(/\d+/)[0];
+                formattedHTML += `
+                    <div style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; 
+                        border-left: 4px solid #4682b4; border-radius: 4px;">
+                        <div style="font-weight: 600; color: #2c3e50; margin-bottom: 8px;">迭代 ${iterNum}</div>`;
+                currentIteration = iterNum;
+                continue;
+            }
+            
+            if (line.includes("Retrieved data from")) {
+                const functionNameMatch = line.match(/from (.+?)(\*\*)?$/);
+                const functionName = functionNameMatch ? functionNameMatch[1].trim() : "unknown";
+                
+                formattedHTML += `
+                    <div style="display: flex; align-items: center; padding: 8px 10px; background-color: #f0f7ff; 
+                        border-radius: 6px; margin-bottom: 12px; border-left: 4px solid #28a745;">
+                        <span style="margin-right: 10px; font-size: 16px;">✅</span>
+                        <span>Data Retrieved Successfully: ${functionName}</span>
+                    </div>`;
+                continue;
+            }
+            
+            if (line.includes("Early stop") || line.includes("No new data found")) {
+                formattedHTML += `
+                    <div style="display: flex; align-items: center; padding: 8px 10px; background-color: #f0f7ff; 
+                        border-radius: 6px; margin-bottom: 12px; border-left: 4px solid #dc3545;">
+                        <span style="margin-right: 10px; font-size: 16px;">⚠️</span>
+                        <span>${cleanContent}</span>
+                    </div>`;
+                continue;
+            }
+            
+            if (line.includes("LLM is satisfied with the data")) {
+                formattedHTML += `
+                    <div style="display: flex; align-items: center; padding: 8px 10px; background-color: #f0f7ff; 
+                        border-radius: 6px; margin-bottom: 12px;">
+                        <span style="margin-right: 10px; font-size: 16px;">🔍</span>
+                        <span>Data Collection Complete, Starting Analysis...</span>
+                    </div>`;
+                continue;
+            }
+            
+            if (line.includes("Investment Insight:")) {
+                inAnalysisSection = true;
+                if (currentIteration !== null) {
+                    formattedHTML += '</div>'; 
+                    currentIteration = null;
+                }
+                
+                formattedHTML += `
+                    <div style="margin-top: 20px; padding: 15px; background-color: #f8fdff; 
+                        border: 1px solid #e1f0fb; border-radius: 8px;">
+                        <div style="font-weight: bold; font-size: 18px; color: #0056b3; 
+                            margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e1f0fb;">
+                            Investment Insight Analysis
+                        </div>
+                        <div style="line-height: 1.6; color: #333;">`;
+                continue;
+            }
+            
+            if (inAnalysisSection && (line.match(/^\d+\./) || line.startsWith('-') || line.startsWith('*'))) {
+                if (!inListSection) {
+                    inListSection = true;
+                    formattedHTML += '<ul style="margin-left: 20px; margin-bottom: 15px;">';
+                }
+                
+                const listContent = line.replace(/^\d+\.\s*|-\s*|\*\s*/, '');
+                formattedHTML += `<li style="margin-bottom: 8px;">${listContent}</li>`;
+                
+                if (i + 1 >= lines.length || 
+                    !(lines[i+1].trim().match(/^\d+\./) || 
+                      lines[i+1].trim().startsWith('-') || 
+                      lines[i+1].trim().startsWith('*'))) {
+                    inListSection = false;
+                    formattedHTML += '</ul>';
+                }
+                continue;
+            }
+            
+            if (line.includes("\\[") && line.includes("\\]")) {
+                formattedHTML += `
+                    <div style="background-color: #f9f9f9; padding: 10px; border-radius: 4px; 
+                        margin: 10px 0; overflow-x: auto;">
+                        ${line}
+                    </div>`;
+                continue;
+            }
+            
+            if (inAnalysisSection) {
+                let formattedLine = line;
+                
+                formattedLine = formattedLine.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                
+                formattedLine = formattedLine.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+                
+                formattedLine = formattedLine.replace(/`([^`]+)`/g, '<code style="background-color: #f5f5f5; padding: 2px 4px; border-radius: 3px;">$1</code>');
+                
+                formattedHTML += `<p>${formattedLine}</p>`;
+            } else {
+                formattedHTML += `<p>${cleanContent}</p>`;
+            }
+        }
+        
+        if (inAnalysisSection) {
+            formattedHTML += '</div></div>';
+        } else if (currentIteration !== null) {
+            formattedHTML += '</div>';
+        }
+        
+        formattedHTML += '</div>';
+        return formattedHTML;
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+        .loading-indicator {
+            text-align: left;
+            padding: 20px;
+            color: #4682b4;
+            font-weight: bold;
+        }
+        
+        .llm-formatted-output {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: left;
+        }
+        
+        .llm-formatted-output ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .llm-formatted-output li {
+            margin-bottom: 8px;
+        }
+        
+        .llm-formatted-output code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .llm-formatted-output p {
+            margin-bottom: 10px;
+        }
+    `;
+    document.head.appendChild(style);
+
 
 
 
