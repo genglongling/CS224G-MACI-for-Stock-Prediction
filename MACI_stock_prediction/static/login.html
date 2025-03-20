@@ -294,6 +294,7 @@
       }
 
       /* API Key Modal */
+      /*
       .modal {
         display: none;
         position: fixed;
@@ -369,6 +370,7 @@
       .cancel-button:hover {
         background-color: #e0e0e0;
       }
+      */
 
       /* SSO Login Modal */
       .sso-modal {
@@ -439,8 +441,75 @@
         color: #777;
       }
 
-      .traditional-login {
-        margin-top: 20px;
+      .traditional-login .form-group {
+        margin-bottom: 20px; /* 增加间距，使布局更宽松 */
+      }
+
+      .traditional-login .form-group label {
+        display: block;
+        margin-bottom: 8px; /* 标签与输入框之间的间距 */
+        font-weight: 500; /* 稍微加粗标签文字 */
+        color: #444; /* 柔和的文字颜色 */
+      }
+
+      .traditional-login .form-group input {
+        width: 100%; /* 确保输入框占满容器宽度 */
+        padding: 12px 15px; /* 增加内边距，使输入框更舒适 */
+        border: 1px solid #ccc; /* 更柔和的边框颜色 */
+        border-radius: 8px; /* 圆角边框，现代感 */
+        font-size: 16px; /* 文字大小适中 */
+        background-color: #fff; /* 白色背景 */
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* 轻微内阴影，增加深度 */
+        transition: border-color 0.3s ease, box-shadow 0.3s ease; /* 平滑过渡效果 */
+      }
+
+      /* 输入框聚焦时的样式 */
+      .traditional-login .form-group input:focus {
+        outline: none; /* 移除默认的聚焦边框 */
+        border-color: #5128f5; /* 与主题色一致的边框 */
+        box-shadow: 0 0 5px rgba(81, 40, 245, 0.3); /* 添加聚焦时的轻微发光效果 */
+      }
+
+      /* 输入框占位符样式 */
+      .traditional-login .form-group input::placeholder {
+        color: #999; /* 柔和的占位符颜色 */
+        font-style: italic; /* 斜体占位符，增加区分度 */
+      }
+
+      /* 调整按钮样式，使其与输入框协调 */
+      .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px; /* 按钮之间的间距 */
+        margin-top: 25px; /* 与输入框的间距 */
+      }
+
+      .modal-button {
+        padding: 12px 20px; /* 增加按钮内边距 */
+        border-radius: 8px; /* 与输入框一致的圆角 */
+        font-size: 16px; /* 文字大小与输入框一致 */
+        cursor: pointer;
+        transition: background-color 0.3s ease; /* 平滑颜色过渡 */
+      }
+
+      .submit-button {
+        background-color: #5128f5;
+        color: white;
+        border: none;
+      }
+
+      .submit-button:hover {
+        background-color: #3a1fca; /* 更深的悬停颜色 */
+      }
+
+      .cancel-button {
+        background-color: #f5f5f5; /* 更柔和的背景色 */
+        color: #666; /* 柔和的文字颜色 */
+        border: 1px solid #ddd;
+      }
+
+      .cancel-button:hover {
+        background-color: #e5e5e5; /* 悬停时稍深 */
       }
 
       #main-container {
@@ -508,6 +577,7 @@
     <!-- Main Container (Hidden until logged in) -->
     <div id="main-container">
       <!-- API Key Modal -->
+      <!--
       <div id="apiKeyModal" class="modal">
         <div class="modal-content">
           <h2>Enter API Keys</h2>
@@ -527,6 +597,7 @@
           </form>
         </div>
       </div>
+      -->
 
       <div class="chat-container">
         <div class="chat-header">Brainstorming Agent Development with LLM Assistant</div>
@@ -597,7 +668,6 @@
         });
       });
 
-      // Simulate a successful login
       function simulateSuccessfulLogin(user) {
         // Hide the SSO modal
         document.getElementById('ssoModal').style.display = 'none';
@@ -610,12 +680,16 @@
         // Show the main container
         document.getElementById('main-container').style.display = 'block';
 
-        // Show the API key modal after login
-        document.getElementById('apiKeyModal').style.display = 'block';
-
-        // Store user info (in a real app, you might use localStorage or a more secure method)
+        // Store user info
         window.currentUser = user;
-      }
+
+        // 启用聊天输入框和发送按钮
+        document.getElementById('chat-input').disabled = false;
+        document.getElementById('chat-send').disabled = false;
+
+        // 立即重定向到 generate_agent.html
+        window.location.href = 'generate_agent.html';
+    }
 
       // Simple Markdown parsing function
       function parseMarkdown(text) {
