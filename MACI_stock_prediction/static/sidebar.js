@@ -1,60 +1,60 @@
-// sidebar.js - 侧边栏功能
+// sidebar.js - Sidebar functionality
 
-// 在文档加载完成后初始化侧边栏
+// Initialize sidebar after document is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化侧边栏
+    // Initialize sidebar
     initSidebar();
     
-    // 如果在generate_agent.html页面
+    // If on generate_agent.html page
     if (window.location.pathname.includes('generate_agent.html')) {
-        // 检查是否有预设Agent需要加载
+        // Check if there’s a preset Agent to load
         const agentIdToLoad = sessionStorage.getItem('load_agent_id');
         if (agentIdToLoad) {
-            // 调用script.js中的函数加载Agent
+            // Call function from script.js to load Agent
             if (typeof window.loadSavedAgent === 'function') {
                 window.loadSavedAgent(agentIdToLoad);
             }
             
-            // 清除sessionStorage中的ID，避免下次加载页面时再次加载
+            // Clear sessionStorage ID to prevent reloading on next page load
             sessionStorage.removeItem('load_agent_id');
             sessionStorage.removeItem('agent_edit_mode');
         }
         
-        // 添加"Create New"按钮
+        // Add "Create New" button
         addCreateNewAgentMenu();
     }
 });
 
-// 初始化侧边栏
+// Initialize sidebar
 function initSidebar() {
-    // 检查页面上是否已经有侧边栏元素
+    // Check if sidebar element already exists on the page
     if (document.getElementById('app-sidebar')) {
         console.log('Sidebar already exists');
         return;
     }
     
-    // 创建侧边栏HTML
+    // Create sidebar HTML
     createSidebarHTML();
     
-    // 添加事件监听器
+    // Add event listeners
     addSidebarEventListeners();
     
-    // 加载保存的Agent列表
+    // Load saved Agents list
     loadSavedAgentsToSidebar();
 }
 
-// 创建侧边栏HTML
+// Create sidebar HTML
 function createSidebarHTML() {
-    // 创建侧边栏容器
+    // Create sidebar container
     const sidebar = document.createElement('div');
     sidebar.id = 'app-sidebar';
     sidebar.className = 'sidebar';
     
-    // 侧边栏内容
+    // Sidebar content
     sidebar.innerHTML = `
         <div class="sidebar-header">
             <h3>MACI Menu</h3>
-            <button class="sidebar-close">&times;</button>
+            <button class="sidebar-close">×</button>
         </div>
         
         <div class="user-info">
@@ -83,12 +83,12 @@ function createSidebarHTML() {
         </ul>
     `;
     
-    // 创建遮罩层
+    // Create overlay
     const overlay = document.createElement('div');
     overlay.id = 'sidebar-overlay';
     overlay.className = 'sidebar-overlay';
     
-    // 创建用户头像按钮
+    // Create user avatar button
     const header = document.querySelector('.header');
     if (header) {
         const avatarBtn = document.createElement('button');
@@ -101,36 +101,36 @@ function createSidebarHTML() {
         console.warn('Header element not found');
     }
     
-    // 添加到文档
+    // Add to document
     document.body.appendChild(sidebar);
     document.body.appendChild(overlay);
     
-    // 添加Agent选择模态框
+    // Add Agent selection modal
     createAgentSelectionModal();
 }
 
-// 添加侧边栏事件监听器
+// Add sidebar event listeners
 function addSidebarEventListeners() {
-    // 用户头像按钮点击事件
+    // User avatar button click event
     const avatarBtn = document.getElementById('user-avatar-btn');
     if (avatarBtn) {
         avatarBtn.addEventListener('click', toggleSidebar);
     }
     
-    // 关闭按钮点击事件
+    // Close button click event
     const closeBtn = document.querySelector('.sidebar-close');
     if (closeBtn) {
         closeBtn.addEventListener('click', toggleSidebar);
     }
     
-    // 遮罩层点击事件
+    // Overlay click event
     const overlay = document.getElementById('sidebar-overlay');
     if (overlay) {
         overlay.addEventListener('click', toggleSidebar);
     }
 }
 
-// 切换侧边栏显示/隐藏
+// Toggle sidebar show/hide
 function toggleSidebar() {
     const sidebar = document.getElementById('app-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
@@ -141,26 +141,26 @@ function toggleSidebar() {
     }
 }
 
-// 页面导航
+// Page navigation
 function navigateTo(url) {
     window.location.href = url;
 }
 
-// 切换已保存Agent列表显示/隐藏
+// Toggle saved Agents list show/hide
 function toggleSavedAgentsList() {
     const agentsList = document.getElementById('saved-agents-list');
     
     if (agentsList) {
         agentsList.classList.toggle('active');
         
-        // 如果打开列表，则加载Agent
+        // If list is opened, load Agents
         if (agentsList.classList.contains('active')) {
             loadSavedAgentsToSidebar();
         }
     }
 }
 
-// 保存Agent配置到后端
+// Save Agent configuration to backend
 async function saveAgentConfig() {
     const dataSource = document.getElementById('data-source').value;
     const modelSource = document.getElementById('model-source').value;
@@ -170,7 +170,7 @@ async function saveAgentConfig() {
     const constraints = document.getElementById('constraint-name').value;
     const agentName = document.getElementById('agent-name').value || "Investment Research Assistant";
     
-    // 创建配置对象
+    // Create configuration object
     const config = {
         data_source: dataSource,
         model_source: modelSource,
@@ -183,7 +183,7 @@ async function saveAgentConfig() {
     console.log("Saving agent configuration:", config);
     
     try {
-      // 保存当前配置用于会话
+      // Save current configuration for session
       const response = await fetch('/save_agent_config', {
           method: 'POST',
           headers: {
@@ -201,17 +201,17 @@ async function saveAgentConfig() {
       if (data.success) {
         console.log("Agent is set correctly for this conversation");
         
-        // 根据是否在编辑模式决定是更新还是保存
+        // Decide whether to update or save based on edit mode
         let newAgentId;
         
         if (window.currentEditingAgentId) {
-            // 使用删除后重建的方式来更新
+            // Update by deleting and recreating
             newAgentId = await deleteAndReCreateAgent(window.currentEditingAgentId);
             alert("Agent is updated successfully! Redirecting to your stock prediction workspace...");
         } else {
-            // 询问是否保存此Agent供将来使用
+            // Ask if this Agent should be saved for future use
             if (confirm("Agent is updated successfully! Do you want to save this Agent for future use?")) {
-                // 获取saveAgentForReuse返回的agent_id
+                // Get agent_id returned by saveAgentForReuse
                 newAgentId = await saveAgentForReuse();
                 console.log("saveAgentForReuse():", newAgentId);
                 
@@ -219,7 +219,7 @@ async function saveAgentConfig() {
             alert("Redirecting to your stock prediction workspace...");
         }
         
-        // 无论成功或失败都重定向
+        // Redirect regardless of success or failure
         setTimeout(() => {
             if (newAgentId) {
                 window.loadAgentAndRedirect(newAgentId);
@@ -235,8 +235,7 @@ async function saveAgentConfig() {
   }
 }
 
-
-// 加载保存的Agent列表到侧边栏
+// Load saved Agents list to sidebar
 async function loadSavedAgentsToSidebar() {
     const agentsList = document.getElementById('saved-agents-list');
     if (!agentsList) return;
@@ -244,7 +243,7 @@ async function loadSavedAgentsToSidebar() {
     agentsList.innerHTML = '<div class="saved-agent-loading">Loading agents...</div>';
     
     try {
-        // 使用script.js中的函数，如果可用
+        // Use function from script.js if available
         const agents = typeof window.listSavedAgents === 'function' 
             ? await window.listSavedAgents() 
             : await listSavedAgentsInternal();
@@ -254,7 +253,7 @@ async function loadSavedAgentsToSidebar() {
             return;
         }
         
-        // 创建Agent列表HTML
+        // Create Agents list HTML
         let html = '';
         
         agents.forEach(agent => {
@@ -278,7 +277,7 @@ async function loadSavedAgentsToSidebar() {
     }
 }
 
-// 内部实现的列出Agent函数，以防script.js的函数不可用
+// Internal implementation of listing Agents, in case script.js function is unavailable
 async function listSavedAgentsInternal() {
     try {
         const response = await fetch('/list_saved_agents');
@@ -301,26 +300,26 @@ async function listSavedAgentsInternal() {
     }
 }
 
-// 处理Agent选择
+// Handle Agent selection
 function handleAgentSelection(agentId) {
     const currentPage = window.location.pathname.split('/').pop();
     
-    // 根据当前页面决定行为
+    // Decide behavior based on current page
     if (currentPage === 'generate_agent.html') {
-        // 在生成页面，使用script.js中的函数加载Agent配置
+        // On generation page, use script.js function to load Agent configuration
         if (typeof window.loadSavedAgent === 'function') {
             window.loadSavedAgent(agentId);
         }
     } else {
-        // 根据用户点击来源确定行为
+        // Determine behavior based on click source
         const clickSource = event.target.closest('li') ? event.target.closest('li').id : '';
         
         if (clickSource === 'agent-settings-menu' || 
             event.target.closest('#saved-agents-list')) {
-            // 如果是从Agent Settings菜单点击的，跳转到generate_agent页面并加载配置
+            // If clicked from Agent Settings menu, navigate to generate_agent page and load configuration
             navigateToAgentSettings(agentId);
         } else {
-            // 否则，使用script.js中的函数加载Agent并跳转到workspace
+            // Otherwise, use script.js function to load Agent and redirect to workspace
             if (typeof window.loadAgentAndRedirect === 'function') {
                 window.loadAgentAndRedirect(agentId);
             } else {
@@ -329,22 +328,22 @@ function handleAgentSelection(agentId) {
         }
     }
     
-    // 关闭侧边栏
+    // Close sidebar
     toggleSidebar();
 }
 
-// 导航到Agent设置页面
+// Navigate to Agent settings page
 function navigateToAgentSettings(agentId) {
-    // 将agentId存储在sessionStorage中，以便在generate_agent页面加载时使用
+    // Store agentId in sessionStorage for use when loading generate_agent page
     sessionStorage.setItem('load_agent_id', agentId);
-    // 标记这是编辑模式而非新建模式
+    // Mark as edit mode rather than new mode
     sessionStorage.setItem('agent_edit_mode', 'true');
     
-    // 跳转到generate_agent页面
+    // Navigate to generate_agent page
     window.location.href = "generate_agent.html";
 }
 
-// 内部实现的加载Agent并跳转函数，以防script.js的函数不可用
+// Internal implementation of loading Agent and redirecting, in case script.js function is unavailable
 async function loadAgentAndRedirectInternal(agentId) {
     try {
         const response = await fetch(`/load_agent/${agentId}`);
@@ -358,7 +357,7 @@ async function loadAgentAndRedirectInternal(agentId) {
         if (data.success) {
             alert(`Agent "${data.agent.agent_name}" has been loaded! Redirecting to workspace...`);
             
-            // 跳转到 index.html 并传递 agentId 作为 URL 参数
+            // Navigate to index.html and pass agentId as URL parameter
             setTimeout(() => {
                 window.location.href = `index.html?agentId=${encodeURIComponent(agentId)}`;
             }, 500);
@@ -371,9 +370,9 @@ async function loadAgentAndRedirectInternal(agentId) {
     }
 }
 
-// 添加Create New按钮
+// Add Create New button
 function addCreateNewAgentMenu() {
-    // 如果已经在generate_agent.html页面，添加一个"Create New"按钮
+    // If already on generate_agent.html page, add a "Create New" button
     if (window.location.pathname.includes('generate_agent.html')) {
         const header = document.querySelector('h1');
         if (header && !document.getElementById('create-new-btn')) {
@@ -384,7 +383,7 @@ function addCreateNewAgentMenu() {
             createNewBtn.style.marginLeft = '0px';
             createNewBtn.style.padding = '0px 0px';
             createNewBtn.onclick = function() {
-                // 调用script.js中的重置函数，如果可用
+                // Call reset function from script.js if available
                 if (typeof window.resetAgentForm === 'function') {
                     window.resetAgentForm();
                 } else {
@@ -396,39 +395,39 @@ function addCreateNewAgentMenu() {
     }
 }
 
-// 内部实现的表单重置函数，以防script.js的函数不可用
+// Internal implementation of form reset, in case script.js function is unavailable
 function resetAgentFormInternal() {
-    // 清除全局变量和sessionStorage
+    // Clear global variable and sessionStorage
     if (typeof window.currentEditingAgentId !== 'undefined') {
         window.currentEditingAgentId = null;
     }
     sessionStorage.removeItem('currentEditingAgentId');
     
-    // 重置表单
+    // Reset form
     const form = document.querySelector('form');
     if (form) form.reset();
     
-    // 清除所有复选框
+    // Clear all checkboxes
     document.querySelectorAll('.selection-box input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
     });
     
-    // 重置下拉框为默认值
+    // Reset dropdowns to default values
     document.getElementById('data-source').value = 'alphavantage';
     document.getElementById('model-source').value = 'deepseek';
     document.getElementById('framework-source').value = 'magnetic';
     
-    // 清空约束和名称
+    // Clear constraints and name
     document.getElementById('constraint-name').value = '';
     document.getElementById('agent-name').value = '';
     
-    // 恢复页面标题
+    // Restore page title
     const pageTitle = document.querySelector('h1');
     if (pageTitle) {
         pageTitle.textContent = 'MACI - Agent Setting';
     }
     
-    // 恢复按钮文本
+    // Restore button text
     const generateBtn = document.getElementById('generate-btn');
     if (generateBtn) {
         generateBtn.textContent = 'Generate Agent';
@@ -442,7 +441,7 @@ function resetAgentFormInternal() {
     alert('Form reset successfully. You can now create a new Agent.');
 }
 
-// 创建Agent选择模态框
+// Create Agent selection modal
 function createAgentSelectionModal() {
     const modal = document.createElement('div');
     modal.id = 'agent-selection-modal';
@@ -453,7 +452,7 @@ function createAgentSelectionModal() {
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Select an Agent</h2>
-                <span class="modal-close">&times;</span>
+                <span class="modal-close">×</span>
             </div>
             <div class="modal-body">
                 <p>Please select an agent to use in your new workspace:</p>
@@ -466,7 +465,7 @@ function createAgentSelectionModal() {
     
     document.body.appendChild(modal);
     
-    // 添加样式
+    // Add styles
     const style = document.createElement('style');
     style.textContent = `
         .modal {
@@ -530,13 +529,13 @@ function createAgentSelectionModal() {
     
     document.head.appendChild(style);
     
-    // 添加事件监听器
+    // Add event listeners
     const closeBtn = modal.querySelector('.modal-close');
     closeBtn.addEventListener('click', function() {
         modal.style.display = 'none';
     });
     
-    // 点击模态框外部关闭
+    // Close modal when clicking outside
     window.addEventListener('click', function(event) {
         if (event.target === modal) {
             modal.style.display = 'none';
@@ -544,21 +543,21 @@ function createAgentSelectionModal() {
     });
 }
 
-// 打开Agent选择模态框
+// Open Agent selection modal
 async function openAgentSelectionModal() {
     const modal = document.getElementById('agent-selection-modal');
     const agentList = document.getElementById('modal-agent-list');
     
     if (!modal || !agentList) return;
     
-    // 显示模态框
+    // Show modal
     modal.style.display = 'block';
     
-    // 加载Agent列表
+    // Load Agents list
     agentList.innerHTML = '<p>Loading agents...</p>';
     
     try {
-        // 使用script.js中的函数，如果可用
+        // Use function from script.js if available
         const agents = typeof window.listSavedAgents === 'function' 
             ? await window.listSavedAgents() 
             : await listSavedAgentsInternal();
@@ -571,7 +570,7 @@ async function openAgentSelectionModal() {
             return;
         }
         
-        // 创建Agent列表HTML
+        // Create Agents list HTML
         let html = '';
         
         agents.forEach(agent => {
@@ -599,6 +598,6 @@ async function openAgentSelectionModal() {
         agentList.innerHTML = '<p>Error loading agents. Please try again.</p>';
     }
     
-    // 关闭侧边栏
+    // Close sidebar
     toggleSidebar();
 }

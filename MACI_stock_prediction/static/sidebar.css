@@ -1,6 +1,6 @@
-/* sidebar.css - 侧边栏样式 */
+/* sidebar.css - Sidebar styles */
 
-/* 侧边栏样式 */
+/* Sidebar styles */
 .sidebar {
     position: fixed;
     top: 0;
@@ -20,7 +20,7 @@
     right: 0;
 }
 
-/* 侧边栏头部 */
+/* Sidebar header */
 .sidebar-header {
     display: flex;
     align-items: center;
@@ -47,7 +47,7 @@
     color: #fff;
 }
 
-/* 用户信息 */
+/* User information */
 .user-info {
     display: flex;
     align-items: center;
@@ -90,7 +90,7 @@
     color: #ccc;
 }
 
-/* 侧边栏菜单 */
+/* Sidebar menu */
 .sidebar-menu {
     list-style: none;
     padding: 0;
@@ -119,7 +119,7 @@
     text-align: center;
 }
 
-/* 页面遮罩 */
+/* Page overlay */
 .sidebar-overlay {
     position: fixed;
     top: 0;
@@ -135,7 +135,7 @@
     display: block;
 }
 
-/* 用户头像按钮 */
+/* User avatar button */
 .user-avatar-btn {
     width: 40px;
     height: 40px;
@@ -155,7 +155,7 @@
     background-color: #3a6d99;
 }
 
-/* 保存的Agent列表 */
+/* Saved Agents list */
 .saved-agents-dropdown {
     max-height: 0;
     overflow: hidden;

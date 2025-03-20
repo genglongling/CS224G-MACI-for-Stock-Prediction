@@ -148,7 +148,7 @@
         }
         #api-key-container {
             margin-top: 10px;
-            display: none; /* 默认隐藏 */
+            display: none; /* Hidden by default */
         }
         #api-key-input {
             width: 95%;
@@ -214,7 +214,7 @@
                     <option value="deepseek">DeepSeek</option>
                     <option value="others">Upload Your Model</option>
                 </select>
-                <!-- 添加 API Key 输入框 -->
+                <!-- Add API Key input field -->
                 <div id="api-key-container">
                     <input type="text" id="api-key-input" placeholder="Enter API Key for selected model">
                 </div>
@@ -265,33 +265,33 @@
     </div>
   
     <script>
-        // 获取选中的功能
+        // Get selected features
         function getSelectedFeatures() {
             const checkboxes = document.querySelectorAll('.feature-item input[type="checkbox"]:checked');
             return Array.from(checkboxes).map(cb => cb.value);
         }
-        // 切换 API Key 输入框的显示
+        // Toggle API Key input visibility
         function toggleApiKeyInput() {
             const modelSource = document.getElementById('model-source').value;
             const apiKeyContainer = document.getElementById('api-key-container');
-            // 如果选择的是需要 API Key 的模型，则显示输入框
+            // Show input field if the selected model requires an API key
             if (modelSource === 'gpt-4o' || modelSource === 'llama-v3' || modelSource === 'deepseek') {
                 apiKeyContainer.style.display = 'block';
             } else {
                 apiKeyContainer.style.display = 'none';
             }
         }
-        // 页面加载事件
+        // Page load event
         document.addEventListener('DOMContentLoaded', function() {
-            toggleApiKeyInput();// 初始化 API Key 输入框状态
-            // 添加按钮事件监听
+            toggleApiKeyInput();// Initialize API Key input field state
+            // Add button event listeners
             document.getElementById('show-saved-btn').addEventListener('click', toggleSavedAgents);
             document.getElementById('create-new-btn').addEventListener('click', function() {
                 document.getElementById('saved-agents-section').style.display = 'none';
             });
         });
         
-        // 切换显示/隐藏已保存Agent列表
+        // Toggle show/hide saved agents list
         function toggleSavedAgents() {
             const section = document.getElementById('saved-agents-section');
             if (section) {
@@ -304,7 +304,7 @@
             }
         }
         
-        // 加载已保存的Agent列表
+        // Load saved agents list
         async function loadSavedAgentsList() {
             const listContainer = document.getElementById('agent-list');
             if (!listContainer) return;
@@ -312,20 +312,20 @@
             listContainer.innerHTML = '<p>Loading saved agents...</p>';
             
             try {
-                // 这里保留原有的loadSavedAgents逻辑，但由于没有看到原有函数实现，留空
+                // Retain original loadSavedAgents logic here, but since the original implementation isn’t visible, leave it empty
                 // const agents = await listSavedAgents();
-                const agents = []; // 示例空数组
+                const agents = []; // Example empty array
                 
                 if (agents.length === 0) {
                     listContainer.innerHTML = '<p>No saved agents found.</p>';
                     return;
                 }
                 
-                // 创建列表HTML
+                // Create list HTML
                 let html = '<ul class="agent-items" style="list-style-type: none; padding: 0;">';
                 
                 agents.forEach(agent => {
-                    // 保留原有的agent展示逻辑
+                    // Retain original agent display logic
                 });
                 
                 html += '</ul>';

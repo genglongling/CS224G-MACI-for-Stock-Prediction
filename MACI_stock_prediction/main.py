@@ -19,14 +19,14 @@ from pydantic import BaseModel
 from model_manager import configure_model
 from model_manager import litellm_completion
 
-# 初始化 FastAPI 应用
+# Initialize FastAPI application
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Alpha Vantage API Key
 AV_API_KEY = os.getenv("AV_API_KEY") or "your_api_key_here"
 
-# Agent 配置模型
+# Agent configuration model
 class AgentConfig(BaseModel):
     data_source: str
     model_source: str
@@ -36,7 +36,7 @@ class AgentConfig(BaseModel):
     agent_name: str
     api_key: str | None = None
 
-# 静态路由
+# Static routes
 @app.get("/")
 async def serve_home():
     return FileResponse("static/index.html")
@@ -45,7 +45,7 @@ async def serve_home():
 async def serve_generate_agent():
     return FileResponse("static/generate_agent.html")
 
-session_config = {}  # 简单的临时全局存储
+session_config = {}  # Simple temporary global storage
 
 @app.post("/save_agent_config")
 async def save_agent_config(config: AgentConfig):
@@ -55,7 +55,7 @@ async def save_agent_config(config: AgentConfig):
 
     return {"success": True, "message": "Agent config saved for session"}
 
-# 保存 Agent 配置以供重用
+# Save Agent configuration for reuse
 @app.post("/save_agent_for_reuse")
 async def save_agent_for_reuse(config: AgentConfig):
     try:
@@ -63,11 +63,11 @@ async def save_agent_for_reuse(config: AgentConfig):
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         
-        # 使用时间戳和代理名称生成唯一 ID
+        # Generate unique ID using timestamp and agent name
         agent_id = f"{config.agent_name}_{int(time.time())}"
         filepath = os.path.join(save_dir, f"{agent_id}.json")
         
-        # 保存配置
+        # Save configuration
         agent_data = config.dict()
         agent_data["id"] = agent_id
         agent_data["created_at"] = time.time()
@@ -79,7 +79,7 @@ async def save_agent_for_reuse(config: AgentConfig):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save agent: {str(e)}")
 
-# 列出所有保存的 Agent
+# List all saved Agents
 @app.get("/list_saved_agents")
 async def list_saved_agents():
     try:
@@ -105,42 +105,42 @@ async def list_saved_agents():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to list agents: {str(e)}")
 
-# 加载特定 Agent
+# Load specific Agent
 @app.get("/load_agent/{agent_id}")
 async def load_agent(agent_id: str):
     try:
-        # 构造代理配置文件路径
+        # Construct agent configuration file path
         filepath = os.path.join("saved_agents", f"{agent_id}.json")
         if not os.path.exists(filepath):
             raise HTTPException(status_code=404, detail="Agent not found")
         
-        # 读取配置文件
+        # Read configuration file
         with open(filepath, "r") as f:
             loaded_config = json.load(f)
         
-        # 更新全局变量
+        # Update global variable
         global CURRENT_AGENT_CONFIG
         CURRENT_AGENT_CONFIG = loaded_config
         
-        # 获取模型和 API 密钥
+        # Get model and API key
         model_source = loaded_config.get("model_source")
         api_key = loaded_config.get("api_key")
         
-        # 配置模型（独立到 model_manager 中）
+        # Configure model (isolated in model_manager)
         if model_source and api_key:
             success = configure_model(model_source, api_key)
             if not success:
-                print("模型配置失败")
+                print("Model configuration failed")
         else:
-            print("配置文件中缺少 model_source 或 api_key")
+            print("Missing model_source or api_key in configuration")
         
-        # 返回结果
-        print("已加载代理配置:", CURRENT_AGENT_CONFIG)
+        # Return result
+        print("Loaded agent configuration:", CURRENT_AGENT_CONFIG)
         return {"success": True, "agent": loaded_config}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"加载代理失败: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to load agent: {str(e)}")
 
-# 删除特定 Agent
+# Delete specific Agent
 @app.delete("/delete_agent/{agent_id}")
 async def delete_agent(agent_id: str):
     try:
@@ -153,7 +153,7 @@ async def delete_agent(agent_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete agent: {str(e)}")
 
-# 投资研究路由（已有）
+# Investment research route (existing)
 async def get_earnings_calendar(ticker: str, api_key: str = AV_API_KEY) -> dict:
     url = f"https://www.alphavantage.co/query?function=EARNINGS_CALENDAR&symbol={ticker}&horizon=12month&apikey={api_key}"
     response = requests.get(url, timeout=30)
@@ -250,10 +250,10 @@ def iterative_search(
 )
 def analyze_data(question: str, collected_data: dict[str, Any]) -> str: ...
 
-# 添加一个使用LiteLLM的替代函数
+# Add an alternative function using LiteLLM
 def analyze_data_litellm(question: str, collected_data: str) -> str:
-    """使用LiteLLM分析数据并回答问题"""
-    # 获取当前配置的模型
+    """Analyze data and answer questions using LiteLLM"""
+    # Get the currently configured model
     model = CURRENT_AGENT_CONFIG.get("model_source", "openai/gpt-3.5-turbo")
     
     messages = [
@@ -265,7 +265,7 @@ def analyze_data_litellm(question: str, collected_data: str) -> str:
         response = litellm_completion(messages=messages, model=model)
         return response.choices[0].message.content
     except Exception as e:
-        return f"分析数据时出错: {str(e)}"
+        return f"Error analyzing data: {str(e)}"
 
 
 def format_collected_data(collected_data: dict[str, Any]) -> str:
@@ -275,10 +275,10 @@ def format_collected_data(collected_data: dict[str, Any]) -> str:
     return "\n".join(formatted_data)
 
 
-# 添加一个使用LiteLLM的替代函数
+# Add an alternative function using LiteLLM
 def analyze_data_litellm(question: str, collected_data: str) -> str:
-    """使用LiteLLM分析数据并回答问题"""
-    # 获取当前配置的模型
+    """Analyze data and answer questions using LiteLLM"""
+    # Get the currently configured model
     model = CURRENT_AGENT_CONFIG.get("model_source", "openai/gpt-3.5-turbo")
     
     messages = [
@@ -290,9 +290,9 @@ def analyze_data_litellm(question: str, collected_data: str) -> str:
         response = litellm_completion(messages=messages, model=model)
         return response.choices[0].message.content
     except Exception as e:
-        return f"分析数据时出错: {str(e)}"
+        return f"Error analyzing data: {str(e)}"
 
-# 修改query函数
+# Modify query function
 async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, None]:
     """
     Runs iterative retrieval and streams LLM analysis.
@@ -309,23 +309,23 @@ async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, 
         )
     ]
     
-    # 检查是否使用LiteLLM
+    # Check whether to use LiteLLM
     use_litellm = False
     if CURRENT_AGENT_CONFIG and "model_source" in CURRENT_AGENT_CONFIG:
         model_source = CURRENT_AGENT_CONFIG.get("model_source", "")
         if "/" in model_source or model_source == "deepseek" or model_source == "llama-v3":
             use_litellm = True
-            yield f"\n**使用LiteLLM与模型 {model_source} 通信**\n"
+            yield f"\n**Using LiteLLM with model {model_source}**\n"
 
     while iteration < max_iterations:
         iteration += 1
         yield f"\n**Iteration {iteration}...**\n"
 
-        # 使用magentic的原始函数或自定义litellm调用
+        # Use magentic's original function or custom litellm call
         if not use_litellm:
             function_call = iterative_search(question, called_functions, chat_history)
         else:
-            # 这里实现一个litellm版本的iterative_search
+            # Implement a LiteLLM version of iterative_search here
             messages = [
                 {"role": "system", "content": "You are an investment research assistant. Retrieve data iteratively."},
                 {"role": "user", "content": f"You need to answer the user's question: {question}\nWhat data do you need? Called functions: {list(called_functions)}"}
@@ -336,21 +336,21 @@ async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, 
                 response = litellm_completion(messages=messages, model=model)
                 content = response.choices[0].message.content.lower()
                 
-                # 简单解析，查找需要调用的函数
+                # Simple parsing to find the function to call
                 if "daily_price" in content and "get_daily_price" not in called_functions:
                     function_name = "get_daily_price"
-                    # 提取ticker (简化实现)
+                    # Extract ticker (simplified implementation)
                     ticker = "TSLA" if "tsla" in question.lower() else "AAPL"
                     function_call = type('obj', (object,), {
                         '_function': globals()[function_name],
-                        'arguments': {"ticker": ticker}
+                        'arguments': {'ticker': ticker}
                     })
                 elif "company_overview" in content and "get_company_overview" not in called_functions:
                     function_name = "get_company_overview"
                     ticker = "TSLA" if "tsla" in question.lower() else "AAPL"
                     function_call = type('obj', (object,), {
                         '_function': globals()[function_name],
-                        'arguments': {"ticker": ticker}
+                        'arguments': {'ticker': ticker}
                     })
                 elif "sector_performance" in content and "get_sector_performance" not in called_functions:
                     function_name = "get_sector_performance"
@@ -363,19 +363,19 @@ async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, 
                     ticker = "TSLA" if "tsla" in question.lower() else "AAPL"
                     function_call = type('obj', (object,), {
                         '_function': globals()[function_name],
-                        'arguments': {"ticker": ticker}
+                        'arguments': {'ticker': ticker}
                     })
                 elif "earnings_calendar" in content and "get_earnings_calendar" not in called_functions:
                     function_name = "get_earnings_calendar"
                     ticker = "TSLA" if "tsla" in question.lower() else "AAPL"
                     function_call = type('obj', (object,), {
                         '_function': globals()[function_name],
-                        'arguments': {"ticker": ticker}
+                        'arguments': {'ticker': ticker}
                     })
                 else:
                     function_call = None
             except Exception as e:
-                yield f"\n**LiteLLM调用错误: {str(e)}**\n"
+                yield f"\n**LiteLLM call error: {str(e)}**\n"
                 function_call = None
 
         if function_call is None:
@@ -419,7 +419,7 @@ async def query(question: str, max_iterations: int = 10) -> AsyncGenerator[str, 
 
     formatted_data = format_collected_data(collected_data)
     
-    # 根据使用的模型选择分析方法
+    # Choose analysis method based on the model used
     if not use_litellm:
         final_analysis = analyze_data(question, formatted_data)
     else:
@@ -440,7 +440,7 @@ async def get_agent_config():
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
-# 定义一个全局变量，暂时存储配置信息（更好的是session管理或数据库持久化）
+# Define a global variable to temporarily store configuration information (better with session management or database persistence)
 CURRENT_AGENT_CONFIG = {
     "agent_name": "Investment Research Assistant",
     "features": ["simple-complex-calculation", "planning"],

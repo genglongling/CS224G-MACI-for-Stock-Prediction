@@ -1,14 +1,14 @@
 """
-Agent Feature Prompts - 为不同的Agent功能提供预设的提示词
-这个模块提供了基于用户选择的不同功能特性生成相应系统提示词的功能
+Agent Feature Prompts - Provide preset prompts for different Agent features
+This module provides functionality to generate system prompts based on user-selected feature characteristics
 """
 
-# 基础提示词模板
+# Base prompt template
 BASE_SYSTEM_PROMPT = """You are an AI assistant that helps with investment research and analysis.
 Your goal is to provide accurate, helpful information based on the data you can access.
 """
 
-# 各个功能的提示词增强
+# Prompt enhancements for each feature
 FEATURE_PROMPTS = {
     "simple-complex-calculation": """
 You have strong mathematical and computational abilities. When analyzing data:
@@ -122,25 +122,25 @@ You have enhanced operational capabilities:
 
 def get_system_prompt(selected_features, custom_constraints="", agent_name="Investment Research Assistant"):
     """
-    根据用户选择的功能特性生成系统提示词
+    Generate a system prompt based on user-selected feature characteristics
     
     Args:
-        selected_features: 用户选择的功能列表
-        custom_constraints: 用户指定的额外约束
-        agent_name: 用户指定的Agent名称
+        selected_features: List of user-selected features
+        custom_constraints: Additional user-specified constraints
+        agent_name: User-specified Agent name
     
     Returns:
-        包含所有选择功能的系统提示词
+        System prompt including all selected features
     """
-    # 开始构建提示词，先加入基础提示词和自定义名称
+    # Start building the prompt, adding the base prompt and custom name
     prompt = BASE_SYSTEM_PROMPT.replace("AI assistant", agent_name)
     
-    # 加入用户选择的每个功能的提示词
+    # Add prompts for each selected feature
     for feature in selected_features:
         if feature in FEATURE_PROMPTS:
             prompt += FEATURE_PROMPTS[feature]
     
-    # 添加自定义约束
+    # Add custom constraints
     if custom_constraints:
         prompt += f"\n\nAdditional Constraints:\n{custom_constraints}"
     
@@ -148,15 +148,15 @@ def get_system_prompt(selected_features, custom_constraints="", agent_name="Inve
 
 def get_iterative_search_prompt(question, called_functions, selected_features=None):
     """
-    为迭代搜索功能生成提示词，根据选择的功能进行调整
+    Generate a prompt for iterative search functionality, adjusted based on selected features
     
     Args:
-        question: 用户问题
-        called_functions: 已调用的函数集合
-        selected_features: 用户选择的功能列表
+        question: User question
+        called_functions: Set of already called functions
+        selected_features: List of user-selected features
     
     Returns:
-        适用于iterative_search的提示词
+        Prompt suitable for iterative_search
     """
     base_prompt = f"""
     You are an investment research assistant. 
@@ -167,7 +167,7 @@ def get_iterative_search_prompt(question, called_functions, selected_features=No
     Here is what has already been retrieved: {called_functions}
     """
     
-    # 如果选择了planning功能，增强提示词
+    # Enhance prompt if planning feature is selected
     if selected_features and "planning" in selected_features:
         base_prompt += """
         Think carefully about your research plan:
@@ -179,7 +179,7 @@ def get_iterative_search_prompt(question, called_functions, selected_features=No
         Only request the most important missing information at this step.
         """
     
-    # 如果选择了validation功能，增强提示词
+    # Enhance prompt if validation feature is selected
     if selected_features and "validation" in selected_features:
         base_prompt += """
         Validate your information needs:
@@ -192,14 +192,14 @@ def get_iterative_search_prompt(question, called_functions, selected_features=No
 
 def get_analyze_data_prompt(question, selected_features=None):
     """
-    为数据分析功能生成提示词，根据选择的功能进行调整
+    Generate a prompt for data analysis functionality, adjusted based on selected features
     
     Args:
-        question: 用户问题
-        selected_features: 用户选择的功能列表
+        question: User question
+        selected_features: List of user-selected features
     
     Returns:
-        适用于analyze_data的提示词
+        Prompt suitable for analyze_data
     """
     base_prompt = "You are an investment research assistant. Only use retrieved data for your analysis."
     
@@ -239,7 +239,7 @@ def get_analyze_data_prompt(question, selected_features=None):
             Suggest concrete next steps or actions based on your analysis.
             """)
     
-    # 组合所有特定功能的提示词
+    # Combine all feature-specific prompts
     if feature_specific_prompts:
         for prompt in feature_specific_prompts:
             base_prompt += prompt

@@ -1,25 +1,24 @@
-// script.js - 处理 Agent 生成、配置和股票数据查询
+// script.js - Handle Agent generation, configuration, and stock data queries
 
-// 全局变量，保存当前正在编辑的 Agent ID
+// Global variable to store the ID of the currently edited Agent
 window.currentEditingAgentId = null;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 检查是否在 Agent 配置页面
+    // Check if on the Agent configuration page
     const generateButton = document.querySelector('button[onclick="goToIndex()"]');
     if (generateButton) {
         generateButton.removeAttribute('onclick');
         generateButton.addEventListener('click', saveAgentConfig);
     }
     
-    // 检查是否在股票查询页面
+    // Check if on the stock query page
     const queryButton = document.getElementById('queryButton');
     if (queryButton) {
         queryButton.addEventListener('click', fetchStockData);
     }
 });
 
-// 保存 Agent 配置到后端
-
+// Save Agent configuration to the backend
 
 async function deleteAgent(agentId) {
     try {
@@ -70,7 +69,7 @@ async function deleteAndReCreateAgent(agentId) {
             features: features,
             constraints: constraints,
             agent_name: agentName,
-            api_key: apiKey // 添加 API Key
+            api_key: api_key // Add API Key
         };
         
         const deleteSuccess = await deleteAgent(agentId);
@@ -151,7 +150,7 @@ async function saveAgentForReuse() {
     const features = Array.from(featureCheckboxes).map(checkbox => checkbox.value);
     const constraints = document.getElementById('constraint-name').value;
     const agentName = document.getElementById('agent-name').value || "Investment Research Assistant";
-    const apiKey = document.getElementById('api-key-input')?.value || null; // 获取 API Key
+    const apiKey = document.getElementById('api-key-input')?.value || null; // Get API Key
     
     const config = {
         data_source: dataSource,
@@ -160,7 +159,7 @@ async function saveAgentForReuse() {
         features: features,
         constraints: constraints,
         agent_name: agentName,
-        api_key: apiKey // 添加 API Key
+        api_key: apiKey // Add API Key
     };
     
     try {
@@ -252,7 +251,7 @@ async function loadSavedAgent(agentId) {
         
         document.getElementById('constraint-name').value = agent.constraints || '';
         document.getElementById('agent-name').value = agent.agent_name || '';
-        document.getElementById('api-key-input').value = agent.api_key || ''; // 加载 API Key
+        document.getElementById('api-key-input').value = agent.api_key || ''; // Load API Key
         
         const pageTitle = document.querySelector('h1');
         if (pageTitle) {
@@ -316,7 +315,7 @@ function resetAgentForm() {
     document.getElementById('framework-source').value = 'magnetic';
     document.getElementById('constraint-name').value = '';
     document.getElementById('agent-name').value = '';
-    document.getElementById('api-key-input').value = ''; // 重置 API Key
+    document.getElementById('api-key-input').value = ''; // Reset API Key
     
     const pageTitle = document.querySelector('h1');
     if (pageTitle) {
@@ -435,7 +434,7 @@ if (typeof loadSavedAgentsList !== 'function') {
     }
 }
 
-// 将核心函数暴露给 window 对象，使 sidebar.js 可以使用
+// Expose core functions to the window object for use in sidebar.js
 window.loadSavedAgent = loadSavedAgent;
 window.loadAgentAndRedirect = loadAgentAndRedirect;
 window.listSavedAgents = listSavedAgents;

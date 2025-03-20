@@ -130,17 +130,17 @@
         }
       }
       
-// 在index.html的JavaScript部分，添加以下函数
+// In the JavaScript section of index.html, add the following function
 
-// 更新输入框占位文字
+// Update input placeholder text
 function updatePlaceholder(features) {
   const inputElement = document.getElementById('stockSymbols');
   if (!inputElement) return;
   
-  // 默认占位文字
+  // Default placeholder text
   let placeholder = "Please enter any questions related to financial, stock (e.g., AAPL,GOOGL)";
   
-  // 根据选择的功能更新占位文字
+  // Update placeholder text based on selected features
   if (features && features.length > 0) {
     if (features.includes('simple-complex-calculation')) {
       placeholder = "Ask about financial calculations (e.g., 'Calculate AAPL's 5-year growth rate')";
@@ -162,14 +162,14 @@ function updatePlaceholder(features) {
     }
   }
   
-  // 应用新的占位文字
+  // Apply the new placeholder text
   inputElement.placeholder = placeholder;
 }
 
-    // 修改loadAgentConfig函数，添加对占位文字的更新
+    // Modify loadAgentConfig function to update placeholder text
     async function loadAgentConfig() {
       try {
-        // 从 URL 参数获取 agentId
+        // Get agentId from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const agentId = urlParams.get('agentId');
         
@@ -198,7 +198,7 @@ function updatePlaceholder(features) {
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      loadAgentConfig(); // 从 URL 获取 agentId
+      loadAgentConfig(); // Get agentId from URL
     });
       
       // Update agent information display
